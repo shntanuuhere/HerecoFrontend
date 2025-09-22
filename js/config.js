@@ -11,6 +11,18 @@ const getEnvValue = (key, defaultValue) => {
     return defaultValue;
 };
 
+// Helper function to join URLs and avoid double slashes
+const joinUrl = (base, path) => {
+    if (!base || !path) return base || path || '';
+    
+    // Remove trailing slashes from base and leading slashes from path
+    const cleanBase = base.replace(/\/+$/, '');
+    const cleanPath = path.replace(/^\/+/, '');
+    
+    // Join with single slash
+    return cleanBase + (cleanPath ? '/' + cleanPath : '');
+};
+
 const Config = {
     // Backend API Configuration
     api: {
@@ -263,7 +275,8 @@ Config.getApiUrl = function(endpoint, params = {}) {
         throw new Error(`Unknown API endpoint: ${endpoint}`);
     }
     
-    let url = baseUrl + endpointPath;
+    // Use joinUrl helper to avoid double slashes
+    let url = joinUrl(baseUrl, endpointPath);
     
     // Add query parameters if provided
     if (Object.keys(params).length > 0) {

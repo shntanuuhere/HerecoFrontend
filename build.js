@@ -367,17 +367,22 @@ class FrontendBuilder {
     const express = require('express');
     const app = express();
     
-    // Serve static files from project root
-    app.use(express.static(this.projectRoot));
-    
-    // Serve built files from dist if they exist
+    // Serve built files from dist as default root if they exist
     if (fs.existsSync(this.buildDir)) {
-      app.use('/dist', express.static(this.buildDir));
+      app.use(express.static(this.buildDir));
+      console.log('📁 Serving built files from:', this.buildDir);
+    } else {
+      // Fallback to project root if dist doesn't exist
+      app.use(express.static(this.projectRoot));
+      console.log('📁 Serving files from project root:', this.projectRoot);
+      console.log('💡 Run "npm run build" to create optimized build files');
     }
+    
+    // Serve source files from project root for development
+    app.use('/src', express.static(this.projectRoot));
     
     app.listen(port, () => {
       console.log(`✅ Development server running at http://localhost:${port}`);
-      console.log('📁 Serving files from:', this.projectRoot);
     });
   }
 }
@@ -415,4 +420,19 @@ if (require.main === module) {
   }
 }
 
+// Export validation function for CLI usage
+function validateEnv() {
+  const builder = new FrontendBuilder();
+  try {
+    builder.loadEnvironment('development');
+    builder.validateEnvironment();
+    console.log('✅ Environment validation passed');
+    return true;
+  } catch (error) {
+    console.error('❌ Environment validation failed:', error.message);
+    return false;
+  }
+}
+
 module.exports = FrontendBuilder;
+module.exports.validateEnv = validateEnv;

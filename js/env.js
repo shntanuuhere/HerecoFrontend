@@ -28,6 +28,9 @@ class EnvironmentLoader {
     // Apply environment detection
     this.detectEnvironment();
 
+    // Coerce boolean values for known flags
+    this.coerceBooleanFlags();
+
     // Validate configuration
     this.validate();
 
@@ -139,7 +142,12 @@ class EnvironmentLoader {
     if (configScript) {
       try {
         const config = JSON.parse(configScript.textContent);
-        Object.assign(this.env, config);
+        // Only assign non-empty values to avoid overriding defaults with empty strings
+        Object.entries(config).forEach(([key, value]) => {
+          if (value !== '' && value !== null && value !== undefined) {
+            this.env[key] = value;
+          }
+        });
       } catch (error) {
         console.warn('Failed to parse runtime configuration:', error);
       }
@@ -147,18 +155,48 @@ class EnvironmentLoader {
   }
 
   /**
+   * Coerce boolean values for known flags
+   */
+  coerceBooleanFlags() {
+    const booleanFlags = [
+      'ENABLE_DEBUG_LOGGING',
+      'ENABLE_DEVELOPMENT_TOOLS',
+      'ENABLE_PERFORMANCE_MONITORING',
+      'ENABLE_ERROR_REPORTING',
+      'ENABLE_FRONTEND_CACHING',
+      'ENABLE_LAZY_LOADING',
+      'ENABLE_IMAGE_OPTIMIZATION',
+      'ENABLE_PRELOADING',
+      'ENABLE_HOT_RELOAD',
+      'ENABLE_SOURCE_MAPS',
+      'ENABLE_DEVTOOLS',
+      'ENABLE_ERROR_BOUNDARIES',
+      'ENABLE_RETRY_MECHANISMS'
+    ];
+
+    booleanFlags.forEach(flag => {
+      if (this.env[flag] !== undefined) {
+        this.env[flag] = this.parseValue(this.env[flag]);
+      }
+    });
+  }
+
+  /**
    * Detect environment based on various indicators
    */
   detectEnvironment() {
-    // Detect based on hostname
-    const hostname = window.location.hostname;
-    
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      this.env.NODE_ENV = 'development';
-    } else if (hostname.includes('staging') || hostname.includes('test')) {
-      this.env.NODE_ENV = 'staging';
-    } else {
-      this.env.NODE_ENV = 'production';
+    // Only detect if NODE_ENV hasn't been explicitly set
+    if (!this.env.NODE_ENV || this.env.NODE_ENV === '') {
+      // Detect based on hostname
+      const hostname = window.location.hostname;
+      
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        this.env.NODE_ENV = 'development';
+      } else if (hostname.includes('staging') || hostname.includes('test')) {
+        this.env.NODE_ENV = 'staging';
+      } else {
+        this.env.NODE_ENV = 'production';
+      }
     }
 
     // Override with explicit setting if provided
@@ -174,7 +212,10 @@ class EnvironmentLoader {
    */
   validate() {
     const required = ['BACKEND_API_URL'];
-    const missing = required.filter(key => !this.get(key));
+    const missing = required.filter(key => {
+      const value = this.get(key);
+      return !value || value === '';
+    });
     
     if (missing.length > 0) {
       console.error('Missing required environment variables:', missing);

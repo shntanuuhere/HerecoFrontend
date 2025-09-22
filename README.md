@@ -79,6 +79,8 @@ frontend/
 
 3. Open your browser to `http://localhost:8080`
 
+   **Note**: The development server serves built files from the `dist/` directory by default. If no build exists, it falls back to serving source files from the project root. Run `npm run build` first for the best development experience with proper environment configuration.
+
 ### 3. Build for Production
 
 ```bash
