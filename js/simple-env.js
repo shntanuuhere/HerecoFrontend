@@ -9,20 +9,27 @@
 
     // Default configuration values
     const DEFAULT_CONFIG = {
-        BACKEND_API_URL: window.location.origin,
+        BACKEND_API_URL: 'https://hereco-backend.azurewebsites.net',
         NODE_ENV: 'production',
-        ENABLE_DEBUG_LOGGING: 'false',
-        ENABLE_DEVELOPMENT_TOOLS: 'false',
-        API_TIMEOUT: '30000',
+        DEBUG_MODE: 'false',
+        DEV_TOOLS: 'false',
+        API_TIMEOUT: '10000',
         API_RETRY_ATTEMPTS: '3',
         API_RETRY_DELAY: '1000',
-        ENABLE_FRONTEND_CACHING: 'true',
+        ENABLE_CACHING: 'true',
         CACHE_DURATION: '300000',
-        MAX_CACHE_SIZE: '50',
         ENABLE_LAZY_LOADING: 'true',
-        ENABLE_IMAGE_OPTIMIZATION: 'true',
-        ENABLE_PRELOADING: 'true',
-        ITEMS_PER_PAGE: '12'
+        CORS_DEBUG: 'false',
+        CORS_ORIGINS: window.location.origin,
+        AZURE_WEB_APP_NAME: 'your-app-name',
+        AZURE_REGION: 'eastus',
+        LOCAL_BACKEND_URL: 'http://localhost:3000',
+        LOCAL_DEV_MODE: 'false',
+        HEALTH_ENDPOINT: '/api/health',
+        PODCAST_ENDPOINT: '/api/podcast/episodes',
+        FILES_ENDPOINT: '/api/files',
+        SHOW_DETAILED_ERRORS: 'false',
+        ENABLE_ERROR_REPORTING: 'true'
     };
 
     // Environment configuration object
@@ -113,27 +120,37 @@
             // Development environment detection
             if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.includes('localhost')) {
                 this.config.NODE_ENV = 'development';
-                this.config.ENABLE_DEBUG_LOGGING = 'true';
-                this.config.ENABLE_DEVELOPMENT_TOOLS = 'true';
+                this.config.DEBUG_MODE = 'true';
+                this.config.DEV_TOOLS = 'true';
+                this.config.LOCAL_DEV_MODE = 'true';
                 
                 // Use local backend for development
-                if (this.config.BACKEND_API_URL === window.location.origin) {
-                    this.config.BACKEND_API_URL = 'http://localhost:3000';
+                if (this.config.BACKEND_API_URL === 'https://hereco-backend.azurewebsites.net') {
+                    this.config.BACKEND_API_URL = this.config.LOCAL_BACKEND_URL;
                 }
+            }
+            
+            // Azure Static Web Apps detection
+            else if (hostname.includes('azurestaticapps.net') || hostname.includes('azurewebsites.net')) {
+                this.config.NODE_ENV = 'production';
+                this.config.DEBUG_MODE = 'false';
+                this.config.DEV_TOOLS = 'false';
+                this.config.CORS_DEBUG = 'true'; // Enable CORS debugging for Azure deployments
             }
             
             // Staging environment detection
             else if (hostname.includes('staging') || hostname.includes('preview')) {
                 this.config.NODE_ENV = 'staging';
-                this.config.ENABLE_DEBUG_LOGGING = 'true';
-                this.config.ENABLE_DEVELOPMENT_TOOLS = 'true';
+                this.config.DEBUG_MODE = 'true';
+                this.config.DEV_TOOLS = 'true';
+                this.config.CORS_DEBUG = 'true';
             }
             
             // Production environment
             else {
                 this.config.NODE_ENV = 'production';
-                this.config.ENABLE_DEBUG_LOGGING = 'false';
-                this.config.ENABLE_DEVELOPMENT_TOOLS = 'false';
+                this.config.DEBUG_MODE = 'false';
+                this.config.DEV_TOOLS = 'false';
             }
         },
 
@@ -203,14 +220,49 @@
          * Check if debug logging is enabled
          */
         isDebugEnabled: function() {
-            return this.get('ENABLE_DEBUG_LOGGING') === 'true';
+            return this.get('DEBUG_MODE') === 'true';
         },
 
         /**
          * Check if development tools are enabled
          */
         areDevelopmentToolsEnabled: function() {
-            return this.get('ENABLE_DEVELOPMENT_TOOLS') === 'true';
+            return this.get('DEV_TOOLS') === 'true';
+        },
+
+        /**
+         * Check if local development mode is enabled
+         */
+        isLocalDevMode: function() {
+            return this.get('LOCAL_DEV_MODE') === 'true';
+        },
+
+        /**
+         * Check if CORS debugging is enabled
+         */
+        isCorsDebugEnabled: function() {
+            return this.get('CORS_DEBUG') === 'true';
+        },
+
+        /**
+         * Get Azure Web App name
+         */
+        getAzureWebAppName: function() {
+            return this.get('AZURE_WEB_APP_NAME', 'your-app-name');
+        },
+
+        /**
+         * Get Azure region
+         */
+        getAzureRegion: function() {
+            return this.get('AZURE_REGION', 'eastus');
+        },
+
+        /**
+         * Get local backend URL
+         */
+        getLocalBackendUrl: function() {
+            return this.get('LOCAL_BACKEND_URL', 'http://localhost:3000');
         },
 
         /**
@@ -226,14 +278,57 @@
          * Get API base URL
          */
         getApiBaseUrl: function() {
-            return this.get('BACKEND_API_URL', window.location.origin);
+            let baseUrl = this.get('BACKEND_API_URL', 'https://hereco-backend.azurewebsites.net');
+            
+            // Handle local development mode
+            if (this.isLocalDevMode() && this.get('LOCAL_BACKEND_URL')) {
+                baseUrl = this.get('LOCAL_BACKEND_URL');
+            }
+            
+            return baseUrl;
+        },
+
+        /**
+         * Validate backend URL
+         */
+        validateBackendUrl: function() {
+            const baseUrl = this.getApiBaseUrl();
+            
+            if (!baseUrl || baseUrl === 'https://hereco-backend.azurewebsites.net') {
+                return {
+                    valid: false,
+                    message: 'Backend API URL not configured. Please update BACKEND_API_URL in your environment configuration.'
+                };
+            }
+            
+            try {
+                new URL(baseUrl);
+                return { valid: true, message: 'Backend URL is valid' };
+            } catch (error) {
+                return {
+                    valid: false,
+                    message: 'Invalid backend URL format. Please check your BACKEND_API_URL configuration.'
+                };
+            }
+        },
+
+        /**
+         * Get CORS configuration
+         */
+        getCorsConfig: function() {
+            return {
+                enabled: true,
+                crossOrigin: true,
+                origins: this.get('CORS_ORIGINS', window.location.origin),
+                debug: this.isCorsDebugEnabled()
+            };
         },
 
         /**
          * Get API timeout
          */
         getApiTimeout: function() {
-            return parseInt(this.get('API_TIMEOUT', '30000'), 10);
+            return parseInt(this.get('API_TIMEOUT', '10000'), 10);
         },
 
         /**
@@ -261,7 +356,7 @@
          * Check if caching is enabled
          */
         isCachingEnabled: function() {
-            return this.get('ENABLE_FRONTEND_CACHING') === 'true';
+            return this.get('ENABLE_CACHING') === 'true';
         },
 
         /**
@@ -272,13 +367,6 @@
         },
 
         /**
-         * Get max cache size
-         */
-        getMaxCacheSize: function() {
-            return parseInt(this.get('MAX_CACHE_SIZE', '50'), 10);
-        },
-
-        /**
          * Check if lazy loading is enabled
          */
         isLazyLoadingEnabled: function() {
@@ -286,17 +374,17 @@
         },
 
         /**
-         * Check if image optimization is enabled
+         * Check if detailed errors are shown
          */
-        isImageOptimizationEnabled: function() {
-            return this.get('ENABLE_IMAGE_OPTIMIZATION') === 'true';
+        isDetailedErrorsEnabled: function() {
+            return this.get('SHOW_DETAILED_ERRORS') === 'true';
         },
 
         /**
-         * Check if preloading is enabled
+         * Check if error reporting is enabled
          */
-        isPreloadingEnabled: function() {
-            return this.get('ENABLE_PRELOADING') === 'true';
+        isErrorReportingEnabled: function() {
+            return this.get('ENABLE_ERROR_REPORTING') === 'true';
         },
 
         /**
@@ -338,6 +426,14 @@
                 SimpleEnv.set('BACKEND_API_URL', url);
                 console.log('Backend URL updated to:', url);
             },
+            setLocalBackendUrl: function(url) {
+                SimpleEnv.set('LOCAL_BACKEND_URL', url);
+                console.log('Local backend URL updated to:', url);
+            },
+            toggleLocalDevMode: function(enabled) {
+                SimpleEnv.set('LOCAL_DEV_MODE', enabled ? 'true' : 'false');
+                console.log('Local development mode', enabled ? 'enabled' : 'disabled');
+            },
             reloadConfig: function() {
                 SimpleEnv.reset();
                 console.log('Configuration reloaded');
@@ -346,8 +442,22 @@
                 console.log('Current configuration:', SimpleEnv.getAll());
             },
             setDebug: function(enabled) {
-                SimpleEnv.set('ENABLE_DEBUG_LOGGING', enabled ? 'true' : 'false');
+                SimpleEnv.set('DEBUG_MODE', enabled ? 'true' : 'false');
                 console.log('Debug logging', enabled ? 'enabled' : 'disabled');
+            },
+            setCorsDebug: function(enabled) {
+                SimpleEnv.set('CORS_DEBUG', enabled ? 'true' : 'false');
+                console.log('CORS debugging', enabled ? 'enabled' : 'disabled');
+            },
+            validateBackendUrl: function() {
+                const validation = SimpleEnv.validateBackendUrl();
+                console.log('Backend URL validation:', validation);
+                return validation;
+            },
+            getCorsConfig: function() {
+                const corsConfig = SimpleEnv.getCorsConfig();
+                console.log('CORS configuration:', corsConfig);
+                return corsConfig;
             }
         };
         

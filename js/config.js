@@ -26,7 +26,7 @@ const joinUrl = (base, path) => {
 const Config = {
     // Backend API Configuration
     api: {
-        baseUrl: getEnvValue('BACKEND_API_URL', window.location.origin),
+        baseUrl: getEnvValue('BACKEND_API_URL', 'https://hereco-backend.azurewebsites.net'),
         endpoints: {
             // Podcast endpoints
             episodes: '/api/podcast/episodes',
@@ -49,9 +49,11 @@ const Config = {
             // Health check
             health: '/api/health'
         },
-        timeout: getEnvValue('API_TIMEOUT', 30000), // 30 seconds
+        timeout: getEnvValue('API_TIMEOUT', 10000), // 10 seconds for cross-origin requests
         retryAttempts: getEnvValue('API_RETRY_ATTEMPTS', 3),
-        retryDelay: getEnvValue('API_RETRY_DELAY', 1000) // 1 second
+        retryDelay: getEnvValue('API_RETRY_DELAY', 1000), // 1 second
+        corsEnabled: true,
+        crossOrigin: true
     },
 
     // Site Configuration
@@ -139,7 +141,9 @@ const Config = {
         isDevelopment: getEnvValue('NODE_ENV', 'development') === 'development',
         isProduction: getEnvValue('NODE_ENV', 'development') === 'production',
         isStaging: getEnvValue('NODE_ENV', 'development') === 'staging',
-        debug: getEnvValue('ENABLE_DEBUG_LOGGING', false) // Set to true for development debugging
+        debug: getEnvValue('DEBUG_MODE', false), // Set to true for development debugging
+        localDevMode: getEnvValue('LOCAL_DEV_MODE', false),
+        azureWebApp: getEnvValue('AZURE_WEB_APP_NAME', 'your-app-name')
     },
 
     // UI Configuration
@@ -190,7 +194,11 @@ const Config = {
             unauthorizedError: 'Unauthorized access. Please refresh the page.',
             forbiddenError: 'Access forbidden. Please contact administrator.',
             notFoundError: 'Resource not found.',
-            rateLimitError: 'Too many requests. Please wait a moment and try again.'
+            rateLimitError: 'Too many requests. Please wait a moment and try again.',
+            corsError: 'Cross-origin request blocked. Please check CORS configuration on the backend server.',
+            corsSetupError: 'CORS configuration issue. The backend server needs to allow requests from this domain.',
+            networkError: 'Network error. Please check your internet connection and try again.',
+            backendUnavailable: 'Backend server is unavailable. Please try again later or contact support.'
         },
         general: {
             loading: 'Loading...',
@@ -268,7 +276,18 @@ const Config = {
 // Helper function to get API endpoint URL
 Config.getApiUrl = function(endpoint, params = {}) {
     // Get current base URL (may have changed via environment)
-    const baseUrl = getEnvValue('BACKEND_API_URL', this.api.baseUrl);
+    let baseUrl = getEnvValue('BACKEND_API_URL', this.api.baseUrl);
+    
+    // Handle local development mode
+    if (this.environment.localDevMode && getEnvValue('LOCAL_BACKEND_URL')) {
+        baseUrl = getEnvValue('LOCAL_BACKEND_URL');
+    }
+    
+    // Validate backend URL
+    if (!baseUrl || baseUrl === 'https://hereco-backend.azurewebsites.net') {
+        console.warn('Backend API URL not configured. Please update BACKEND_API_URL in your environment configuration.');
+    }
+    
     const endpointPath = this.api.endpoints[endpoint];
     
     if (!endpointPath) {
@@ -337,9 +356,41 @@ Config.isProduction = function() {
 
 // Helper function to log debug messages
 Config.debug = function(message, data = null) {
-    if (getEnvValue('ENABLE_DEBUG_LOGGING', this.environment.debug)) {
+    if (getEnvValue('DEBUG_MODE', this.environment.debug)) {
         console.log(`[DEBUG] ${message}`, data);
     }
+};
+
+// Helper function to validate backend URL
+Config.validateBackendUrl = function() {
+    const baseUrl = getEnvValue('BACKEND_API_URL', this.api.baseUrl);
+    
+    if (!baseUrl || baseUrl === 'https://hereco-backend.azurewebsites.net') {
+        return {
+            valid: false,
+            message: 'Backend API URL not configured. Please update BACKEND_API_URL in your environment configuration.'
+        };
+    }
+    
+    try {
+        new URL(baseUrl);
+        return { valid: true, message: 'Backend URL is valid' };
+    } catch (error) {
+        return {
+            valid: false,
+            message: 'Invalid backend URL format. Please check your BACKEND_API_URL configuration.'
+        };
+    }
+};
+
+// Helper function to get CORS configuration
+Config.getCorsConfig = function() {
+    return {
+        enabled: this.api.corsEnabled,
+        crossOrigin: this.api.crossOrigin,
+        origins: getEnvValue('CORS_ORIGINS', window.location.origin),
+        debug: getEnvValue('CORS_DEBUG', false)
+    };
 };
 
 // Export for use in other modules

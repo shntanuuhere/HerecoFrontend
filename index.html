@@ -21,10 +21,21 @@
     <link rel="stylesheet" href="styles/main.css">
     
     <!-- Environment Configuration Meta Tags -->
-    <meta name="env-backend-api-url" content="">
-    <meta name="env-node-env" content="">
-    <meta name="env-enable-debug-logging" content="">
-    <meta name="env-enable-development-tools" content="">
+    <meta name="env-backend-api-url" content="https://hereco-backend.azurewebsites.net">
+    <meta name="env-node-env" content="production">
+    <meta name="env-debug-mode" content="false">
+    <meta name="env-dev-tools" content="false">
+    <meta name="env-cors-debug" content="false">
+    <meta name="env-cors-origins" content="">
+    <meta name="env-azure-web-app-name" content="your-app-name">
+    <meta name="env-azure-region" content="eastus">
+    <meta name="env-local-backend-url" content="http://localhost:3000">
+    <meta name="env-local-dev-mode" content="false">
+    <meta name="env-api-timeout" content="10000">
+    <meta name="env-enable-caching" content="true">
+    <meta name="env-enable-lazy-loading" content="true">
+    <meta name="env-show-detailed-errors" content="false">
+    <meta name="env-enable-error-reporting" content="true">
 </head>
 <body>
     <header class="header">
@@ -71,6 +82,14 @@
                 
                 <!-- Error Container -->
                 <div id="error-container" class="hidden"></div>
+                
+                <!-- API Connection Status -->
+                <div id="api-connection-status" class="api-connection-status hidden">
+                    <div class="connection-indicator">
+                        <span class="connection-icon">🔗</span>
+                        <span class="connection-text">Testing API connection...</span>
+                    </div>
+                </div>
                 
                 <!-- Projects Container -->
                 <div id="projects-container" class="projects-container" role="main" aria-label="Podcast episodes">
@@ -185,5 +204,56 @@
     <script src="js/config.js"></script>
     <script src="js/apiService.js"></script>
     <script src="js/main.js"></script>
+    
+    <!-- API Connection Test Script -->
+    <script>
+        // Test API connection on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait for environment to be initialized
+            setTimeout(function() {
+                if (window.apiService && window.apiService.testBackendConnection) {
+                    const connectionStatus = document.getElementById('api-connection-status');
+                    const connectionText = connectionStatus.querySelector('.connection-text');
+                    
+                    // Show connection status
+                    connectionStatus.classList.remove('hidden');
+                    
+                    // Test connection
+                    window.apiService.testBackendConnection()
+                        .then(function(result) {
+                            if (result.success) {
+                                connectionStatus.className = 'api-connection-status connection-success';
+                                connectionText.textContent = '✅ API connection successful';
+                                setTimeout(function() {
+                                    connectionStatus.classList.add('hidden');
+                                }, 3000);
+                            } else {
+                                connectionStatus.className = 'api-connection-status connection-error';
+                                connectionText.textContent = '❌ API connection failed: ' + result.error;
+                                
+                                // Show detailed error for CORS issues
+                                if (result.type === 'cors') {
+                                    const errorContainer = document.getElementById('error-container');
+                                    errorContainer.innerHTML = `
+                                        <div class="error-message cors-error">
+                                            <h3>API Connection Issue</h3>
+                                            <p>Unable to connect to the backend server. This is likely a CORS configuration issue.</p>
+                                            <p><strong>Error:</strong> ${result.error}</p>
+                                            <p><strong>Backend URL:</strong> ${window.env.getApiBaseUrl()}</p>
+                                            <p>Please check the CORS-SETUP.md guide for configuration instructions.</p>
+                                        </div>
+                                    `;
+                                    errorContainer.classList.remove('hidden');
+                                }
+                            }
+                        })
+                        .catch(function(error) {
+                            connectionStatus.className = 'api-connection-status connection-error';
+                            connectionText.textContent = '❌ API connection test failed: ' + error.message;
+                        });
+                }
+            }, 1000);
+        });
+    </script>
 </body>
 </html>
