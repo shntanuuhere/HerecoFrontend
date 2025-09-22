@@ -108,7 +108,7 @@ class EnvironmentLoader {
   loadFromMetaTags() {
     const metaTags = document.querySelectorAll('meta[name^="env-"]');
     metaTags.forEach(meta => {
-      const key = meta.name.replace('env-', '').toUpperCase();
+      const key = meta.name.replace(/^env-/, '').replace(/-/g, '_').toUpperCase();
       const value = meta.content;
       if (value) {
         this.env[key] = this.parseValue(value);
@@ -413,4 +413,6 @@ if (typeof module !== 'undefined' && module.exports) {
 
 // Make available globally
 window.EnvLoader = EnvironmentLoader;
-window.env = envLoader;
+if (!window.env) {
+  window.env = envLoader;
+}

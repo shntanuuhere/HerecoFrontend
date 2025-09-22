@@ -25,8 +25,6 @@
     <meta name="env-node-env" content="">
     <meta name="env-enable-debug-logging" content="">
     <meta name="env-enable-development-tools" content="">
-    
-    <!-- Runtime Configuration Script (injected at build time) -->
 </head>
 <body>
     <header class="header">
@@ -181,52 +179,11 @@
     }
     </script>
 
-    <!-- Environment Configuration Script -->
-    <script>
-        // Build-time environment injection placeholder
-        window.__ENV__ = window.__ENV__ || {};
-        
-        // Development configuration loader
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            // Load development configuration
-            try {
-                const devConfig = localStorage.getItem('__DEV_CONFIG__');
-                if (devConfig) {
-                    window.__ENV__ = { ...window.__ENV__, ...JSON.parse(devConfig) };
-                }
-            } catch (error) {
-                console.warn('Failed to load development configuration:', error);
-            }
-        }
-    </script>
-    
     <!-- Application Scripts -->
+    <script src="js/simple-env.js"></script>
     <script src="js/env.js"></script>
     <script src="js/config.js"></script>
     <script src="js/apiService.js"></script>
     <script src="js/main.js"></script>
-    
-    <!-- Development Tools -->
-    <script>
-        // Development tools and debugging
-        if (window.env && window.env.isDevelopment() && window.env.areDevelopmentToolsEnabled()) {
-            // Add development tools
-            window.devTools = {
-                setBackendUrl: (url) => {
-                    window.env.set('BACKEND_API_URL', url);
-                    console.log('Backend URL updated to:', url);
-                },
-                reloadConfig: () => {
-                    window.env.init();
-                    console.log('Configuration reloaded');
-                },
-                showConfig: () => {
-                    console.log('Current configuration:', window.env.getAll());
-                }
-            };
-            
-            console.log('Development tools available. Use window.devTools to access them.');
-        }
-    </script>
 </body>
 </html>
