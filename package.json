@@ -1,0 +1,94 @@
+{
+  "name": "podcast-website-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for podcast website with RSS feed integration and file gallery",
+  "main": "build.js",
+  "scripts": {
+    "build": "node build.js build",
+    "build:dev": "node build.js build development",
+    "build:staging": "node build.js build staging",
+    "build:prod": "node build.js build production",
+    "serve": "node build.js serve",
+    "dev": "node build.js dev",
+    "start": "npm run dev",
+    "clean": "rimraf dist",
+    "preview": "npm run build:prod && npx serve dist",
+    "deploy:netlify": "npm run build:prod && netlify deploy --prod --dir=dist",
+    "deploy:vercel": "npm run build:prod && vercel --prod",
+    "deploy:github": "npm run build:prod && gh-pages -d dist",
+    "env:setup": "cp env.template .env",
+    "env:validate": "node -e \"require('./build.js').validateEnvironment()\"",
+    "lint": "eslint js/",
+    "lint:fix": "eslint js/ --fix",
+    "format": "prettier --write js/ styles/ *.html",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": [
+    "podcast",
+    "rss",
+    "frontend",
+    "vanilla-js",
+    "azure",
+    "gallery"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "express": "^4.18.2",
+    "rimraf": "^5.0.5",
+    "serve": "^14.2.1",
+    "eslint": "^8.55.0",
+    "prettier": "^3.1.0"
+  },
+  "optionalDependencies": {
+    "netlify-cli": "^17.10.1",
+    "vercel": "^32.7.0",
+    "gh-pages": "^6.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/podcast-website.git",
+    "directory": "frontend"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/podcast-website/issues"
+  },
+  "homepage": "https://github.com/yourusername/podcast-website#readme",
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "es2021": true,
+      "node": true
+    },
+    "extends": [
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+    },
+    "rules": {
+      "no-unused-vars": "warn",
+      "no-console": "off",
+      "prefer-const": "error",
+      "no-var": "error"
+    }
+  },
+  "prettier": {
+    "semi": true,
+    "trailingComma": "es5",
+    "singleQuote": true,
+    "printWidth": 80,
+    "tabWidth": 2
+  }
+}

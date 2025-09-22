@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Podcast website with episodes and file gallery">
+    <meta name="keywords" content="podcast, RSS, episodes, audio, projects">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Podcast Website - Episodes & Gallery">
+    <meta property="og:description" content="Listen to podcast episodes and explore the file gallery">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Podcast Website - Episodes & Gallery">
+    <meta name="twitter:description" content="Listen to podcast episodes and explore the file gallery">
+    
+    <title>Podcast Website</title>
+    <link rel="stylesheet" href="styles/main.css">
+    
+    <!-- Environment Configuration Meta Tags -->
+    <meta name="env-backend-api-url" content="">
+    <meta name="env-node-env" content="">
+    <meta name="env-enable-debug-logging" content="">
+    <meta name="env-enable-development-tools" content="">
+    
+    <!-- Runtime Configuration Script -->
+    <script type="application/json" data-config>
+    {
+        "BACKEND_API_URL": "",
+        "NODE_ENV": "",
+        "ENABLE_DEBUG_LOGGING": "",
+        "ENABLE_DEVELOPMENT_TOOLS": ""
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="site-title">Podcast Website</h1>
+            <nav class="navigation">
+                <ul class="nav-list">
+                    <li><a href="#projects" class="nav-link">Episodes</a></li>
+                    <li><a href="#gallery" class="nav-link">Gallery</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Projects Section -->
+            <section id="projects" class="section projects-section">
+                <h2 class="section-title">Podcast Episodes</h2>
+                
+                <!-- RSS Feed Controls -->
+                <div class="rss-controls">
+                    <button id="refresh-button" class="refresh-button" aria-label="Refresh podcast episodes">
+                        <span class="refresh-icon">🔄</span> Refresh Episodes
+                    </button>
+                </div>
+                
+                <!-- Episode Search -->
+                <div class="episode-search">
+                    <input 
+                        type="text" 
+                        id="episode-search-input" 
+                        class="episode-search-input" 
+                        placeholder="Search episodes..."
+                        aria-label="Search episodes"
+                    >
+                </div>
+                
+                <!-- Loading Indicator -->
+                <div id="loading-indicator" class="loading-indicator hidden">
+                    <div class="loading-spinner"></div>
+                    <span>Loading podcast episodes...</span>
+                </div>
+                
+                <!-- Error Container -->
+                <div id="error-container" class="hidden"></div>
+                
+                <!-- Projects Container -->
+                <div id="projects-container" class="projects-container" role="main" aria-label="Podcast episodes">
+                    <p class="placeholder-text">Podcast episodes will be displayed here.</p>
+                </div>
+            </section>
+
+            <!-- Gallery Section -->
+            <section id="gallery" class="section gallery-section">
+                <h2 class="section-title">File Gallery</h2>
+                
+                <!-- Gallery Controls -->
+                <div class="gallery-controls" role="toolbar" aria-label="Gallery controls">
+                    <input 
+                        type="text" 
+                        id="gallery-search" 
+                        class="gallery-search" 
+                        placeholder="Search files..."
+                        aria-label="Search files"
+                    >
+                    <select id="gallery-filter" class="gallery-filter" aria-label="Filter by file type">
+                        <option value="all">All Files</option>
+                        <option value="images">Images</option>
+                        <option value="videos">Videos</option>
+                        <option value="audio">Audio</option>
+                        <option value="documents">Documents</option>
+                    </select>
+                    <select id="gallery-sort" class="gallery-sort" aria-label="Sort files">
+                        <option value="date-newest">Newest First</option>
+                        <option value="date-oldest">Oldest First</option>
+                        <option value="name-asc">Name A-Z</option>
+                        <option value="name-desc">Name Z-A</option>
+                        <option value="size-largest">Largest First</option>
+                        <option value="size-smallest">Smallest First</option>
+                    </select>
+                </div>
+                
+                <!-- Gallery Container -->
+                <div id="gallery-container" class="gallery-container" role="main" aria-label="File gallery">
+                    <div class="gallery-loading">
+                        <div class="loading-spinner"></div>
+                        <span>Loading files...</span>
+                    </div>
+                </div>
+                
+                <!-- Load More Button -->
+                <button id="load-more-btn" class="load-more-btn hidden" aria-label="Load more files">
+                    Load More Files
+                </button>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-text">&copy; 2024 Podcast Website. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Modal Dialogs -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirm Action</h3>
+                <button class="modal-close" onclick="Utils.closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-message">Are you sure you want to perform this action?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="Utils.closeModal()">Cancel</button>
+                <button class="btn btn-primary" id="modal-confirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Detail Modal -->
+    <div id="file-detail-modal" class="modal-overlay hidden">
+        <div class="modal-container modal-large">
+            <div class="modal-header">
+                <h3 class="modal-title">File Details</h3>
+                <button class="modal-close" onclick="Utils.closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="file-detail-content"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="Utils.closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Structured Data for Podcast Episodes -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Podcast Website",
+        "description": "Podcast website with episodes and file gallery",
+        "url": "",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+
+    <!-- Environment Configuration Script -->
+    <script>
+        // Build-time environment injection placeholder
+        window.__ENV__ = window.__ENV__ || {};
+        
+        // Development configuration loader
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            // Load development configuration
+            try {
+                const devConfig = localStorage.getItem('__DEV_CONFIG__');
+                if (devConfig) {
+                    window.__ENV__ = { ...window.__ENV__, ...JSON.parse(devConfig) };
+                }
+            } catch (error) {
+                console.warn('Failed to load development configuration:', error);
+            }
+        }
+    </script>
+    
+    <!-- Application Scripts -->
+    <script src="js/env.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/apiService.js"></script>
+    <script src="js/main.js"></script>
+    
+    <!-- Development Tools -->
+    <script>
+        // Development tools and debugging
+        if (window.env && window.env.isDevelopment() && window.env.areDevelopmentToolsEnabled()) {
+            // Add development tools
+            window.devTools = {
+                setBackendUrl: (url) => {
+                    window.env.set('BACKEND_API_URL', url);
+                    console.log('Backend URL updated to:', url);
+                },
+                reloadConfig: () => {
+                    window.env.init();
+                    console.log('Configuration reloaded');
+                },
+                showConfig: () => {
+                    console.log('Current configuration:', window.env.getAll());
+                }
+            };
+            
+            console.log('Development tools available. Use window.devTools to access them.');
+        }
+    </script>
+</body>
+</html>
