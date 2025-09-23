@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "**/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "env": {
+    "BACKEND_API_URL": "@backend_api_url",
+    "NODE_ENV": "@node_env",
+    "DEBUG_MODE": "@debug_mode",
+    "DEV_TOOLS": "@dev_tools",
+    "CORS_DEBUG": "@cors_debug",
+    "CORS_ORIGINS": "@cors_origins",
+    "AZURE_WEB_APP_NAME": "@azure_web_app_name",
+    "AZURE_REGION": "@azure_region",
+    "LOCAL_BACKEND_URL": "@local_backend_url",
+    "LOCAL_DEV_MODE": "@local_dev_mode",
+    "API_TIMEOUT": "@api_timeout",
+    "ENABLE_CACHING": "@enable_caching",
+    "ENABLE_LAZY_LOADING": "@enable_lazy_loading",
+    "SHOW_DETAILED_ERRORS": "@show_detailed_errors",
+    "ENABLE_ERROR_REPORTING": "@enable_error_reporting"
+  }
+}
