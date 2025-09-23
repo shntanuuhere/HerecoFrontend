@@ -5,9 +5,24 @@
 
 // Wait for environment loader to be available
 const getEnvValue = (key, defaultValue) => {
-    if (typeof window !== 'undefined' && window.env) {
-        return window.env.get(key, defaultValue);
+    if (typeof window !== 'undefined' && window.env && typeof window.env.get === 'function') {
+        try {
+            return window.env.get(key, defaultValue);
+        } catch (error) {
+            console.warn('Error getting environment value:', error);
+            return defaultValue;
+        }
     }
+    
+    // Fallback: try to get from meta tags directly
+    if (typeof document !== 'undefined') {
+        const metaName = `env-${key.toLowerCase().replace(/_/g, '-')}`;
+        const meta = document.querySelector(`meta[name="${metaName}"]`);
+        if (meta && meta.content) {
+            return meta.content;
+        }
+    }
+    
     return defaultValue;
 };
 
@@ -278,13 +293,13 @@ Config.getApiUrl = function(endpoint, params = {}) {
     // Get current base URL (may have changed via environment)
     let baseUrl = getEnvValue('BACKEND_API_URL', this.api.baseUrl);
     
-    // Handle local development mode
-    if (this.environment.localDevMode && getEnvValue('LOCAL_BACKEND_URL')) {
+    // Handle local development mode - only if explicitly enabled
+    if (getEnvValue('LOCAL_DEV_MODE') === 'true' && getEnvValue('LOCAL_BACKEND_URL')) {
         baseUrl = getEnvValue('LOCAL_BACKEND_URL');
     }
     
     // Validate backend URL
-    if (!baseUrl || baseUrl === 'https://hereco-backend.azurewebsites.net') {
+    if (!baseUrl || baseUrl === '' || baseUrl === window.location.origin) {
         console.warn('Backend API URL not configured. Please update BACKEND_API_URL in your environment configuration.');
     }
     
@@ -365,7 +380,7 @@ Config.debug = function(message, data = null) {
 Config.validateBackendUrl = function() {
     const baseUrl = getEnvValue('BACKEND_API_URL', this.api.baseUrl);
     
-    if (!baseUrl || baseUrl === 'https://hereco-backend.azurewebsites.net') {
+    if (!baseUrl || baseUrl === '' || baseUrl === window.location.origin) {
         return {
             valid: false,
             message: 'Backend API URL not configured. Please update BACKEND_API_URL in your environment configuration.'
@@ -396,4 +411,9 @@ Config.getCorsConfig = function() {
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = Config;
+}
+
+// Ensure Config is available globally
+if (typeof window !== 'undefined') {
+    window.Config = Config;
 }

@@ -108,7 +108,12 @@ class EnvironmentLoader {
   loadFromMetaTags() {
     const metaTags = document.querySelectorAll('meta[name^="env-"]');
     metaTags.forEach(meta => {
-      const key = meta.name.replace(/^env-/, '').replace(/-/g, '_').toUpperCase();
+      // Remove 'env-' prefix and convert hyphens to underscores
+      let key = meta.name;
+      if (key.startsWith('env-')) {
+        key = key.substring(4); // Remove 'env-' prefix
+      }
+      key = key.replace(/-/g, '_').toUpperCase();
       const value = meta.content;
       if (value) {
         this.env[key] = this.parseValue(value);
@@ -120,7 +125,12 @@ class EnvironmentLoader {
    * Load environment variables from localStorage (for development)
    */
   loadFromLocalStorage() {
-    if (this.isDevelopment()) {
+    // Check if we're in development mode without calling isDevelopment() to avoid recursion
+    const isDev = this.env.NODE_ENV === 'development' || 
+                 window.location.hostname === 'localhost' || 
+                 window.location.hostname === '127.0.0.1';
+    
+    if (isDev) {
       const stored = localStorage.getItem('__FRONTEND_ENV__');
       if (stored) {
         try {

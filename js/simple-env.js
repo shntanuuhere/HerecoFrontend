@@ -48,7 +48,10 @@
             // Start with default values
             this.config = { ...DEFAULT_CONFIG };
 
-            // Load from meta tags (if available)
+            // Apply environment-specific overrides first
+            this.applyEnvironmentOverrides();
+
+            // Load from meta tags (if available) - this will override the defaults
             this.loadFromMetaTags();
 
             // Load from URL parameters (for development/testing)
@@ -56,9 +59,6 @@
 
             // Load from localStorage (for development)
             this.loadFromLocalStorage();
-
-            // Apply environment-specific overrides
-            this.applyEnvironmentOverrides();
 
             this.initialized = true;
             this.debug('Environment configuration initialized', this.config);
@@ -73,7 +73,12 @@
                 const name = meta.getAttribute('name');
                 const value = meta.getAttribute('content');
                 if (name && value) {
-                    const key = name.replace(/^env-/, '').replace(/-/g, '_').toUpperCase();
+                    // Remove 'env-' prefix and convert hyphens to underscores
+                    let key = name;
+                    if (key.startsWith('env-')) {
+                        key = key.substring(4); // Remove 'env-' prefix
+                    }
+                    key = key.replace(/-/g, '_').toUpperCase();
                     this.config[key] = value;
                 }
             });
@@ -98,7 +103,12 @@
          * Load configuration from localStorage (development only)
          */
         loadFromLocalStorage: function() {
-            if (this.isDevelopment()) {
+            // Check if we're in development mode without calling isDevelopment() to avoid recursion
+            const isDev = this.config.NODE_ENV === 'development' || 
+                         window.location.hostname === 'localhost' || 
+                         window.location.hostname === '127.0.0.1';
+            
+            if (isDev) {
                 try {
                     const storedConfig = localStorage.getItem('__DEV_CONFIG__');
                     if (storedConfig) {
@@ -122,12 +132,13 @@
                 this.config.NODE_ENV = 'development';
                 this.config.DEBUG_MODE = 'true';
                 this.config.DEV_TOOLS = 'true';
-                this.config.LOCAL_DEV_MODE = 'true';
+                // Don't automatically enable local dev mode - let meta tags control this
+                // this.config.LOCAL_DEV_MODE = 'true';
                 
-                // Use local backend for development
-                if (this.config.BACKEND_API_URL === 'https://hereco-backend.azurewebsites.net') {
-                    this.config.BACKEND_API_URL = this.config.LOCAL_BACKEND_URL;
-                }
+                // Don't automatically switch to local backend - use what's configured
+                // if (this.config.LOCAL_DEV_MODE === 'true' && this.config.LOCAL_BACKEND_URL) {
+                //     this.config.BACKEND_API_URL = this.config.LOCAL_BACKEND_URL;
+                // }
             }
             
             // Azure Static Web Apps detection
@@ -280,8 +291,8 @@
         getApiBaseUrl: function() {
             let baseUrl = this.get('BACKEND_API_URL', 'https://hereco-backend.azurewebsites.net');
             
-            // Handle local development mode
-            if (this.isLocalDevMode() && this.get('LOCAL_BACKEND_URL')) {
+            // Only use local backend if explicitly enabled in meta tags
+            if (this.get('LOCAL_DEV_MODE') === 'true' && this.get('LOCAL_BACKEND_URL')) {
                 baseUrl = this.get('LOCAL_BACKEND_URL');
             }
             

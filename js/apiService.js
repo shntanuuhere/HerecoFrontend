@@ -36,9 +36,11 @@ class ApiService {
 
             const method = (options.method || 'GET').toUpperCase();
             const headers = { ...options.headers };
-            if (this.corsConfig.enabled && this.corsConfig.crossOrigin) {
-                headers['Accept'] = 'application/json';
-            }
+            
+            // Always set Accept header for API requests
+            headers['Accept'] = 'application/json';
+            
+            // Set Content-Type for non-GET requests
             if (method !== 'GET' && method !== 'HEAD') {
                 headers['Content-Type'] = headers['Content-Type'] || 'application/json';
             }
