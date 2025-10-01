@@ -54,6 +54,9 @@
             // Load from meta tags (if available) - this will override the defaults
             this.loadFromMetaTags();
 
+            // Load from Vercel environment variables
+            this.loadFromVercelEnv();
+
             // Load from URL parameters (for development/testing)
             this.loadFromUrlParams();
 
@@ -80,6 +83,50 @@
                     }
                     key = key.replace(/-/g, '_').toUpperCase();
                     this.config[key] = value;
+                }
+            });
+        },
+
+        /**
+         * Load environment variables from Vercel build-time injection
+         */
+        loadFromVercelEnv: function() {
+            // Check for Vercel environment variables
+            if (typeof window !== 'undefined' && window.process && window.process.env) {
+                Object.keys(window.process.env).forEach(key => {
+                    const value = window.process.env[key];
+                    if (value && !value.startsWith('%') && !value.endsWith('%')) {
+                        this.config[key] = this.parseValue(value);
+                    }
+                });
+            }
+
+            // Check for build-time injected variables
+            if (typeof window !== 'undefined' && window.__ENV__) {
+                Object.keys(window.__ENV__).forEach(key => {
+                    const value = window.__ENV__[key];
+                    if (value && !value.startsWith('%') && !value.endsWith('%')) {
+                        this.config[key] = this.parseValue(value);
+                    }
+                });
+            }
+
+            // Check for Vercel's environment variable injection
+            // Vercel injects environment variables as global variables
+            const vercelEnvVars = [
+                'BACKEND_API_URL', 'NODE_ENV', 'DEBUG_MODE', 'API_TIMEOUT',
+                'API_RETRY_ATTEMPTS', 'API_RETRY_DELAY', 'ENABLE_CACHING',
+                'CACHE_DURATION', 'ENABLE_LAZY_LOADING', 'CORS_DEBUG',
+                'CORS_ORIGINS', 'AZURE_WEB_APP_NAME', 'AZURE_REGION',
+                'LOCAL_BACKEND_URL', 'LOCAL_DEV_MODE', 'SHOW_DETAILED_ERRORS',
+                'ENABLE_ERROR_REPORTING', 'ENABLE_ANIMATIONS'
+            ];
+
+            vercelEnvVars.forEach(key => {
+                if (typeof window !== 'undefined' && window[key] && 
+                    typeof window[key] === 'string' && 
+                    !window[key].startsWith('%') && !window[key].endsWith('%')) {
+                    this.config[key] = this.parseValue(window[key]);
                 }
             });
         },

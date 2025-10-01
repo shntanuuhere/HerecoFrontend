@@ -7,16 +7,12 @@
 const getEnvValue = (key, defaultValue) => {
     if (typeof window !== 'undefined' && window.env && typeof window.env.get === 'function') {
         try {
-            const value = window.env.get(key, defaultValue);
-            console.log(`Environment value for ${key}:`, value);
-            return value;
+            return window.env.get(key, defaultValue);
         } catch (error) {
             console.warn('Error getting environment value:', error);
             return defaultValue;
         }
     }
-    
-    console.warn(`Environment loader not available, using default for ${key}:`, defaultValue);
     
     // Fallback: try to get from meta tags directly
     if (typeof document !== 'undefined') {
@@ -45,7 +41,7 @@ const joinUrl = (base, path) => {
 const Config = {
     // Backend API Configuration
     api: {
-        baseUrl: getEnvValue('BACKEND_API_URL', 'https://hereco-backend.azurewebsites.net'),
+        baseUrl: 'https://hereco-backend.azurewebsites.net',
         endpoints: {
             // Podcast endpoints
             episodes: '/api/podcast/episodes',
@@ -354,8 +350,8 @@ const Config = {
 
 // Helper function to get API endpoint URL
 Config.getApiUrl = function(endpoint, params = {}) {
-    // Get current base URL (may have changed via environment)
-    let baseUrl = getEnvValue('BACKEND_API_URL', this.api.baseUrl);
+    // Use the hardcoded backend URL
+    let baseUrl = this.api.baseUrl;
     
     // Handle local development mode - only if explicitly enabled
     if (getEnvValue('LOCAL_DEV_MODE') === 'true' && getEnvValue('LOCAL_BACKEND_URL')) {
@@ -442,13 +438,9 @@ Config.debug = function(message, data = null) {
 
 // Helper function to validate backend URL
 Config.validateBackendUrl = function() {
-    const baseUrl = getEnvValue('BACKEND_API_URL', this.api.baseUrl);
-    
-    console.log('Validating backend URL:', baseUrl);
-    console.log('Current window.location.origin:', window.location.origin);
+    const baseUrl = this.api.baseUrl;
     
     if (!baseUrl || baseUrl === '' || baseUrl === window.location.origin) {
-        console.error('Backend URL validation failed - URL is empty or same as frontend origin');
         return {
             valid: false,
             message: 'Backend API URL not configured. Please update BACKEND_API_URL in your environment configuration.'
@@ -457,10 +449,8 @@ Config.validateBackendUrl = function() {
     
     try {
         new URL(baseUrl);
-        console.log('Backend URL validation passed');
         return { valid: true, message: 'Backend URL is valid' };
     } catch (error) {
-        console.error('Backend URL validation failed - invalid URL format:', error);
         return {
             valid: false,
             message: 'Invalid backend URL format. Please check your BACKEND_API_URL configuration.'
