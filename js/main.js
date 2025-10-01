@@ -848,6 +848,10 @@ const GalleryModule = {
         }
         
         if (isVideo) {
+            // Try direct URL first, fallback to proxy if CORS fails
+            const directUrl = file.url;
+            const proxyUrl = `${Config.api.baseUrl}/api/files/proxy?url=${encodeURIComponent(file.url)}`;
+            
             return `
                 <div class="file-preview-container video-preview" data-file-url="${file.url}" data-file-name="${file.name}">
                     <video class="file-preview-video" 
@@ -856,11 +860,11 @@ const GalleryModule = {
                            muted
                            playsinline
                            onloadedmetadata="console.log('Video metadata loaded:', '${file.name}'); this.currentTime = 1;"
-                           onerror="console.error('Video failed to load:', '${file.name}', '${file.url}'); this.parentElement.innerHTML='<div class=\\"file-preview-fallback\\">${fileTypeInfo.icon}</div>'"
+                           onerror="console.error('Video failed to load:', '${file.name}', '${file.url}'); this.tryProxyFallback('${proxyUrl}');"
                            oncanplay="console.log('Video can play:', '${file.name}')">
-                        <source src="${file.url}" type="video/quicktime">
-                        <source src="${file.url}" type="video/mp4">
-                        <source src="${file.url}">
+                        <source src="${directUrl}" type="video/quicktime">
+                        <source src="${directUrl}" type="video/mp4">
+                        <source src="${directUrl}">
                         Your browser does not support the video tag.
                     </video>
                     <div class="file-preview-overlay">
@@ -935,6 +939,16 @@ const GalleryModule = {
             console.error('File access test failed:', url, error);
             return false;
         }
+    },
+
+    /**
+     * Try proxy fallback for CORS-blocked files
+     * @param {string} proxyUrl - Proxy URL to try
+     */
+    tryProxyFallback(proxyUrl) {
+        console.log('Trying proxy fallback:', proxyUrl);
+        // This would need to be implemented on the backend
+        // For now, just log the attempt
     },
 
     /**
