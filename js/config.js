@@ -7,12 +7,16 @@
 const getEnvValue = (key, defaultValue) => {
     if (typeof window !== 'undefined' && window.env && typeof window.env.get === 'function') {
         try {
-            return window.env.get(key, defaultValue);
+            const value = window.env.get(key, defaultValue);
+            console.log(`Environment value for ${key}:`, value);
+            return value;
         } catch (error) {
             console.warn('Error getting environment value:', error);
             return defaultValue;
         }
     }
+    
+    console.warn(`Environment loader not available, using default for ${key}:`, defaultValue);
     
     // Fallback: try to get from meta tags directly
     if (typeof document !== 'undefined') {
@@ -440,7 +444,11 @@ Config.debug = function(message, data = null) {
 Config.validateBackendUrl = function() {
     const baseUrl = getEnvValue('BACKEND_API_URL', this.api.baseUrl);
     
+    console.log('Validating backend URL:', baseUrl);
+    console.log('Current window.location.origin:', window.location.origin);
+    
     if (!baseUrl || baseUrl === '' || baseUrl === window.location.origin) {
+        console.error('Backend URL validation failed - URL is empty or same as frontend origin');
         return {
             valid: false,
             message: 'Backend API URL not configured. Please update BACKEND_API_URL in your environment configuration.'
@@ -449,8 +457,10 @@ Config.validateBackendUrl = function() {
     
     try {
         new URL(baseUrl);
+        console.log('Backend URL validation passed');
         return { valid: true, message: 'Backend URL is valid' };
     } catch (error) {
+        console.error('Backend URL validation failed - invalid URL format:', error);
         return {
             valid: false,
             message: 'Invalid backend URL format. Please check your BACKEND_API_URL configuration.'
