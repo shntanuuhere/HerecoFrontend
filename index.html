@@ -26,8 +26,35 @@
     <meta name="color-scheme" content="light dark">
     <meta name="theme-color" content="#2563eb">
     
-    <title>Hereco</title>
+    <title>Hereco - Your Podcast and Media Hub</title>
+    <meta name="description" content="Discover amazing podcast episodes and media content. Your hub for engaging conversations, file galleries, and premium audio experiences.">
+    <meta name="keywords" content="podcast, media, episodes, audio, content, hereco, streaming, gallery">
+    <meta name="author" content="Shantanu Sen Gupta">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.hereco.xyz/">
+    <meta property="og:title" content="Hereco - Your Podcast and Media Hub">
+    <meta property="og:description" content="Discover amazing podcast episodes and media content. Your hub for engaging conversations, file galleries, and premium audio experiences.">
+    <meta property="og:image" content="https://www.hereco.xyz/og-image.jpg">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.hereco.xyz/">
+    <meta property="twitter:title" content="Hereco - Your Podcast and Media Hub">
+    <meta property="twitter:description" content="Discover amazing podcast episodes and media content. Your hub for engaging conversations, file galleries, and premium audio experiences.">
+    <meta property="twitter:image" content="https://www.hereco.xyz/og-image.jpg">
     <link rel="stylesheet" href="styles/main.css">
+    
+    <!-- Performance optimizations -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://hereco-backend.azurewebsites.net">
+    <link rel="dns-prefetch" href="https://shntanuuherebucket1.blob.core.windows.net">
+    
+    <!-- Critical resource hints -->
+    <link rel="preload" href="js/main.js" as="script">
+    <link rel="preload" href="js/apiService.js" as="script">
     
     <!-- Environment Configuration Meta Tags -->
     <meta name="env-backend-api-url" content="%BACKEND_API_URL%">
@@ -47,11 +74,11 @@
     <meta name="env-enable-error-reporting" content="%ENABLE_ERROR_REPORTING%">
 </head>
 <body>
-    <header class="header">
+    <header class="header" role="banner">
         <div class="container">
             <div class="header-content">
                 <h1 class="site-title">
-                    <a href="#" class="site-title-link">Hereco</a>
+                    <a href="#" class="site-title-link" aria-label="Hereco - Home">Hereco</a>
                 </h1>
                 <nav class="navigation" role="navigation" aria-label="Main navigation">
                     <button class="mobile-menu-toggle" aria-label="Toggle mobile menu" aria-expanded="false">
@@ -87,7 +114,7 @@
         </div>
     </section>
 
-    <main class="main">
+    <main class="main" role="main">
         <div class="container">
             <!-- Projects Section -->
             <section id="projects" class="section projects-section">
@@ -180,7 +207,7 @@
         </div>
     </main>
 
-    <footer class="footer">
+    <footer class="footer" role="contentinfo">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">

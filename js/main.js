@@ -437,8 +437,40 @@ const Utils = {
             }, 250);
         }, { passive: true });
         
+        // Initialize lazy loading
+        this.initLazyLoading();
+        
         // Preload critical resources
         this.preloadCriticalResources();
+    },
+
+    /**
+     * Initialize lazy loading for images and media
+     */
+    initLazyLoading() {
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        if (img.dataset.src) {
+                            img.src = img.dataset.src;
+                            img.removeAttribute('data-src');
+                            img.classList.remove('lazy');
+                            observer.unobserve(img);
+                        }
+                    }
+                });
+            }, {
+                rootMargin: '50px 0px',
+                threshold: 0.01
+            });
+
+            // Observe all lazy images
+            document.querySelectorAll('img[data-src]').forEach(img => {
+                imageObserver.observe(img);
+            });
+        }
     },
 
     /**
@@ -457,20 +489,64 @@ const Utils = {
      * Preload critical resources for better performance
      */
     preloadCriticalResources() {
-        // Preload critical CSS
-        const criticalCSS = document.createElement('link');
-        criticalCSS.rel = 'preload';
-        criticalCSS.as = 'style';
-        criticalCSS.href = 'styles/main.css';
-        document.head.appendChild(criticalCSS);
+        try {
+            // Preload critical CSS
+            const criticalCSS = document.createElement('link');
+            criticalCSS.rel = 'preload';
+            criticalCSS.as = 'style';
+            criticalCSS.href = 'styles/main.css';
+            document.head.appendChild(criticalCSS);
+            
+            // Preload critical fonts
+            const fontPreload = document.createElement('link');
+            fontPreload.rel = 'preload';
+            fontPreload.as = 'font';
+            fontPreload.type = 'font/woff2';
+            fontPreload.crossOrigin = 'anonymous';
+            document.head.appendChild(fontPreload);
+        } catch (error) {
+            console.warn('Failed to preload critical resources:', error);
+        }
+    },
+
+    /**
+     * Enhanced error handling with user feedback
+     */
+    handleError(error, context = 'Unknown') {
+        console.error(`Error in ${context}:`, error);
         
-        // Preload critical fonts
-        const fontPreload = document.createElement('link');
-        fontPreload.rel = 'preload';
-        fontPreload.as = 'font';
-        fontPreload.type = 'font/woff2';
-        fontPreload.crossOrigin = 'anonymous';
-        document.head.appendChild(fontPreload);
+        // Show user-friendly error message
+        const errorMessage = this.getErrorMessage(error);
+        this.showNotification(errorMessage, 'error');
+        
+        // Report error for monitoring
+        this.reportError(error, context);
+    },
+
+    /**
+     * Get user-friendly error message
+     */
+    getErrorMessage(error) {
+        if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+            return 'Network connection issue. Please check your internet connection.';
+        }
+        if (error.message.includes('CORS')) {
+            return 'Connection issue. Please try again later.';
+        }
+        if (error.message.includes('429')) {
+            return 'Too many requests. Please wait a moment before trying again.';
+        }
+        return 'Something went wrong. Please try again.';
+    },
+
+    /**
+     * Report error for monitoring
+     */
+    reportError(error, context) {
+        if (Config.environment.debug) {
+            // In production, you would send this to an error monitoring service
+            console.log('Error reported:', { error: error.message, context, timestamp: new Date().toISOString() });
+        }
     }
 };
 

@@ -5,6 +5,40 @@
     box-sizing: border-box;
 }
 
+/* Remove focus outlines globally */
+*:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Lazy loading styles */
+.lazy {
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.lazy.loaded {
+    opacity: 1;
+}
+
+/* Performance optimizations */
+img, video {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
 /* CSS Custom Properties - Modern Design System */
 :root {
     /* Primary Color Palette */
@@ -319,12 +353,13 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    padding-right: 20px; /* Add padding to account for scrollbar */
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
-    overflow-y: overlay; /* Make scrollbar overlay instead of taking space */
+    overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
-/* Hide scrollbar but keep functionality */
+/* Custom scrollbar styling */
 body::-webkit-scrollbar {
     width: 8px;
 }
@@ -408,20 +443,19 @@ a:focus {
     max-width: var(--container-max-width);
     margin: 0 auto;
     padding: 0 var(--spacing-4);
-    padding-right: calc(var(--spacing-4) + 20px); /* Extra padding to prevent scrollbar overlap */
+    width: 100%;
+    box-sizing: border-box;
 }
 
 @media (min-width: 640px) {
     .container {
         padding: 0 var(--spacing-6);
-        padding-right: calc(var(--spacing-6) + 20px); /* Extra padding to prevent scrollbar overlap */
     }
 }
 
 @media (min-width: 1024px) {
     .container {
         padding: 0 var(--spacing-8);
-        padding-right: calc(var(--spacing-8) + 20px); /* Extra padding to prevent scrollbar overlap */
     }
 }
 
@@ -708,8 +742,6 @@ a:focus {
     max-width: 800px;
     margin: 0 auto;
     padding: var(--spacing-16) 0;
-    padding-right: 60px; /* Extra padding to ensure content doesn't get covered */
-    margin-right: 60px; /* Extra margin to prevent scrollbar overlap */
 }
 
 .hero-title {
@@ -741,9 +773,7 @@ a:focus {
     justify-content: center;
     flex-wrap: wrap;
     animation: fade-in-up 1s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
-    padding-right: 50px; /* Larger padding to ensure buttons don't get covered by scrollbar */
-    margin-right: 50px; /* Much larger margin to prevent scrollbar overlap */
-    max-width: 90%; /* Limit width to prevent overflow */
+    max-width: 100%;
 }
 
 @keyframes fade-in-up {
@@ -1657,6 +1687,11 @@ a:focus {
     color: var(--primary-color);
 }
 
+.footer-link:focus {
+    outline: none;
+    box-shadow: none;
+}
+
 /* Footer Bottom */
 .footer-bottom {
     display: flex;
@@ -2533,7 +2568,6 @@ a:focus {
     padding: var(--spacing-4) var(--spacing-8);
     font-size: var(--font-size-lg);
     border-radius: var(--radius-xl);
-    margin-right: 10px; /* Extra margin to prevent scrollbar overlap */
     min-width: 200px; /* Ensure buttons have minimum width */
 }
 
@@ -2718,14 +2752,11 @@ a:focus {
     .hero-actions {
         flex-direction: column;
         align-items: center;
-        padding-right: 20px; /* Reduce padding on smaller screens */
-        margin-right: 20px;
     }
     
     .btn-large {
         width: 100%;
         max-width: 300px;
-        margin-right: 0; /* Remove margin on mobile */
     }
 }
 
@@ -3080,9 +3111,8 @@ textarea:focus,
 button:focus,
 a:focus,
 [tabindex]:focus {
-    outline: 2px solid var(--primary-color);
-    outline-offset: 2px;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    outline: none;
+    box-shadow: none;
 }
 
 /* Micro-interactions */

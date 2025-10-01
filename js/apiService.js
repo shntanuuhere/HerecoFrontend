@@ -97,7 +97,8 @@ class ApiService {
             clearTimeout(timeoutId);
 
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                const errorText = await response.text().catch(() => 'Unknown error');
+                throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
             }
 
             const data = await response.json();
@@ -122,8 +123,9 @@ class ApiService {
             }
             
             if (attempt < this.retryAttempts && this.shouldRetry(error)) {
-                Config.debug(`Request failed, retrying... (attempt ${attempt + 1})`, error);
-                await this.delay(this.retryDelay * attempt);
+                const delayTime = this.retryDelay * Math.pow(2, attempt - 1); // Exponential backoff
+                Config.debug(`Request failed, retrying in ${delayTime}ms... (attempt ${attempt + 1})`, error);
+                await this.delay(delayTime);
                 return this.makeRequest(url, options, attempt + 1);
             }
             throw this.handleError(error);
