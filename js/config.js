@@ -73,7 +73,7 @@ const Config = {
 
     // Site Configuration
     site: {
-        title: 'Podcast Website',
+        title: 'odcast Website',
         description: 'Podcast website with episodes and file gallery',
         version: '1.0.0',
         features: {
@@ -193,7 +193,7 @@ const Config = {
         },
         gallery: {
             loadError: 'Failed to load gallery items. Please try again.',
-            empty: 'No files in gallery yet. Files are manually uploaded to Azure Blob Storage.',
+            empty: 'No files in gallery yet.',
             deleteError: 'Failed to delete file. Please try again.',
             deleteSuccess: 'File deleted successfully.',
             downloadError: 'Failed to download file. Please try again.',
