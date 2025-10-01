@@ -812,7 +812,7 @@ const GalleryModule = {
         
         if (isImage) {
             return `
-                <div class="file-preview-container">
+                <div class="file-preview-container image-preview" data-file-url="${file.url}" data-file-name="${file.name}">
                     <img src="${file.url}" 
                          alt="${file.name}" 
                          class="file-preview-image" 
@@ -820,6 +820,7 @@ const GalleryModule = {
                          onerror="this.parentElement.innerHTML='<div class=\\"file-preview-fallback\\">${fileTypeInfo.icon}</div>'">
                     <div class="file-preview-overlay">
                         <span class="file-type-badge">${fileTypeInfo.icon}</span>
+                        <div class="expand-button" title="View Full Size">🔍</div>
                     </div>
                 </div>
             `;
@@ -827,17 +828,21 @@ const GalleryModule = {
         
         if (isVideo) {
             return `
-                <div class="file-preview-container">
+                <div class="file-preview-container video-preview" data-file-url="${file.url}" data-file-name="${file.name}">
                     <video class="file-preview-video" 
                            preload="metadata" 
                            muted
-                           onloadedmetadata="this.currentTime = 1">
+                           poster=""
+                           onloadedmetadata="this.currentTime = 1; this.poster = this.currentTime > 0 ? this.currentTime : ''"
+                           onerror="this.parentElement.innerHTML='<div class=\\"file-preview-fallback\\">${fileTypeInfo.icon}</div>'">
                         <source src="${file.url}" type="${file.contentType}">
+                        Your browser does not support the video tag.
                     </video>
                     <div class="file-preview-overlay">
                         <span class="file-type-badge">${fileTypeInfo.icon}</span>
-                        <div class="play-button">▶️</div>
+                        <div class="play-button" title="Play Video">▶️</div>
                     </div>
+                    <div class="video-duration" style="display: none;"></div>
                 </div>
             `;
         }
@@ -926,16 +931,81 @@ const GalleryModule = {
             });
         });
 
-        // Video play buttons
-        const videoPreviews = document.querySelectorAll('.file-preview-video');
-        videoPreviews.forEach(video => {
-            video.addEventListener('click', () => {
-                if (video.paused) {
-                    video.play();
-                } else {
-                    video.pause();
-                }
-            });
+        // Image expand buttons
+        const imagePreviews = document.querySelectorAll('.image-preview');
+        imagePreviews.forEach(container => {
+            const expandButton = container.querySelector('.expand-button');
+            if (expandButton) {
+                expandButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const fileUrl = container.dataset.fileUrl;
+                    const fileName = container.dataset.fileName;
+                    this.previewFile(fileName);
+                });
+            }
+            
+            // Click on image to expand
+            const image = container.querySelector('.file-preview-image');
+            if (image) {
+                image.addEventListener('click', () => {
+                    const fileName = container.dataset.fileName;
+                    this.previewFile(fileName);
+                });
+            }
+        });
+
+        // Video play buttons and inline playback
+        const videoPreviews = document.querySelectorAll('.video-preview');
+        videoPreviews.forEach(container => {
+            const video = container.querySelector('.file-preview-video');
+            const playButton = container.querySelector('.play-button');
+            
+            if (video && playButton) {
+                // Play button click
+                playButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (video.paused) {
+                        video.play();
+                        playButton.innerHTML = '⏸️';
+                        playButton.title = 'Pause Video';
+                    } else {
+                        video.pause();
+                        playButton.innerHTML = '▶️';
+                        playButton.title = 'Play Video';
+                    }
+                });
+                
+                // Video click to play/pause
+                video.addEventListener('click', () => {
+                    if (video.paused) {
+                        video.play();
+                        playButton.innerHTML = '⏸️';
+                        playButton.title = 'Pause Video';
+                    } else {
+                        video.pause();
+                        playButton.innerHTML = '▶️';
+                        playButton.title = 'Play Video';
+                    }
+                });
+                
+                // Update play button when video ends
+                video.addEventListener('ended', () => {
+                    playButton.innerHTML = '▶️';
+                    playButton.title = 'Play Video';
+                });
+                
+                // Show duration when loaded
+                video.addEventListener('loadedmetadata', () => {
+                    const duration = video.duration;
+                    const durationElement = container.querySelector('.video-duration');
+                    if (durationElement && duration) {
+                        const minutes = Math.floor(duration / 60);
+                        const seconds = Math.floor(duration % 60);
+                        durationElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                        durationElement.style.display = 'block';
+                    }
+                });
+            }
         });
     },
 

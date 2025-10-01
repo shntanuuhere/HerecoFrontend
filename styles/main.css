@@ -1240,6 +1240,37 @@ a:focus {
     transform: scale(1.1);
 }
 
+.expand-button {
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-lg);
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease;
+}
+
+.expand-button:hover {
+    transform: scale(1.1);
+}
+
+.video-duration {
+    position: absolute;
+    bottom: var(--spacing-sm);
+    left: var(--spacing-sm);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-xs);
+    backdrop-filter: blur(10px);
+}
+
 /* Audio Preview Styles */
 .audio-preview {
     background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
@@ -1381,6 +1412,47 @@ a:focus {
 .file-item:hover .file-preview-image,
 .file-item:hover .file-preview-video {
     transform: scale(1.05);
+}
+
+/* Interactive Preview Styles */
+.image-preview .file-preview-image {
+    cursor: pointer;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.image-preview:hover .file-preview-image {
+    filter: brightness(1.1);
+}
+
+.video-preview .file-preview-video {
+    cursor: pointer;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.video-preview:hover .file-preview-video {
+    filter: brightness(1.1);
+}
+
+.video-preview .file-preview-video:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* Video Controls Overlay */
+.video-preview .file-preview-overlay {
+    background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 100%);
+}
+
+/* Loading State for Videos */
+.file-preview-video[poster=""] {
+    background: linear-gradient(45deg, var(--surface-color) 25%, var(--background-color) 50%, var(--surface-color) 75%);
+    background-size: 20px 20px;
+    animation: video-loading 1s linear infinite;
+}
+
+@keyframes video-loading {
+    0% { background-position: 0 0; }
+    100% { background-position: 20px 20px; }
 }
 
 /* Loading States */
