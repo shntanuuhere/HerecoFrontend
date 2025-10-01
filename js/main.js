@@ -747,6 +747,9 @@ const GalleryModule = {
 
         const filesHtml = files.map(file => this.createFileItem(file)).join('');
         container.innerHTML = filesHtml;
+        
+        // Bind event listeners for the new buttons
+        this.bindFileActionButtons();
     },
 
     /**
@@ -758,30 +761,28 @@ const GalleryModule = {
         const fileTypeInfo = Utils.getFileTypeInfo(file.name);
         const isImage = fileTypeInfo.type === 'image';
         const isVideo = fileTypeInfo.type === 'video';
+        const isAudio = fileTypeInfo.type === 'audio';
+        const isDocument = fileTypeInfo.type === 'document';
         
-        const thumbnailHtml = isImage ? `
-            <img src="${file.url}" alt="${file.name}" class="gallery-image" loading="lazy">
-        ` : isVideo ? `
-            <video class="gallery-image" preload="metadata">
-                <source src="${file.url}" type="${file.contentType}">
-            </video>
-        ` : `
-            <div class="file-icon-large">${fileTypeInfo.icon}</div>
-        `;
+        // Create preview HTML based on file type
+        const thumbnailHtml = this.createFilePreview(file, fileTypeInfo);
 
         const overlayHtml = `
             <div class="file-overlay">
-                <button class="file-action-btn download-btn" onclick="GalleryModule.downloadFile('${file.name}')" title="Download">
+                <button class="file-action-btn download-btn" data-filename="${file.name}" title="Download">
                     ⬇️
                 </button>
-                <button class="file-action-btn" onclick="GalleryModule.viewFileDetails('${file.name}')" title="View Details">
+                <button class="file-action-btn preview-btn" data-filename="${file.name}" title="Preview">
+                    👁️
+                </button>
+                <button class="file-action-btn info-btn" data-filename="${file.name}" title="View Details">
                     ℹ️
                 </button>
             </div>
         `;
 
         return `
-            <div class="file-item">
+            <div class="file-item" data-file-type="${fileTypeInfo.type}">
                 <div class="file-thumbnail">
                     ${thumbnailHtml}
                     ${overlayHtml}
@@ -795,6 +796,206 @@ const GalleryModule = {
                 </div>
             </div>
         `;
+    },
+
+    /**
+     * Create file preview HTML based on file type
+     * @param {Object} file - File data
+     * @param {Object} fileTypeInfo - File type information
+     * @returns {string} Preview HTML
+     */
+    createFilePreview(file, fileTypeInfo) {
+        const isImage = fileTypeInfo.type === 'image';
+        const isVideo = fileTypeInfo.type === 'video';
+        const isAudio = fileTypeInfo.type === 'audio';
+        const isDocument = fileTypeInfo.type === 'document';
+        
+        if (isImage) {
+            return `
+                <div class="file-preview-container">
+                    <img src="${file.url}" 
+                         alt="${file.name}" 
+                         class="file-preview-image" 
+                         loading="lazy"
+                         onerror="this.parentElement.innerHTML='<div class=\\"file-preview-fallback\\">${fileTypeInfo.icon}</div>'">
+                    <div class="file-preview-overlay">
+                        <span class="file-type-badge">${fileTypeInfo.icon}</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        if (isVideo) {
+            return `
+                <div class="file-preview-container">
+                    <video class="file-preview-video" 
+                           preload="metadata" 
+                           muted
+                           onloadedmetadata="this.currentTime = 1">
+                        <source src="${file.url}" type="${file.contentType}">
+                    </video>
+                    <div class="file-preview-overlay">
+                        <span class="file-type-badge">${fileTypeInfo.icon}</span>
+                        <div class="play-button">▶️</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        if (isAudio) {
+            return `
+                <div class="file-preview-container audio-preview">
+                    <div class="audio-waveform">
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                    </div>
+                    <div class="file-preview-overlay">
+                        <span class="file-type-badge">${fileTypeInfo.icon}</span>
+                        <div class="play-button">▶️</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        if (isDocument) {
+            return `
+                <div class="file-preview-container document-preview">
+                    <div class="document-preview-content">
+                        <div class="document-lines">
+                            <div class="document-line"></div>
+                            <div class="document-line"></div>
+                            <div class="document-line"></div>
+                            <div class="document-line short"></div>
+                        </div>
+                    </div>
+                    <div class="file-preview-overlay">
+                        <span class="file-type-badge">${fileTypeInfo.icon}</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Default fallback for other file types
+        return `
+            <div class="file-preview-container default-preview">
+                <div class="file-preview-fallback">
+                    <div class="file-icon-large">${fileTypeInfo.icon}</div>
+                    <div class="file-extension">${file.name.split('.').pop()?.toUpperCase()}</div>
+                </div>
+                <div class="file-preview-overlay">
+                    <span class="file-type-badge">${fileTypeInfo.icon}</span>
+                </div>
+            </div>
+        `;
+    },
+
+    /**
+     * Bind event listeners for file action buttons
+     */
+    bindFileActionButtons() {
+        // Download buttons
+        const downloadButtons = document.querySelectorAll('.download-btn');
+        downloadButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const filename = button.dataset.filename;
+                this.downloadFile(filename);
+            });
+        });
+
+        // Preview buttons
+        const previewButtons = document.querySelectorAll('.preview-btn');
+        previewButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const filename = button.dataset.filename;
+                this.previewFile(filename);
+            });
+        });
+
+        // Info buttons
+        const infoButtons = document.querySelectorAll('.info-btn');
+        infoButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const filename = button.dataset.filename;
+                this.viewFileDetails(filename);
+            });
+        });
+
+        // Video play buttons
+        const videoPreviews = document.querySelectorAll('.file-preview-video');
+        videoPreviews.forEach(video => {
+            video.addEventListener('click', () => {
+                if (video.paused) {
+                    video.play();
+                } else {
+                    video.pause();
+                }
+            });
+        });
+    },
+
+    /**
+     * Preview file in modal
+     * @param {string} filename - File name
+     */
+    async previewFile(filename) {
+        try {
+            const file = AppState.files.find(f => f.name === filename);
+            if (!file) {
+                Utils.showNotification('File not found', 'error');
+                return;
+            }
+
+            const fileTypeInfo = Utils.getFileTypeInfo(filename);
+            const isImage = fileTypeInfo.type === 'image';
+            const isVideo = fileTypeInfo.type === 'video';
+            const isAudio = fileTypeInfo.type === 'audio';
+
+            let previewHtml = '';
+            
+            if (isImage) {
+                previewHtml = `
+                    <div class="file-preview-modal">
+                        <img src="${file.url}" alt="${filename}" class="preview-image">
+                    </div>
+                `;
+            } else if (isVideo) {
+                previewHtml = `
+                    <div class="file-preview-modal">
+                        <video controls class="preview-video">
+                            <source src="${file.url}" type="${file.contentType}">
+                        </video>
+                    </div>
+                `;
+            } else if (isAudio) {
+                previewHtml = `
+                    <div class="file-preview-modal">
+                        <audio controls class="preview-audio">
+                            <source src="${file.url}" type="${file.contentType}">
+                        </audio>
+                    </div>
+                `;
+            } else {
+                previewHtml = `
+                    <div class="file-preview-modal">
+                        <div class="preview-fallback">
+                            <div class="preview-icon">${fileTypeInfo.icon}</div>
+                            <p>Preview not available for this file type</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            Utils.showModal('File Preview', previewHtml);
+        } catch (error) {
+            console.error('Error previewing file:', error);
+            Utils.showNotification('Failed to preview file', 'error');
+        }
     },
 
     /**
