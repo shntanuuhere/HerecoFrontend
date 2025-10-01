@@ -12,7 +12,15 @@ const AppState = {
     searchQuery: '',
     filterType: 'all',
     sortBy: 'date-newest',
-    hasMoreFiles: true
+    hasMoreFiles: true,
+    theme: 'light', // 'light' or 'dark'
+    notifications: [],
+    preferences: {
+        autoRefresh: true,
+        lazyLoading: true,
+        animations: true,
+        reducedMotion: false
+    }
 };
 
 // Utility functions
@@ -153,19 +161,235 @@ const Utils = {
     /**
      * Show notification
      * @param {string} message - Notification message
-     * @param {string} type - Notification type (success, error, info)
+     * @param {string} type - Notification type (success, error, info, warning)
      * @param {number} duration - Duration in milliseconds
+     * @param {Object} options - Additional options
      */
-    showNotification(message, type = 'info', duration = 3000) {
+    showNotification(message, type = 'info', duration = 5000, options = {}) {
         const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.textContent = message;
+        notification.className = `notification notification--${type}`;
+        
+        const icons = {
+            success: '✅',
+            error: '❌',
+            warning: '⚠️',
+            info: 'ℹ️'
+        };
+        
+        notification.innerHTML = `
+            <span class="notification-icon" aria-hidden="true">${icons[type] || icons.info}</span>
+            <span class="notification-content">${message}</span>
+            <button class="notification-close" aria-label="Close notification" title="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        `;
+        
+        // Add to state
+        AppState.notifications.push({
+            id: Date.now(),
+            message,
+            type,
+            element: notification
+        });
         
         document.body.appendChild(notification);
         
-        setTimeout(() => {
-            notification.remove();
+        // Show notification with animation
+        requestAnimationFrame(() => {
+            notification.classList.add('show');
+        });
+        
+        // Auto-remove after duration
+        const autoRemove = setTimeout(() => {
+            this.hideNotification(notification);
         }, duration);
+        
+        // Manual close button
+        const closeBtn = notification.querySelector('.notification-close');
+        closeBtn.addEventListener('click', () => {
+            clearTimeout(autoRemove);
+            this.hideNotification(notification);
+        });
+        
+        // Keyboard support
+        notification.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                clearTimeout(autoRemove);
+                this.hideNotification(notification);
+            }
+        });
+        
+        return notification;
+    },
+
+    /**
+     * Hide notification with animation
+     * @param {HTMLElement} notification - Notification element
+     */
+    hideNotification(notification) {
+        notification.classList.remove('show');
+        notification.classList.add('hide');
+        
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+            
+            // Remove from state
+            AppState.notifications = AppState.notifications.filter(n => n.element !== notification);
+        }, 300);
+    },
+
+    /**
+     * Clear all notifications
+     */
+    clearAllNotifications() {
+        AppState.notifications.forEach(notification => {
+            this.hideNotification(notification.element);
+        });
+    },
+
+    /**
+     * Initialize theme system
+     */
+    initTheme() {
+        // Load saved theme preference
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        AppState.theme = savedTheme || (prefersDark ? 'dark' : 'light');
+        this.applyTheme(AppState.theme);
+        
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) {
+                AppState.theme = e.matches ? 'dark' : 'light';
+                this.applyTheme(AppState.theme);
+            }
+        });
+    },
+
+    /**
+     * Apply theme to document
+     * @param {string} theme - Theme name ('light' or 'dark')
+     */
+    applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        AppState.theme = theme;
+        localStorage.setItem('theme', theme);
+        
+        // Update theme toggle button
+        const themeToggle = document.querySelector('.theme-toggle');
+        if (themeToggle) {
+            themeToggle.setAttribute('aria-label', `Switch to ${theme === 'light' ? 'dark' : 'light'} mode`);
+            themeToggle.setAttribute('title', `Switch to ${theme === 'light' ? 'dark' : 'light'} theme`);
+        }
+    },
+
+    /**
+     * Toggle theme between light and dark
+     */
+    toggleTheme() {
+        const newTheme = AppState.theme === 'light' ? 'dark' : 'light';
+        this.applyTheme(newTheme);
+        
+        // Show notification
+        this.showNotification(
+            `Switched to ${newTheme} theme`, 
+            'success', 
+            2000
+        );
+    },
+
+    /**
+     * Initialize accessibility features
+     */
+    initAccessibility() {
+        // Check for reduced motion preference
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        AppState.preferences.reducedMotion = prefersReducedMotion;
+        
+        if (prefersReducedMotion) {
+            document.documentElement.classList.add('reduced-motion');
+        }
+        
+        // Add skip link
+        this.addSkipLink();
+        
+        // Initialize focus management
+        this.initFocusManagement();
+    },
+
+    /**
+     * Add skip link for keyboard navigation
+     */
+    addSkipLink() {
+        const skipLink = document.createElement('a');
+        skipLink.href = '#main';
+        skipLink.textContent = 'Skip to main content';
+        skipLink.className = 'skip-link';
+        skipLink.style.cssText = `
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: var(--primary-color);
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            border-radius: 4px;
+            z-index: 1000;
+            transition: top 0.3s;
+        `;
+        
+        skipLink.addEventListener('focus', () => {
+            skipLink.style.top = '6px';
+        });
+        
+        skipLink.addEventListener('blur', () => {
+            skipLink.style.top = '-40px';
+        });
+        
+        document.body.insertBefore(skipLink, document.body.firstChild);
+    },
+
+    /**
+     * Initialize focus management
+     */
+    initFocusManagement() {
+        // Trap focus in modals
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                const modal = document.querySelector('.modal-overlay:not(.hidden)');
+                if (modal) {
+                    this.trapFocus(modal, e);
+                }
+            }
+        });
+    },
+
+    /**
+     * Trap focus within an element
+     * @param {HTMLElement} element - Element to trap focus in
+     * @param {KeyboardEvent} e - Keyboard event
+     */
+    trapFocus(element, e) {
+        const focusableElements = element.querySelectorAll(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+        
+        if (e.shiftKey) {
+            if (document.activeElement === firstElement) {
+                lastElement.focus();
+                e.preventDefault();
+            }
+        } else {
+            if (document.activeElement === lastElement) {
+                firstElement.focus();
+                e.preventDefault();
+            }
+        }
     }
 };
 
@@ -683,14 +907,167 @@ const GalleryModule = {
     }
 };
 
+// Mobile Navigation Module
+const MobileNavigation = {
+    /**
+     * Initialize mobile navigation
+     */
+    init() {
+        this.bindEvents();
+    },
+
+    /**
+     * Bind event listeners
+     */
+    bindEvents() {
+        const mobileToggle = document.querySelector('.mobile-menu-toggle');
+        const navList = document.querySelector('.nav-list');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', () => this.toggleMenu());
+        }
+
+        // Close menu when clicking on nav links
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => this.closeMenu());
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.navigation')) {
+                this.closeMenu();
+            }
+        });
+
+        // Close menu on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                this.closeMenu();
+            }
+        });
+    },
+
+    /**
+     * Toggle mobile menu
+     */
+    toggleMenu() {
+        const mobileToggle = document.querySelector('.mobile-menu-toggle');
+        const navList = document.querySelector('.nav-list');
+        
+        if (!mobileToggle || !navList) return;
+
+        const isExpanded = mobileToggle.getAttribute('aria-expanded') === 'true';
+        
+        if (isExpanded) {
+            this.closeMenu();
+        } else {
+            this.openMenu();
+        }
+    },
+
+    /**
+     * Open mobile menu
+     */
+    openMenu() {
+        const mobileToggle = document.querySelector('.mobile-menu-toggle');
+        const navList = document.querySelector('.nav-list');
+        
+        if (!mobileToggle || !navList) return;
+
+        mobileToggle.setAttribute('aria-expanded', 'true');
+        navList.classList.add('active');
+        
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+    },
+
+    /**
+     * Close mobile menu
+     */
+    closeMenu() {
+        const mobileToggle = document.querySelector('.mobile-menu-toggle');
+        const navList = document.querySelector('.nav-list');
+        
+        if (!mobileToggle || !navList) return;
+
+        mobileToggle.setAttribute('aria-expanded', 'false');
+        navList.classList.remove('active');
+        
+        // Restore body scroll
+        document.body.style.overflow = '';
+    }
+};
+
+// Smooth Scrolling Module
+const SmoothScrolling = {
+    /**
+     * Initialize smooth scrolling
+     */
+    init() {
+        this.bindEvents();
+    },
+
+    /**
+     * Bind event listeners
+     */
+    bindEvents() {
+        // Handle anchor links
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('a[href^="#"]');
+            if (!link) return;
+
+            const href = link.getAttribute('href');
+            if (href === '#') return;
+
+            const target = document.querySelector(href);
+            if (!target) return;
+
+            e.preventDefault();
+            this.scrollToElement(target);
+        });
+    },
+
+    /**
+     * Scroll to element smoothly
+     * @param {HTMLElement} element - Target element
+     */
+    scrollToElement(element) {
+        const header = document.querySelector('.header');
+        const headerHeight = header ? header.offsetHeight : 0;
+        const offset = headerHeight + 20; // Add some padding
+        
+        const targetPosition = element.offsetTop - offset;
+        
+        window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
+        });
+    }
+};
+
 // Application initialization
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize core systems first
+    Utils.initTheme();
+    Utils.initAccessibility();
+    
     // Initialize modules
     ProjectsModule.init();
     GalleryModule.init();
+    MobileNavigation.init();
+    SmoothScrolling.init();
+    
+    // Initialize theme toggle
+    const themeToggle = document.querySelector('.theme-toggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            Utils.toggleTheme();
+        });
+    }
     
     // Set up auto-refresh if enabled
-    if (Config.ui.autoRefresh) {
+    if (Config.ui.autoRefresh && AppState.preferences.autoRefresh) {
         setInterval(() => {
             ProjectsModule.loadEpisodes();
             GalleryModule.loadFiles();
@@ -704,12 +1081,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Handle escape key for modals
+    // Handle escape key for modals and notifications
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             Utils.closeModal();
+            MobileNavigation.closeMenu();
+            Utils.clearAllNotifications();
         }
     });
     
-    console.log('Podcast website initialized successfully!');
+    // Performance monitoring
+    if (Config.environment.debug) {
+        console.log('Podcast website initialized successfully!');
+        console.log('Theme:', AppState.theme);
+        console.log('Preferences:', AppState.preferences);
+    }
 });

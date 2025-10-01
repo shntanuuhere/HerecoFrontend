@@ -1,23 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Podcast website with episodes and file gallery">
-    <meta name="keywords" content="podcast, RSS, episodes, audio, projects">
+    <meta name="description" content="Discover amazing podcast episodes and explore our comprehensive file gallery. Your ultimate destination for audio content and digital resources.">
+    <meta name="keywords" content="podcast, RSS, episodes, audio, projects, gallery, files, streaming, content">
+    <meta name="author" content="Podcast Website">
+    <meta name="robots" content="index, follow">
     
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="Podcast Website - Episodes & Gallery">
-    <meta property="og:description" content="Listen to podcast episodes and explore the file gallery">
+    <meta property="og:description" content="Discover amazing podcast episodes and explore our comprehensive file gallery. Your ultimate destination for audio content and digital resources.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <meta property="og:site_name" content="Podcast Website">
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Podcast Website - Episodes & Gallery">
-    <meta name="twitter:description" content="Listen to podcast episodes and explore the file gallery">
+    <meta name="twitter:description" content="Discover amazing podcast episodes and explore our comprehensive file gallery. Your ultimate destination for audio content and digital resources.">
+    <meta name="twitter:image" content="">
     
-    <title>Podcast Website</title>
+    <!-- Theme and Accessibility -->
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#2563eb">
+    
+    <title>Hereco</title>
     <link rel="stylesheet" href="styles/main.css">
     
     <!-- Environment Configuration Meta Tags -->
@@ -40,15 +49,41 @@
 <body>
     <header class="header">
         <div class="container">
-            <h1 class="site-title">Podcast Website</h1>
-            <nav class="navigation">
-                <ul class="nav-list">
-                    <li><a href="#projects" class="nav-link">Episodes</a></li>
-                    <li><a href="#gallery" class="nav-link">Gallery</a></li>
-                </ul>
-            </nav>
+            <div class="header-content">
+                <h1 class="site-title">
+                    <a href="#" class="site-title-link">Podcast Website</a>
+                </h1>
+                <nav class="navigation" role="navigation" aria-label="Main navigation">
+                    <button class="mobile-menu-toggle" aria-label="Toggle mobile menu" aria-expanded="false">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                    </button>
+                    <ul class="nav-list">
+                        <li><a href="#projects" class="nav-link">Episodes</a></li>
+                        <li><a href="#gallery" class="nav-link">Gallery</a></li>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-background">
+            <div class="hero-gradient"></div>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Discover Amazing Podcast Episodes</h1>
+                <p class="hero-subtitle">Explore our comprehensive collection of audio content and digital resources. From thought-provoking discussions to entertaining stories, find your next favorite episode.</p>
+                <div class="hero-actions">
+                    <a href="#projects" class="btn btn-primary btn-large">Browse Episodes</a>
+                    <a href="#gallery" class="btn btn-secondary btn-large">Explore Gallery</a>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <main class="main">
         <div class="container">
@@ -145,7 +180,7 @@
 
     <footer class="footer">
         <div class="container">
-            <p class="footer-text">&copy; 2024 Podcast Website. All rights reserved.</p>
+            <p class="footer-text">&copy; 2025 Shantanu Sen Gupta. All rights reserved.</p>
         </div>
     </footer>
 

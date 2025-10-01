@@ -284,7 +284,67 @@ const Config = {
         enableImageOptimization: getEnvValue('ENABLE_IMAGE_OPTIMIZATION', true),
         enableCaching: getEnvValue('ENABLE_FRONTEND_CACHING', true),
         cacheSize: getEnvValue('MAX_CACHE_SIZE', 50),
-        preloadNextPage: getEnvValue('ENABLE_PRELOADING', true)
+        preloadNextPage: getEnvValue('ENABLE_PRELOADING', true),
+        enableServiceWorker: getEnvValue('ENABLE_SERVICE_WORKER', false),
+        enableWebP: getEnvValue('ENABLE_WEBP', true),
+        enableCompression: getEnvValue('ENABLE_COMPRESSION', true),
+        maxConcurrentRequests: getEnvValue('MAX_CONCURRENT_REQUESTS', 3),
+        requestTimeout: getEnvValue('REQUEST_TIMEOUT', 10000),
+        enablePerformanceMonitoring: getEnvValue('ENABLE_PERFORMANCE_MONITORING', false),
+        enableResourceHints: getEnvValue('ENABLE_RESOURCE_HINTS', true),
+        enableCriticalCSS: getEnvValue('ENABLE_CRITICAL_CSS', true),
+        enableFontDisplay: getEnvValue('ENABLE_FONT_DISPLAY', true)
+    },
+
+    // Accessibility Configuration
+    accessibility: {
+        enableSkipLinks: true,
+        enableFocusManagement: true,
+        enableKeyboardNavigation: true,
+        enableScreenReaderSupport: true,
+        enableHighContrast: true,
+        enableReducedMotion: true,
+        enableColorBlindSupport: true,
+        announceChanges: true,
+        focusVisible: true,
+        tabIndex: 0
+    },
+
+    // Theme Configuration
+    theme: {
+        defaultTheme: 'light',
+        enableSystemTheme: true,
+        enableThemePersistence: true,
+        enableThemeTransition: true,
+        transitionDuration: 300,
+        supportedThemes: ['light', 'dark'],
+        enableThemeCustomization: false
+    },
+
+    // Notification Configuration
+    notifications: {
+        maxNotifications: 5,
+        defaultDuration: 5000,
+        enableStacking: true,
+        enableAutoClose: true,
+        enableClickToClose: true,
+        enableKeyboardClose: true,
+        position: 'top-right',
+        enableSound: false,
+        enableVibration: false
+    },
+
+    // Animation Configuration
+    animations: {
+        enableAnimations: getEnvValue('ENABLE_ANIMATIONS', true),
+        enableMicroInteractions: true,
+        enablePageTransitions: false,
+        enableScrollAnimations: true,
+        enableHoverEffects: true,
+        enableLoadingAnimations: true,
+        defaultDuration: 300,
+        easingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+        enableReducedMotion: true
     }
 };
 
@@ -406,6 +466,104 @@ Config.getCorsConfig = function() {
         origins: getEnvValue('CORS_ORIGINS', window.location.origin),
         debug: getEnvValue('CORS_DEBUG', false)
     };
+};
+
+// Performance monitoring helper
+Config.performanceMonitor = {
+    startTime: performance.now(),
+    marks: {},
+    
+    mark(name) {
+        this.marks[name] = performance.now();
+        if (this.performance.enablePerformanceMonitoring) {
+            performance.mark(name);
+        }
+    },
+    
+    measure(name, startMark, endMark) {
+        if (this.performance.enablePerformanceMonitoring) {
+            performance.measure(name, startMark, endMark);
+            const measure = performance.getEntriesByName(name)[0];
+            console.log(`Performance: ${name} took ${measure.duration.toFixed(2)}ms`);
+        }
+    },
+    
+    getLoadTime() {
+        return performance.now() - this.startTime;
+    },
+    
+    getResourceTiming() {
+        if (this.performance.enablePerformanceMonitoring) {
+            return performance.getEntriesByType('resource');
+        }
+        return [];
+    }
+};
+
+// Accessibility helper
+Config.accessibility = {
+    isReducedMotion() {
+        return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    },
+    
+    isHighContrast() {
+        return window.matchMedia('(prefers-contrast: high)').matches;
+    },
+    
+    isColorBlind() {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    },
+    
+    announceToScreenReader(message) {
+        if (this.accessibility.announceChanges) {
+            const announcement = document.createElement('div');
+            announcement.setAttribute('aria-live', 'polite');
+            announcement.setAttribute('aria-atomic', 'true');
+            announcement.className = 'sr-only';
+            announcement.textContent = message;
+            document.body.appendChild(announcement);
+            
+            setTimeout(() => {
+                document.body.removeChild(announcement);
+            }, 1000);
+        }
+    }
+};
+
+// Theme helper
+Config.theme = {
+    getSystemTheme() {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    },
+    
+    getSavedTheme() {
+        return localStorage.getItem('theme') || this.theme.defaultTheme;
+    },
+    
+    saveTheme(theme) {
+        if (this.theme.enableThemePersistence) {
+            localStorage.setItem('theme', theme);
+        }
+    },
+    
+    isValidTheme(theme) {
+        return this.theme.supportedThemes.includes(theme);
+    }
+};
+
+// Animation helper
+Config.animations = {
+    shouldAnimate() {
+        return this.animations.enableAnimations && !this.accessibility.isReducedMotion();
+    },
+    
+    getTransitionDuration() {
+        return this.animations.shouldAnimate() ? this.animations.defaultDuration : 0;
+    },
+    
+    getEasingFunction() {
+        return this.animations.easingFunction;
+    }
 };
 
 // Export for use in other modules
