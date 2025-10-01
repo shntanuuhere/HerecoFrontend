@@ -13,20 +13,20 @@
     }
   ],
   "env": {
-    "BACKEND_API_URL": "@backend_api_url",
-    "NODE_ENV": "@node_env",
-    "DEBUG_MODE": "@debug_mode",
-    "DEV_TOOLS": "@dev_tools",
-    "CORS_DEBUG": "@cors_debug",
-    "CORS_ORIGINS": "@cors_origins",
-    "AZURE_WEB_APP_NAME": "@azure_web_app_name",
-    "AZURE_REGION": "@azure_region",
-    "LOCAL_BACKEND_URL": "@local_backend_url",
-    "LOCAL_DEV_MODE": "@local_dev_mode",
-    "API_TIMEOUT": "@api_timeout",
-    "ENABLE_CACHING": "@enable_caching",
-    "ENABLE_LAZY_LOADING": "@enable_lazy_loading",
-    "SHOW_DETAILED_ERRORS": "@show_detailed_errors",
-    "ENABLE_ERROR_REPORTING": "@enable_error_reporting"
+    "BACKEND_API_URL": "https://hereco-backend.azurewebsites.net",
+    "NODE_ENV": "production",
+    "DEBUG_MODE": "false",
+    "DEV_TOOLS": "false",
+    "CORS_DEBUG": "false",
+    "CORS_ORIGINS": "*",
+    "AZURE_WEB_APP_NAME": "hereco-backend",
+    "AZURE_REGION": "eastus",
+    "LOCAL_BACKEND_URL": "http://localhost:3000",
+    "LOCAL_DEV_MODE": "false",
+    "API_TIMEOUT": "10000",
+    "ENABLE_CACHING": "true",
+    "ENABLE_LAZY_LOADING": "true",
+    "SHOW_DETAILED_ERRORS": "false",
+    "ENABLE_ERROR_REPORTING": "false"
   }
 }
