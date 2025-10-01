@@ -44,7 +44,7 @@ class EnvironmentLoader {
   setDefaults() {
     this.defaults = {
       // Backend API Configuration
-      BACKEND_API_URL: window.location.origin,
+      BACKEND_API_URL: 'https://hereco-backend.azurewebsites.net',
       
       // Environment Detection
       NODE_ENV: 'development',
