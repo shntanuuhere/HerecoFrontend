@@ -1337,8 +1337,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Set up auto-refresh if enabled
-    if (Config.ui.autoRefresh && AppState.preferences.autoRefresh) {
+    // Set up auto-refresh if enabled (disabled temporarily to avoid rate limiting)
+    if (Config.ui.autoRefresh && AppState.preferences.autoRefresh && false) {
         setInterval(() => {
             ProjectsModule.loadEpisodes();
             GalleryModule.loadFiles();

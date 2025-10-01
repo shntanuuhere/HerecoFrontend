@@ -14,16 +14,41 @@ class ApiService {
         this.corsConfig = Config.getCorsConfig();
         this.connectionTested = false;
         this.connectionValid = false;
+        
+        // Rate limiting protection
+        this.lastRequestTime = 0;
+        this.minRequestInterval = 1000; // 1 second between requests
+        this.requestQueue = [];
+        this.isProcessingQueue = false;
     }
 
     /**
-     * Make HTTP request with retry logic
+     * Throttle requests to avoid rate limiting
+     * @returns {Promise<void>}
+     */
+    async throttleRequest() {
+        const now = Date.now();
+        const timeSinceLastRequest = now - this.lastRequestTime;
+        
+        if (timeSinceLastRequest < this.minRequestInterval) {
+            const delay = this.minRequestInterval - timeSinceLastRequest;
+            console.log(`Throttling request for ${delay}ms to avoid rate limiting`);
+            await this.delay(delay);
+        }
+        
+        this.lastRequestTime = Date.now();
+    }
+
+    /**
+     * Make HTTP request with retry logic and rate limiting protection
      * @param {string} url - Request URL
      * @param {Object} options - Fetch options
      * @param {number} attempt - Current attempt number
      * @returns {Promise<Object>} Response data
      */
     async makeRequest(url, options = {}, attempt = 1) {
+        // Throttle requests to avoid rate limiting
+        await this.throttleRequest();
         try {
             // Validate backend URL before making request
             const urlValidation = Config.validateBackendUrl();
@@ -116,6 +141,11 @@ class ApiService {
             return false;
         }
         
+        // Don't retry rate limiting errors (429) - they need longer delays
+        if (error.message.includes('HTTP 429') || error.message.includes('Too many requests')) {
+            return false;
+        }
+        
         return error.name === 'AbortError' || 
                error.message.includes('NetworkError') ||
                error.message.includes('Failed to fetch') ||
@@ -150,6 +180,11 @@ class ApiService {
         
         if (error.message.includes('HTTP 403')) {
             return new Error(Config.messages.api.forbiddenError);
+        }
+        
+        if (error.message.includes('HTTP 429') || error.message.includes('Too many requests')) {
+            // For rate limiting, suggest waiting longer
+            return new Error('Too many requests. Please wait 2-3 minutes before trying again.');
         }
         
         if (error.message.includes('HTTP 404')) {
