@@ -232,7 +232,7 @@ const Config = {
         image: {
             icon: '🖼️',
             color: '#10b981',
-            extensions: ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg']
+            extensions: ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.jfif', '.bmp', '.tiff', '.tif']
         },
         video: {
             icon: '🎥',

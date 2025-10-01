@@ -613,6 +613,7 @@ const GalleryModule = {
             });
             
             if (response.success && response.data) {
+                console.log('Files loaded from API:', response.data);
                 AppState.files = response.data;
                 AppState.currentPage = 1;
                 AppState.hasMoreFiles = response.pagination ? response.pagination.hasMore : response.data.length >= Config.ui.itemsPerPage;
@@ -810,6 +811,14 @@ const GalleryModule = {
         const isAudio = fileTypeInfo.type === 'audio';
         const isDocument = fileTypeInfo.type === 'document';
         
+        // Debug logging
+        console.log('Creating preview for file:', {
+            name: file.name,
+            url: file.url,
+            type: fileTypeInfo.type,
+            contentType: file.contentType
+        });
+        
         if (isImage) {
             return `
                 <div class="file-preview-container image-preview" data-file-url="${file.url}" data-file-name="${file.name}">
@@ -817,7 +826,8 @@ const GalleryModule = {
                          alt="${file.name}" 
                          class="file-preview-image" 
                          loading="lazy"
-                         onerror="this.parentElement.innerHTML='<div class=\\"file-preview-fallback\\">${fileTypeInfo.icon}</div>'">
+                         onload="console.log('Image loaded successfully:', '${file.name}')"
+                         onerror="console.error('Image failed to load:', '${file.name}', '${file.url}'); this.parentElement.innerHTML='<div class=\\"file-preview-fallback\\">${fileTypeInfo.icon}</div>'">
                     <div class="file-preview-overlay">
                         <span class="file-type-badge">${fileTypeInfo.icon}</span>
                         <div class="expand-button" title="View Full Size">🔍</div>
@@ -833,8 +843,9 @@ const GalleryModule = {
                            preload="metadata" 
                            muted
                            poster=""
-                           onloadedmetadata="this.currentTime = 1; this.poster = this.currentTime > 0 ? this.currentTime : ''"
-                           onerror="this.parentElement.innerHTML='<div class=\\"file-preview-fallback\\">${fileTypeInfo.icon}</div>'">
+                           onloadedmetadata="console.log('Video metadata loaded:', '${file.name}'); this.currentTime = 1; this.poster = this.currentTime > 0 ? this.currentTime : ''"
+                           onerror="console.error('Video failed to load:', '${file.name}', '${file.url}'); this.parentElement.innerHTML='<div class=\\"file-preview-fallback\\">${fileTypeInfo.icon}</div>'"
+                           oncanplay="console.log('Video can play:', '${file.name}')">
                         <source src="${file.url}" type="${file.contentType}">
                         Your browser does not support the video tag.
                     </video>
