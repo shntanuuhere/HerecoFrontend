@@ -31,6 +31,8 @@ class ApiService {
                 throw new Error(urlValidation.message);
             }
 
+            console.log(`Making request to: ${url} (attempt ${attempt})`);
+
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
@@ -50,8 +52,9 @@ class ApiService {
                 ...options,
                 signal: controller.signal,
                 headers,
-                mode: this.corsConfig.crossOrigin ? 'cors' : 'same-origin',
-                credentials: 'omit' // Don't send cookies for cross-origin requests
+                mode: 'cors',
+                credentials: 'omit', // Don't send cookies for cross-origin requests
+                cache: 'no-cache'
             });
 
             clearTimeout(timeoutId);
@@ -426,13 +429,10 @@ class ApiService {
                 return { success: false, error: urlValidation.message, type: 'configuration' };
             }
 
+            // Start with a simple health check
+            console.log('Testing backend connection...');
             const health = await this.checkHealth();
-
-            // Lightweight checks
-            const [episodes, files] = await Promise.all([
-                this.getEpisodes({ limit: 1 }),
-                this.getFiles({ limit: 1 })
-            ]);
+            console.log('Health check successful:', health);
 
             this.connectionValid = true;
             this.connectionTested = true;
@@ -440,13 +440,14 @@ class ApiService {
             return {
                 success: true,
                 message: 'Backend connection successful',
-                data: { health, episodes, files },
+                data: { health },
                 corsEnabled: this.corsConfig.enabled,
                 crossOrigin: this.corsConfig.crossOrigin
             };
         } catch (error) {
             this.connectionValid = false;
             this.connectionTested = true;
+            console.error('Backend connection test failed:', error);
             const errorType = this.isCorsError(error) ? 'cors' : 'network';
             return { success: false, error: error.message, type: errorType, corsEnabled: this.corsConfig.enabled, crossOrigin: this.corsConfig.crossOrigin };
         }

@@ -64,7 +64,7 @@ const Config = {
             // Health check
             health: '/api/health'
         },
-        timeout: getEnvValue('API_TIMEOUT', 10000), // 10 seconds for cross-origin requests
+        timeout: getEnvValue('API_TIMEOUT', 30000), // 30 seconds for cross-origin requests
         retryAttempts: getEnvValue('API_RETRY_ATTEMPTS', 3),
         retryDelay: getEnvValue('API_RETRY_DELAY', 1000), // 1 second
         corsEnabled: true,
