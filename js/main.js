@@ -786,10 +786,6 @@ const GalleryModule = {
                 </div>
                 <div class="file-info">
                     <div class="file-name" title="${file.name}">${file.name}</div>
-                    <div class="file-meta">
-                        <span class="file-size">${Utils.formatFileSize(file.size || 0)}</span>
-                        <span class="file-date">${Utils.formatDate(file.lastModified)}</span>
-                    </div>
                 </div>
             </div>
         `;
