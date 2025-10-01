@@ -64,9 +64,9 @@ const Config = {
             // Health check
             health: '/api/health'
         },
-        timeout: getEnvValue('API_TIMEOUT', 10000), // 10 seconds for faster feedback
-        retryAttempts: getEnvValue('API_RETRY_ATTEMPTS', 3),
-        retryDelay: getEnvValue('API_RETRY_DELAY', 1000), // 1 second
+        timeout: 10000, // 10 seconds for faster feedback
+        retryAttempts: 3,
+        retryDelay: 1000, // 1 second
         corsEnabled: true,
         crossOrigin: true
     },
@@ -156,7 +156,7 @@ const Config = {
         isDevelopment: getEnvValue('NODE_ENV', 'development') === 'development',
         isProduction: getEnvValue('NODE_ENV', 'development') === 'production',
         isStaging: getEnvValue('NODE_ENV', 'development') === 'staging',
-        debug: getEnvValue('DEBUG_MODE', false), // Set to true for development debugging
+        debug: true, // Set to true for development debugging
         localDevMode: getEnvValue('LOCAL_DEV_MODE', false),
         azureWebApp: getEnvValue('AZURE_WEB_APP_NAME', 'your-app-name')
     },
