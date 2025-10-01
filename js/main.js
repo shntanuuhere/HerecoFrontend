@@ -617,6 +617,13 @@ const GalleryModule = {
                 AppState.files = response.data;
                 AppState.currentPage = 1;
                 AppState.hasMoreFiles = response.pagination ? response.pagination.hasMore : response.data.length >= Config.ui.itemsPerPage;
+                
+                // Test file accessibility
+                response.data.forEach(async (file) => {
+                    const isAccessible = await this.testFileAccess(file.url);
+                    console.log(`File accessibility test for ${file.name}:`, isAccessible ? 'ACCESSIBLE' : 'NOT ACCESSIBLE');
+                });
+                
                 this.renderFiles(AppState.files);
                 this.updateLoadMoreButton();
             } else {
@@ -827,7 +834,11 @@ const GalleryModule = {
                          class="file-preview-image" 
                          loading="lazy"
                          onload="console.log('Image loaded successfully:', '${file.name}')"
-                         onerror="console.error('Image failed to load:', '${file.name}', '${file.url}'); this.parentElement.innerHTML='<div class=\\"file-preview-fallback\\">${fileTypeInfo.icon}</div>'">
+                         onerror="console.error('Image failed to load:', '${file.name}', '${file.url}'); this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="file-preview-fallback" style="display: none;">
+                        <div class="file-icon-large">${fileTypeInfo.icon}</div>
+                        <div class="file-extension">${file.name.split('.').pop()?.toUpperCase()}</div>
+                    </div>
                     <div class="file-preview-overlay">
                         <span class="file-type-badge">${fileTypeInfo.icon}</span>
                         <div class="expand-button" title="View Full Size">🔍</div>
@@ -840,13 +851,16 @@ const GalleryModule = {
             return `
                 <div class="file-preview-container video-preview" data-file-url="${file.url}" data-file-name="${file.name}">
                     <video class="file-preview-video" 
+                           controls
                            preload="metadata" 
                            muted
-                           poster=""
-                           onloadedmetadata="console.log('Video metadata loaded:', '${file.name}'); this.currentTime = 1; this.poster = this.currentTime > 0 ? this.currentTime : ''"
+                           playsinline
+                           onloadedmetadata="console.log('Video metadata loaded:', '${file.name}'); this.currentTime = 1;"
                            onerror="console.error('Video failed to load:', '${file.name}', '${file.url}'); this.parentElement.innerHTML='<div class=\\"file-preview-fallback\\">${fileTypeInfo.icon}</div>'"
                            oncanplay="console.log('Video can play:', '${file.name}')">
-                        <source src="${file.url}" type="${file.contentType}">
+                        <source src="${file.url}" type="video/quicktime">
+                        <source src="${file.url}" type="video/mp4">
+                        <source src="${file.url}">
                         Your browser does not support the video tag.
                     </video>
                     <div class="file-preview-overlay">
@@ -906,6 +920,21 @@ const GalleryModule = {
                 </div>
             </div>
         `;
+    },
+
+    /**
+     * Test if a file URL is accessible
+     * @param {string} url - File URL to test
+     * @returns {Promise<boolean>} Whether the file is accessible
+     */
+    async testFileAccess(url) {
+        try {
+            const response = await fetch(url, { method: 'HEAD' });
+            return response.ok;
+        } catch (error) {
+            console.error('File access test failed:', url, error);
+            return false;
+        }
     },
 
     /**
@@ -970,8 +999,9 @@ const GalleryModule = {
         videoPreviews.forEach(container => {
             const video = container.querySelector('.file-preview-video');
             const playButton = container.querySelector('.play-button');
+            const overlay = container.querySelector('.file-preview-overlay');
             
-            if (video && playButton) {
+            if (video && playButton && overlay) {
                 // Play button click
                 playButton.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -979,23 +1009,30 @@ const GalleryModule = {
                         video.play();
                         playButton.innerHTML = '⏸️';
                         playButton.title = 'Pause Video';
+                        overlay.style.opacity = '0.3'; // Dim overlay when playing
                     } else {
                         video.pause();
                         playButton.innerHTML = '▶️';
                         playButton.title = 'Play Video';
+                        overlay.style.opacity = '1'; // Show overlay when paused
                     }
                 });
                 
-                // Video click to play/pause
-                video.addEventListener('click', () => {
-                    if (video.paused) {
-                        video.play();
-                        playButton.innerHTML = '⏸️';
-                        playButton.title = 'Pause Video';
-                    } else {
-                        video.pause();
-                        playButton.innerHTML = '▶️';
-                        playButton.title = 'Play Video';
+                // Video click to play/pause (only if not clicking controls)
+                video.addEventListener('click', (e) => {
+                    // Don't interfere with native video controls
+                    if (e.target === video && !e.target.controls) {
+                        if (video.paused) {
+                            video.play();
+                            playButton.innerHTML = '⏸️';
+                            playButton.title = 'Pause Video';
+                            overlay.style.opacity = '0.3';
+                        } else {
+                            video.pause();
+                            playButton.innerHTML = '▶️';
+                            playButton.title = 'Play Video';
+                            overlay.style.opacity = '1';
+                        }
                     }
                 });
                 
@@ -1003,6 +1040,7 @@ const GalleryModule = {
                 video.addEventListener('ended', () => {
                     playButton.innerHTML = '▶️';
                     playButton.title = 'Play Video';
+                    overlay.style.opacity = '1';
                 });
                 
                 // Show duration when loaded
@@ -1015,6 +1053,19 @@ const GalleryModule = {
                         durationElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
                         durationElement.style.display = 'block';
                     }
+                });
+                
+                // Handle play/pause events from native controls
+                video.addEventListener('play', () => {
+                    playButton.innerHTML = '⏸️';
+                    playButton.title = 'Pause Video';
+                    overlay.style.opacity = '0.3';
+                });
+                
+                video.addEventListener('pause', () => {
+                    playButton.innerHTML = '▶️';
+                    playButton.title = 'Play Video';
+                    overlay.style.opacity = '1';
                 });
             }
         });

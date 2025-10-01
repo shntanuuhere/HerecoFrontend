@@ -1195,6 +1195,15 @@ a:focus {
     object-fit: cover;
     cursor: pointer;
     transition: transform 0.3s ease;
+    background: #000;
+}
+
+.file-preview-video::-webkit-media-controls {
+    display: flex;
+}
+
+.file-preview-video::-webkit-media-controls-panel {
+    background: rgba(0, 0, 0, 0.8);
 }
 
 .file-preview-overlay {
@@ -1206,6 +1215,11 @@ a:focus {
     gap: var(--spacing-xs);
     opacity: 0;
     transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.file-preview-overlay .play-button {
+    pointer-events: auto;
 }
 
 .file-item:hover .file-preview-overlay {
