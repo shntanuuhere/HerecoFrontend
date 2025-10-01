@@ -32,9 +32,13 @@ class ApiService {
             }
 
             console.log(`Making request to: ${url} (attempt ${attempt})`);
+            console.log(`Timeout set to: ${this.timeout}ms`);
 
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+            const timeoutId = setTimeout(() => {
+                console.log(`Request timeout after ${this.timeout}ms for: ${url}`);
+                controller.abort();
+            }, this.timeout);
 
             const method = (options.method || 'GET').toUpperCase();
             const headers = { ...options.headers };
@@ -47,6 +51,14 @@ class ApiService {
                 headers['Content-Type'] = headers['Content-Type'] || 'application/json';
             }
             // Remove X-Requested-With unless absolutely needed
+
+            console.log(`Fetch options:`, {
+                method: method,
+                headers: headers,
+                mode: 'cors',
+                credentials: 'omit',
+                cache: 'no-cache'
+            });
 
             const response = await fetch(url, {
                 ...options,
@@ -74,6 +86,16 @@ class ApiService {
             return data;
 
         } catch (error) {
+            console.log(`Request error for ${url}:`, {
+                name: error.name,
+                message: error.message,
+                stack: error.stack
+            });
+            
+            if (error.name === 'AbortError') {
+                console.log(`Request was aborted for: ${url}`);
+            }
+            
             if (attempt < this.retryAttempts && this.shouldRetry(error)) {
                 Config.debug(`Request failed, retrying... (attempt ${attempt + 1})`, error);
                 await this.delay(this.retryDelay * attempt);
