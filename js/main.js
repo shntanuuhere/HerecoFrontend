@@ -313,44 +313,11 @@ const Utils = {
             document.documentElement.classList.add('reduced-motion');
         }
         
-        // Add skip link
-        this.addSkipLink();
         
         // Initialize focus management
         this.initFocusManagement();
     },
 
-    /**
-     * Add skip link for keyboard navigation
-     */
-    addSkipLink() {
-        const skipLink = document.createElement('a');
-        skipLink.href = '#main';
-        skipLink.textContent = 'Skip to main content';
-        skipLink.className = 'skip-link';
-        skipLink.style.cssText = `
-            position: absolute;
-            top: -40px;
-            left: 6px;
-            background: var(--primary-color);
-            color: white;
-            padding: 8px;
-            text-decoration: none;
-            border-radius: 4px;
-            z-index: 1000;
-            transition: top 0.3s;
-        `;
-        
-        skipLink.addEventListener('focus', () => {
-            skipLink.style.top = '6px';
-        });
-        
-        skipLink.addEventListener('blur', () => {
-            skipLink.style.top = '-40px';
-        });
-        
-        document.body.insertBefore(skipLink, document.body.firstChild);
-    },
 
     /**
      * Initialize focus management
@@ -390,6 +357,53 @@ const Utils = {
                 e.preventDefault();
             }
         }
+    },
+
+    /**
+     * Show modal dialog
+     * @param {string} title - Modal title
+     * @param {string} content - Modal content HTML
+     * @param {Function} onConfirm - Optional confirm callback
+     */
+    showModal(title, content, onConfirm = null) {
+        const modal = document.getElementById('modal-overlay');
+        const modalTitle = modal.querySelector('.modal-title');
+        const modalBody = modal.querySelector('.modal-body');
+        const confirmBtn = document.getElementById('modal-confirm');
+        
+        if (modalTitle) modalTitle.textContent = title;
+        if (modalBody) modalBody.innerHTML = content;
+        
+        // Remove hidden class to show modal
+        modal.classList.remove('hidden');
+        modal.classList.add('show');
+        
+        // Handle confirm button
+        if (confirmBtn && onConfirm) {
+            confirmBtn.onclick = () => {
+                onConfirm();
+                this.closeModal();
+            };
+        } else if (confirmBtn) {
+            confirmBtn.onclick = () => this.closeModal();
+        }
+        
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+    },
+
+    /**
+     * Close modal dialog
+     */
+    closeModal() {
+        const modal = document.getElementById('modal-overlay');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('show');
+        }
+        
+        // Restore body scroll
+        document.body.style.overflow = '';
     }
 };
 
@@ -786,7 +800,7 @@ const GalleryModule = {
                 </div>
                 <div class="file-info">
                     <div class="file-name" title="${file.name}">${file.name}</div>
-                </div>
+                    </div>
             </div>
         `;
     },
@@ -1361,6 +1375,13 @@ const SmoothScrolling = {
 
 // Application initialization
 document.addEventListener('DOMContentLoaded', () => {
+    // Ensure modals are hidden on page load
+    const modals = document.querySelectorAll('.modal-overlay');
+    modals.forEach(modal => {
+        modal.classList.add('hidden');
+        modal.classList.remove('show');
+    });
+    
     // Initialize core systems first
     Utils.initTheme();
     Utils.initAccessibility();
@@ -1405,7 +1426,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Performance monitoring
     if (Config.environment.debug) {
-        console.log('Podcast website initialized successfully!');
+    console.log('Podcast website initialized successfully!');
         console.log('Theme:', AppState.theme);
         console.log('Preferences:', AppState.preferences);
     }

@@ -298,7 +298,7 @@ const Config = {
 
     // Accessibility Configuration
     accessibility: {
-        enableSkipLinks: true,
+        enableSkipLinks: false,
         enableFocusManagement: true,
         enableKeyboardNavigation: true,
         enableScreenReaderSupport: true,

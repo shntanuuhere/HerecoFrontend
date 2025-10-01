@@ -319,6 +319,27 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    padding-right: 20px; /* Add padding to account for scrollbar */
+    box-sizing: border-box;
+    overflow-y: overlay; /* Make scrollbar overlay instead of taking space */
+}
+
+/* Hide scrollbar but keep functionality */
+body::-webkit-scrollbar {
+    width: 8px;
+}
+
+body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+body::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.5);
 }
 
 /* Enhanced Typography */
@@ -387,17 +408,20 @@ a:focus {
     max-width: var(--container-max-width);
     margin: 0 auto;
     padding: 0 var(--spacing-4);
+    padding-right: calc(var(--spacing-4) + 20px); /* Extra padding to prevent scrollbar overlap */
 }
 
 @media (min-width: 640px) {
     .container {
         padding: 0 var(--spacing-6);
+        padding-right: calc(var(--spacing-6) + 20px); /* Extra padding to prevent scrollbar overlap */
     }
 }
 
 @media (min-width: 1024px) {
     .container {
         padding: 0 var(--spacing-8);
+        padding-right: calc(var(--spacing-8) + 20px); /* Extra padding to prevent scrollbar overlap */
     }
 }
 
@@ -683,6 +707,8 @@ a:focus {
     max-width: 800px;
     margin: 0 auto;
     padding: var(--spacing-16) 0;
+    padding-right: 60px; /* Extra padding to ensure content doesn't get covered */
+    margin-right: 60px; /* Extra margin to prevent scrollbar overlap */
 }
 
 .hero-title {
@@ -714,6 +740,9 @@ a:focus {
     justify-content: center;
     flex-wrap: wrap;
     animation: fade-in-up 1s ease-out 0.4s both;
+    padding-right: 50px; /* Larger padding to ensure buttons don't get covered by scrollbar */
+    margin-right: 50px; /* Much larger margin to prevent scrollbar overlap */
+    max-width: 90%; /* Limit width to prevent overflow */
 }
 
 @keyframes fade-in-up {
@@ -2323,7 +2352,7 @@ a:focus {
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     z-index: var(--z-index-50);
@@ -2334,6 +2363,7 @@ a:focus {
 }
 
 .modal-overlay.show {
+    display: flex;
     opacity: 1;
     visibility: visible;
 }
@@ -2341,6 +2371,7 @@ a:focus {
 .modal-overlay.hidden {
     opacity: 0;
     visibility: hidden;
+    display: none !important;
 }
 
 .modal-container {
@@ -2499,6 +2530,8 @@ a:focus {
     padding: var(--spacing-4) var(--spacing-8);
     font-size: var(--font-size-lg);
     border-radius: var(--radius-xl);
+    margin-right: 10px; /* Extra margin to prevent scrollbar overlap */
+    min-width: 200px; /* Ensure buttons have minimum width */
 }
 
 .btn-small {
@@ -2682,11 +2715,14 @@ a:focus {
     .hero-actions {
         flex-direction: column;
         align-items: center;
+        padding-right: 20px; /* Reduce padding on smaller screens */
+        margin-right: 20px;
     }
     
     .btn-large {
         width: 100%;
         max-width: 300px;
+        margin-right: 0; /* Remove margin on mobile */
     }
 }
 
