@@ -534,8 +534,9 @@ a:focus {
     border-radius: var(--radius-lg);
     font-weight: var(--font-weight-medium);
     color: var(--text-secondary);
-    transition: var(--transition-all);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+    will-change: transform, box-shadow;
     overflow: hidden;
 }
 
@@ -548,7 +549,7 @@ a:focus {
     bottom: 0;
     background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
     opacity: 0;
-    transition: var(--transition-opacity);
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: -1;
 }
 
@@ -720,7 +721,7 @@ a:focus {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: fade-in-up 1s ease-out;
+    animation: fade-in-up 1s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .hero-subtitle {
@@ -731,7 +732,7 @@ a:focus {
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
-    animation: fade-in-up 1s ease-out 0.2s both;
+    animation: fade-in-up 1s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
 }
 
 .hero-actions {
@@ -739,7 +740,7 @@ a:focus {
     gap: var(--spacing-4);
     justify-content: center;
     flex-wrap: wrap;
-    animation: fade-in-up 1s ease-out 0.4s both;
+    animation: fade-in-up 1s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
     padding-right: 50px; /* Larger padding to ensure buttons don't get covered by scrollbar */
     margin-right: 50px; /* Much larger margin to prevent scrollbar overlap */
     max-width: 90%; /* Limit width to prevent overflow */
@@ -2150,7 +2151,8 @@ a:focus {
     border-radius: var(--border-radius-lg);
     padding: var(--spacing-lg);
     box-shadow: var(--shadow-sm);
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, box-shadow;
     display: flex;
     flex-direction: column;
     gap: var(--spacing-md);
@@ -2295,13 +2297,13 @@ a:focus {
 
 /* Skeleton Loading */
 .episode-card.skeleton {
-    animation: skeleton-loading 1.5s ease-in-out infinite;
+    animation: skeleton-loading 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 .episode-card.skeleton .episode-title {
     background: linear-gradient(90deg, var(--border-color) 25%, var(--surface-color) 50%, var(--border-color) 75%);
     background-size: 200% 100%;
-    animation: skeleton-shimmer 1.5s infinite;
+    animation: skeleton-shimmer 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     height: 1.5em;
     border-radius: var(--border-radius);
     margin-bottom: var(--spacing-sm);
@@ -2310,7 +2312,7 @@ a:focus {
 .episode-card.skeleton .episode-description {
     background: linear-gradient(90deg, var(--border-color) 25%, var(--surface-color) 50%, var(--border-color) 75%);
     background-size: 200% 100%;
-    animation: skeleton-shimmer 1.5s infinite;
+    animation: skeleton-shimmer 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     height: 4.5em;
     border-radius: var(--border-radius);
     margin-bottom: var(--spacing-md);
@@ -2319,7 +2321,7 @@ a:focus {
 .episode-card.skeleton .episode-metadata {
     background: linear-gradient(90deg, var(--border-color) 25%, var(--surface-color) 50%, var(--border-color) 75%);
     background-size: 200% 100%;
-    animation: skeleton-shimmer 1.5s infinite;
+    animation: skeleton-shimmer 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     height: 1.2em;
     width: 60%;
     border-radius: var(--border-radius);
@@ -2329,7 +2331,7 @@ a:focus {
 .episode-card.skeleton .episode-audio {
     background: linear-gradient(90deg, var(--border-color) 25%, var(--surface-color) 50%, var(--border-color) 75%);
     background-size: 200% 100%;
-    animation: skeleton-shimmer 1.5s infinite;
+    animation: skeleton-shimmer 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     height: 40px;
     border-radius: var(--border-radius);
 }
@@ -2474,9 +2476,10 @@ a:focus {
     line-height: var(--line-height-none);
     text-decoration: none;
     cursor: pointer;
-    transition: var(--transition-all);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    will-change: transform, box-shadow;
     white-space: nowrap;
     user-select: none;
 }
@@ -2490,7 +2493,7 @@ a:focus {
     bottom: 0;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
     opacity: 0;
-    transition: var(--transition-opacity);
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1;
 }
 

@@ -404,6 +404,73 @@ const Utils = {
         
         // Restore body scroll
         document.body.style.overflow = '';
+    },
+
+    /**
+     * Initialize performance optimizations
+     */
+    initPerformanceOptimizations() {
+        // Optimize scroll performance
+        let ticking = false;
+        
+        const optimizeScroll = () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    // Smooth scroll behavior
+                    document.documentElement.style.scrollBehavior = 'smooth';
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        };
+
+        // Throttle scroll events
+        window.addEventListener('scroll', optimizeScroll, { passive: true });
+        
+        // Optimize resize events
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                // Handle resize optimizations
+                Utils.handleResize();
+            }, 250);
+        }, { passive: true });
+        
+        // Preload critical resources
+        this.preloadCriticalResources();
+    },
+
+    /**
+     * Handle window resize optimizations
+     */
+    handleResize() {
+        // Recalculate any size-dependent elements
+        const heroContent = document.querySelector('.hero-content');
+        if (heroContent) {
+            // Trigger reflow for responsive adjustments
+            heroContent.style.transform = 'translateZ(0)';
+        }
+    },
+
+    /**
+     * Preload critical resources for better performance
+     */
+    preloadCriticalResources() {
+        // Preload critical CSS
+        const criticalCSS = document.createElement('link');
+        criticalCSS.rel = 'preload';
+        criticalCSS.as = 'style';
+        criticalCSS.href = 'styles/main.css';
+        document.head.appendChild(criticalCSS);
+        
+        // Preload critical fonts
+        const fontPreload = document.createElement('link');
+        fontPreload.rel = 'preload';
+        fontPreload.as = 'font';
+        fontPreload.type = 'font/woff2';
+        fontPreload.crossOrigin = 'anonymous';
+        document.head.appendChild(fontPreload);
     }
 };
 
@@ -1385,6 +1452,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize core systems first
     Utils.initTheme();
     Utils.initAccessibility();
+    Utils.initPerformanceOptimizations();
     
     // Initialize modules
     ProjectsModule.init();
