@@ -775,19 +775,8 @@ const GalleryModule = {
         // Create preview HTML based on file type
         const thumbnailHtml = this.createFilePreview(file, fileTypeInfo);
 
-        const overlayHtml = `
-            <div class="file-overlay">
-                <button class="file-action-btn download-btn" data-filename="${file.name}" title="Download">
-                    ⬇️
-                </button>
-                <button class="file-action-btn preview-btn" data-filename="${file.name}" title="Preview">
-                    👁️
-                </button>
-                <button class="file-action-btn info-btn" data-filename="${file.name}" title="View Details">
-                    ℹ️
-                </button>
-            </div>
-        `;
+        // Remove overlay buttons for cleaner video experience
+        const overlayHtml = '';
 
         return `
             <div class="file-item" data-file-type="${fileTypeInfo.type}">
@@ -839,10 +828,6 @@ const GalleryModule = {
                         <div class="file-icon-large">${fileTypeInfo.icon}</div>
                         <div class="file-extension">${file.name.split('.').pop()?.toUpperCase()}</div>
                     </div>
-                    <div class="file-preview-overlay">
-                        <span class="file-type-badge">${fileTypeInfo.icon}</span>
-                        <div class="expand-button" title="View Full Size">🔍</div>
-                    </div>
                 </div>
             `;
         }
@@ -867,11 +852,6 @@ const GalleryModule = {
                         <source src="${directUrl}">
                         Your browser does not support the video tag.
                     </video>
-                    <div class="file-preview-overlay">
-                        <span class="file-type-badge">${fileTypeInfo.icon}</span>
-                        <div class="play-button" title="Play Video">▶️</div>
-                    </div>
-                    <div class="video-duration" style="display: none;"></div>
                 </div>
             `;
         }
@@ -885,10 +865,6 @@ const GalleryModule = {
                         <div class="waveform-bar"></div>
                         <div class="waveform-bar"></div>
                         <div class="waveform-bar"></div>
-                    </div>
-                    <div class="file-preview-overlay">
-                        <span class="file-type-badge">${fileTypeInfo.icon}</span>
-                        <div class="play-button">▶️</div>
                     </div>
                 </div>
             `;
@@ -905,9 +881,6 @@ const GalleryModule = {
                             <div class="document-line short"></div>
                         </div>
                     </div>
-                    <div class="file-preview-overlay">
-                        <span class="file-type-badge">${fileTypeInfo.icon}</span>
-                    </div>
                 </div>
             `;
         }
@@ -918,9 +891,6 @@ const GalleryModule = {
                 <div class="file-preview-fallback">
                     <div class="file-icon-large">${fileTypeInfo.icon}</div>
                     <div class="file-extension">${file.name.split('.').pop()?.toUpperCase()}</div>
-                </div>
-                <div class="file-preview-overlay">
-                    <span class="file-type-badge">${fileTypeInfo.icon}</span>
                 </div>
             </div>
         `;
