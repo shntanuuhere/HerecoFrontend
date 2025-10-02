@@ -26,7 +26,7 @@
     <meta name="color-scheme" content="light dark">
     <meta name="theme-color" content="#2563eb">
     
-    <title>Hereco - Your Podcast and Media Hub</title>
+    <title>Hereco - Home</title>
     <meta name="description" content="Discover amazing podcast episodes and media content. Your hub for engaging conversations, file galleries, and premium audio experiences.">
     <meta name="keywords" content="podcast, media, episodes, audio, content, hereco, streaming, gallery">
     <meta name="author" content="Shantanu Sen Gupta">
@@ -133,9 +133,60 @@
                         type="text" 
                         id="episode-search-input" 
                         class="episode-search-input" 
-                        placeholder="Search episodes..."
+                        placeholder="Search episodes by title, description, or keywords..."
                         aria-label="Search episodes"
                     >
+                </div>
+                
+                <!-- Episode Stats -->
+                <div id="episode-stats" class="episode-stats hidden">
+                    <div class="episode-stat">
+                        <div class="episode-stat-value" id="total-episodes">0</div>
+                        <div class="episode-stat-label">Total Episodes</div>
+                    </div>
+                    <div class="episode-stat">
+                        <div class="episode-stat-value" id="filtered-episodes">0</div>
+                        <div class="episode-stat-label">Showing</div>
+                    </div>
+                    <div class="episode-stat">
+                        <div class="episode-stat-value" id="total-duration">0h</div>
+                        <div class="episode-stat-label">Total Duration</div>
+                    </div>
+                </div>
+                
+                <!-- Episode Filters -->
+                <div class="episode-filters">
+                    <div class="episode-filter-group">
+                        <label for="episode-sort" class="episode-filter-label">Sort by</label>
+                        <select id="episode-sort" class="episode-filter-select" aria-label="Sort episodes">
+                            <option value="date-newest">Newest First</option>
+                            <option value="date-oldest">Oldest First</option>
+                            <option value="title-asc">Title A-Z</option>
+                            <option value="title-desc">Title Z-A</option>
+                            <option value="duration-longest">Longest First</option>
+                            <option value="duration-shortest">Shortest First</option>
+                        </select>
+                    </div>
+                    
+                    <div class="episode-filter-group">
+                        <label for="episode-filter" class="episode-filter-label">Filter by</label>
+                        <select id="episode-filter" class="episode-filter-select" aria-label="Filter episodes">
+                            <option value="all">All Episodes</option>
+                            <option value="recent">Last 30 Days</option>
+                            <option value="this-year">This Year</option>
+                            <option value="long-form">Long Form (30+ min)</option>
+                            <option value="short-form">Short Form (< 30 min)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="episode-filter-group">
+                        <label for="episode-view" class="episode-filter-label">View</label>
+                        <select id="episode-view" class="episode-filter-select" aria-label="Episode view mode">
+                            <option value="cards">Card View</option>
+                            <option value="list">List View</option>
+                            <option value="compact">Compact View</option>
+                        </select>
+                    </div>
                 </div>
                 
                 <!-- Loading Indicator -->
@@ -302,6 +353,83 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="Utils.closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Episode Detail Modal -->
+    <div id="episode-detail-modal" class="modal-overlay hidden">
+        <div class="modal-container modal-large">
+            <div class="modal-header">
+                <h3 class="modal-title">Episode Details</h3>
+                <button class="modal-close" onclick="Utils.closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="episode-detail-content"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="Utils.closeModal()">Close</button>
+                <button id="episode-detail-play" class="btn btn-primary">Play Episode</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Audio Player -->
+    <div id="floating-player" class="floating-player hidden">
+        <div class="floating-player-content">
+            <div class="floating-artwork">
+                <img id="floating-artwork-img" src="" alt="Episode artwork">
+                <div class="floating-artwork-overlay">
+                    <div class="floating-wave-animation">
+                        <div class="wave"></div>
+                        <div class="wave"></div>
+                        <div class="wave"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="floating-info">
+                <div class="floating-episode-info">
+                    <h4 id="floating-title" class="floating-title">Episode Title</h4>
+                    <div class="floating-time-info">
+                        <span id="floating-current-time" class="floating-current-time">0:00</span>
+                        <span class="floating-time-separator">/</span>
+                        <span id="floating-total-time" class="floating-total-time">0:00</span>
+                    </div>
+                </div>
+                <div class="floating-controls">
+                    <button id="floating-prev-btn" class="floating-control-btn" title="Previous">
+                        <span class="floating-prev-icon">⏮</span>
+                    </button>
+                    <button id="floating-play-btn" class="floating-play-btn">
+                        <span class="floating-play-icon">▶</span>
+                    </button>
+                    <button id="floating-next-btn" class="floating-control-btn" title="Next">
+                        <span class="floating-next-icon">⏭</span>
+                    </button>
+                    <div class="floating-progress">
+                        <div class="floating-progress-bar">
+                            <div class="floating-progress-fill"></div>
+                            <div class="floating-progress-handle"></div>
+                        </div>
+                    </div>
+                    <div class="floating-volume">
+                        <button id="floating-volume-btn" class="floating-volume-btn" title="Volume">
+                            <span class="floating-volume-icon">🔊</span>
+                        </button>
+                        <div class="floating-volume-slider-container">
+                            <div class="floating-volume-slider">
+                                <div class="floating-volume-fill"></div>
+                                <div class="floating-volume-handle"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="floating-actions">
+                <button id="floating-expand-btn" class="floating-action-btn" title="Expand">
+                    <span class="floating-expand-icon">⛶</span>
+                </button>
+                <button id="floating-close" class="floating-close">×</button>
             </div>
         </div>
     </div>
