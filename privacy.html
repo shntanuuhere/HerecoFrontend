@@ -7,6 +7,33 @@
     <meta name="description" content="Privacy Policy for Hereco - Learn how we protect your privacy and handle your data.">
     <link rel="stylesheet" href="styles/main.css">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB1TMKnRNnH1pMEq26gAKYcxulUoyUFJRI",
+            authDomain: "hereco-17.firebaseapp.com",
+            projectId: "hereco-17",
+            storageBucket: "hereco-17.firebasestorage.app",
+            messagingSenderId: "114911168209",
+            appId: "1:114911168209:web:8c77ab79ae3f172a6827f0"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Make auth available globally
+        window.auth = auth;
+        window.signOut = signOut;
+        
+        // Dispatch event when Firebase is ready
+        window.dispatchEvent(new CustomEvent('firebase-ready'));
+    </script>
 </head>
 <body>
 
@@ -14,33 +41,34 @@
     <header class="header">
         <div class="container">
             <div class="header-content">
-                <div class="logo">
-                    <a href="index.html" class="logo-link">
-                        <h1 class="logo-text">Hereco</h1>
-                    </a>
-                </div>
-                <nav class="nav" role="navigation" aria-label="Main navigation">
+                <h1 class="site-title">
+                    <a href="index.html" class="site-title-link" aria-label="Hereco - Home">Hereco</a>
+                </h1>
+                <nav class="navigation" role="navigation" aria-label="Main navigation">
                     <ul class="nav-list">
-                        <li class="nav-item">
-                            <a href="index.html" class="nav-link">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="index.html#episodes" class="nav-link">Episodes</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="index.html#gallery" class="nav-link">Gallery</a>
+                        <li class="nav-item dropdown">
+                            <a href="index.html#episodes" class="nav-link">
+                                Episodes
+                                <span class="dropdown-arrow">▼</span>
+                            </a>
                         </li>
                         <li class="nav-item">
                             <a href="about.html" class="nav-link">About</a>
                         </li>
                         <li class="nav-item">
+                            <a href="index.html#gallery" class="nav-link">Gallery</a>
+                        </li>
+                        <li class="nav-item">
                             <a href="contact.html" class="nav-link">Contact</a>
+                        </li>
+                        <li class="nav-item auth-links">
+                            <a href="login.html" class="nav-link">Login</a>
+                        </li>
+                        <li class="nav-item auth-links">
+                            <a href="signup.html" class="nav-link">Sign Up</a>
                         </li>
                     </ul>
                 </nav>
-                <button class="theme-toggle" aria-label="Toggle theme" title="Toggle theme">
-                    <span class="theme-icon">🌙</span>
-                </button>
             </div>
         </div>
     </header>
@@ -140,7 +168,7 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3 class="footer-title">Hereco</h3>
-                    <p class="footer-description">Your podcast and media hub for discovering amazing content.</p>
+                    <p class="footer-description">We do incredible things!</p>
                 </div>
                 
                 <div class="footer-section">
@@ -206,5 +234,6 @@
     <script src="js/config.js"></script>
     <script src="js/apiService.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
 </body>
 </html>

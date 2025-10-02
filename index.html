@@ -44,11 +44,15 @@
     <meta property="twitter:title" content="Hereco - Your Podcast and Media Hub">
     <meta property="twitter:description" content="Discover amazing podcast episodes and media content. Your hub for engaging conversations, file galleries, and premium audio experiences.">
     <meta property="twitter:image" content="https://www.hereco.xyz/og-image.jpg">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="styles/main.css">
     
     <!-- Performance optimizations -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://hereco-backend.azurewebsites.net">
     <link rel="dns-prefetch" href="https://shntanuuherebucket1.blob.core.windows.net">
     
@@ -72,25 +76,64 @@
     <meta name="env-enable-lazy-loading" content="%ENABLE_LAZY_LOADING%">
     <meta name="env-show-detailed-errors" content="%SHOW_DETAILED_ERRORS%">
     <meta name="env-enable-error-reporting" content="%ENABLE_ERROR_REPORTING%">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB1TMKnRNnH1pMEq26gAKYcxulUoyUFJRI",
+            authDomain: "hereco-17.firebaseapp.com",
+            projectId: "hereco-17",
+            storageBucket: "hereco-17.firebasestorage.app",
+            messagingSenderId: "114911168209",
+            appId: "1:114911168209:web:8c77ab79ae3f172a6827f0"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Make auth available globally
+        window.auth = auth;
+        window.signOut = signOut;
+        
+        // Dispatch event when Firebase is ready
+        window.dispatchEvent(new CustomEvent('firebase-ready'));
+    </script>
 </head>
 <body>
     <header class="header" role="banner">
         <div class="container">
             <div class="header-content">
                 <h1 class="site-title">
-                    <a href="#" class="site-title-link" aria-label="Hereco - Home">Hereco</a>
+                    <a href="index.html" class="site-title-link" aria-label="Hereco - Home">Hereco</a>
                 </h1>
                 <nav class="navigation" role="navigation" aria-label="Main navigation">
-                    <button class="mobile-menu-toggle" aria-label="Toggle mobile menu" aria-expanded="false">
-                        <span class="hamburger-line"></span>
-                        <span class="hamburger-line"></span>
-                        <span class="hamburger-line"></span>
-                    </button>
                     <ul class="nav-list">
-                        <li><a href="#projects" class="nav-link">Episodes</a></li>
-                        <li><a href="#gallery" class="nav-link">Gallery</a></li>
-                        <li><a href="about.html" class="nav-link">About</a></li>
-                        <li><a href="contact.html" class="nav-link">Contact</a></li>
+                        <li class="nav-item dropdown">
+                            <a href="#projects" class="nav-link">
+                                Episodes
+                                <span class="dropdown-arrow">▼</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="about.html" class="nav-link">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#gallery" class="nav-link">Gallery</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="contact.html" class="nav-link">Contact</a>
+                        </li>
+                        <li class="nav-item auth-links">
+                            <a href="login.html" class="nav-link">Login</a>
+                        </li>
+                        <li class="nav-item auth-links">
+                            <a href="signup.html" class="nav-link">Sign Up</a>
+                        </li>
                     </ul>
                 </nav>
             </div>
@@ -118,12 +161,10 @@
         <div class="container">
             <!-- Projects Section -->
             <section id="projects" class="section projects-section">
-                <h2 class="section-title">Podcast Episodes</h2>
-                
-                <!-- RSS Feed Controls -->
-                <div class="rss-controls">
+                <div class="section-header">
+                    <h2 class="section-title">Podcast Episodes</h2>
                     <button id="refresh-button" class="refresh-button" aria-label="Refresh podcast episodes">
-                        <span class="refresh-icon">🔄</span> Refresh Episodes
+                        <span class="refresh-icon">🔄</span> Refresh
                     </button>
                 </div>
                 
@@ -263,7 +304,7 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3 class="footer-title">Hereco</h3>
-                    <p class="footer-description">Your podcast and media hub for discovering amazing content.</p>
+                    <p class="footer-description">We do incredible things!</p>
                 </div>
                 
                 <div class="footer-section">
@@ -506,5 +547,6 @@
             }, 1000);
         });
     </script>
+    <script src="js/auth.js"></script>
 </body>
 </html>
