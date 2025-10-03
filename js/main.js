@@ -551,9 +551,12 @@ const Utils = {
             // Get current page name (e.g., 'index.html', 'contact.html')
             const currentPage = window.location.pathname.split('/').pop() || 'index.html';
             
-            // Create user-specific URL structure: /username/uid/page.html
-            const userPath = `/${username}/${uid}/${currentPage}`;
-            const newURL = `${window.location.origin}${userPath}`;
+            // Create user-specific URL with query parameters: page.html?username=xxx&uid=xxx
+            const params = new URLSearchParams({
+                username: username,
+                uid: uid
+            });
+            const newURL = `${window.location.origin}/${currentPage}?${params.toString()}`;
             
             // Update URL without page reload
             window.history.pushState({}, '', newURL);
@@ -577,9 +580,12 @@ const Utils = {
             const username = user.displayName || user.email?.split('@')[0] || 'user';
             const uid = user.uid;
             
-            // Create user-specific URL for the new page
-            const userPath = `/${username}/${uid}/${pageName}`;
-            const newURL = `${window.location.origin}${userPath}`;
+            // Create user-specific URL with query parameters
+            const params = new URLSearchParams({
+                username: username,
+                uid: uid
+            });
+            const newURL = `${window.location.origin}/${pageName}?${params.toString()}`;
             
             // Navigate to the new page
             window.location.href = newURL;
@@ -587,6 +593,14 @@ const Utils = {
             // If not logged in, navigate normally
             window.location.href = pageName;
         }
+    },
+
+    getUserFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return {
+            username: urlParams.get('username'),
+            uid: urlParams.get('uid')
+        };
     },
 
     canPlay() {
@@ -3141,6 +3155,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         window.navigateToPage = (pageName) => {
             Utils.navigateToPage(pageName);
+        };
+        
+        window.getUserFromURL = () => {
+            return Utils.getUserFromURL();
         };
         
         // Simple test modal for debugging
