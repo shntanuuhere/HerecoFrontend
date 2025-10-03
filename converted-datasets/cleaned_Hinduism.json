@@ -1,0 +1,527 @@
+{
+  "name": "Hinduism Knowledge Base",
+  "type": "knowledge",
+  "description": "Converted from cleaned_Hinduism.jsonl - 130 Q&A pairs",
+  "data": [
+    {
+      "question": "Who are the Trimurti in Hinduism?",
+      "answer": "<|assistant|>\nThe Trimurti are the three principal deities of Hinduism: Brahma the creator, Vishnu the preserver, and Shiva the destroyer. Together, they represent the cosmic functions of creation, maintenance, and destruction."
+    },
+    {
+      "question": "What is the role of Lord Brahma in the universe?",
+      "answer": "<|assistant|>\nLord Brahma is regarded as the creator of the universe in Hinduism. He is part of the Trimurti and is believed to have created the Vedas, knowledge, and all living beings."
+    },
+    {
+      "question": "What is the symbolism of Lord Vishnu’s conch and discus?",
+      "answer": "<|assistant|>\nLord Vishnu’s conch (shankha) symbolizes the primordial sound 'Om', while his discus (chakra) represents the mind and the power to destroy evil and protect dharma."
+    },
+    {
+      "question": "Why is Lord Shiva called the 'destroyer'?",
+      "answer": "<|assistant|>\nLord Shiva is known as the destroyer not in a negative sense, but as one who dissolves the universe so it can be recreated. This cycle is essential to the balance of creation and regeneration in Hindu cosmology."
+    },
+    {
+      "question": "How is the concept of rebirth connected to Shiva?",
+      "answer": "<|assistant|>\nShiva represents transformation and renewal. As the destroyer, he ends one cycle of life so another may begin, embodying the principle of rebirth in Hindu thought."
+    },
+    {
+      "question": "What are the avatars of Lord Vishnu?",
+      "answer": "<|assistant|>\nLord Vishnu is believed to have ten major avatars (Dashavatara), including Rama, Krishna, and Narasimha, through which he descends to earth to restore dharma and cosmic order."
+    },
+    {
+      "question": "What is Brahma’s connection with the Vedas?",
+      "answer": "<|assistant|>\nBrahma is credited with creating the four Vedas—Rigveda, Yajurveda, Samaveda, and Atharvaveda. These texts form the foundation of Hindu spiritual and philosophical thought."
+    },
+    {
+      "question": "Who is Saraswati and how is she linked to Brahma?",
+      "answer": "<|assistant|>\nSaraswati is the goddess of knowledge, music, and wisdom, and is considered the consort of Brahma. She represents the intellectual aspect of creation and learning."
+    },
+    {
+      "question": "Why is Lord Vishnu often depicted resting on a serpent?",
+      "answer": "<|assistant|>\nLord Vishnu is commonly shown reclining on the cosmic serpent Adi Shesha in the Kshira Sagara (ocean of milk), symbolizing his control over time, space, and the cosmos."
+    },
+    {
+      "question": "What does the third eye of Lord Shiva signify?",
+      "answer": "<|assistant|>\nThe third eye of Lord Shiva represents higher consciousness and inner vision. It is also a symbol of destruction, which he uses to annihilate evil and ignorance."
+    },
+    {
+      "question": "Why is Lord Vishnu known as the preserver?",
+      "answer": "<|assistant|>\nLord Vishnu is known as the preserver because he maintains cosmic order (dharma) and intervenes when the balance of good and evil is threatened. Through his avatars, he restores righteousness and sustains the universe."
+    },
+    {
+      "question": "Why does Lord Shiva wear a crescent moon on his head?",
+      "answer": "<|assistant|>\nThe crescent moon on Shiva’s head symbolizes the cycle of time and his control over it. It also represents immortality and the waxing and waning nature of life."
+    },
+    {
+      "question": "What is the significance of Lord Brahma’s four heads?",
+      "answer": "<|assistant|>\nLord Brahma’s four heads represent the four Vedas, the four directions, and the four aspects of human consciousness—mind, intellect, ego, and conditioned consciousness."
+    },
+    {
+      "question": "Why is Shiva often shown meditating?",
+      "answer": "<|assistant|>\nShiva’s meditative posture symbolizes supreme detachment, inner stillness, and transcendence. He represents the ultimate yogi—one who is in perfect harmony with the cosmos."
+    },
+    {
+      "question": "Who is Lakshmi and how is she related to Vishnu?",
+      "answer": "<|assistant|>\nLakshmi is the goddess of wealth, prosperity, and beauty. She is the consort of Lord Vishnu and accompanies him in each of his incarnations, supporting the sustenance of the universe."
+    },
+    {
+      "question": "Why is Brahma not widely worshipped?",
+      "answer": "<|assistant|>\nWhile Brahma is deeply revered, his worship is limited due to mythological stories suggesting that he became egoistic and was cursed. Temples dedicated solely to Brahma are rare, with one major temple in Pushkar, Rajasthan."
+    },
+    {
+      "question": "What is the significance of Rudra in relation to Shiva?",
+      "answer": "<|assistant|>\nRudra is an early Vedic form of Shiva, associated with storms, medicine, and fierce aspects of divinity. Over time, Rudra evolved into the more complex and compassionate form of Shiva in later Hinduism."
+    },
+    {
+      "question": "Why does Lord Vishnu take multiple avatars?",
+      "answer": "<|assistant|>\nLord Vishnu takes various avatars to restore balance and dharma whenever evil rises. Each incarnation addresses a specific cosmic crisis, reflecting his eternal role as the preserver."
+    },
+    {
+      "question": "What does the name 'Shiva' mean?",
+      "answer": "<|assistant|>\nThe name 'Shiva' means 'the auspicious one' or 'the kind'. It also signifies liberation, purity, and transcendence in Hindu philosophy."
+    },
+    {
+      "question": "How is the concept of time represented in Hinduism?",
+      "answer": "<|assistant|>\nTime in Hinduism is cyclical, represented by the cosmic cycles of creation, preservation, and destruction governed by Brahma, Vishnu, and Shiva. These cycles are known as Yugas and Kalpas."
+    },
+    {
+      "question": "What is the mantra ‘Om Namah Shivaya’?",
+      "answer": "<|assistant|>\n‘Om Namah Shivaya’ is a sacred mantra dedicated to Lord Shiva. It means “I bow to Shiva,” and invokes peace, transformation, and the inner divine consciousness."
+    },
+    {
+      "question": "What is Vishnu’s mount Garuda?",
+      "answer": "<|assistant|>\nGaruda is a divine eagle and the vehicle (vahana) of Lord Vishnu. He symbolizes strength, speed, and protection from evil forces."
+    },
+    {
+      "question": "What does Shiva’s trident represent?",
+      "answer": "<|assistant|>\nShiva’s trident, or Trishula, represents the three aspects of existence: creation, preservation, and destruction. It also signifies the transcendence of the three gunas—sattva, rajas, and tamas."
+    },
+    {
+      "question": "Who is Narayana?",
+      "answer": "<|assistant|>\nNarayana is another name for Vishnu, particularly in his supreme, all-pervading aspect. Narayana is often invoked in Vedic hymns as the eternal, unchanging source of creation."
+    },
+    {
+      "question": "What is the lotus seat of Brahma?",
+      "answer": "<|assistant|>\nBrahma is depicted seated on a lotus, symbolizing purity, creation, and detachment. The lotus represents divine origin and the unfolding of the universe from Brahma’s mind."
+    },
+    {
+      "question": "Why is Vishnu shown with blue skin?",
+      "answer": "<|assistant|>\nVishnu’s blue skin symbolizes infinity, depth, and the cosmic ocean. It reflects his divine and infinite nature, beyond the grasp of ordinary perception."
+    },
+    {
+      "question": "What is Shiva’s Tandava dance?",
+      "answer": "<|assistant|>\nShiva’s Tandava is a divine dance of cosmic energy. It represents creation, preservation, and destruction, and is a profound symbol of the rhythm of the universe."
+    },
+    {
+      "question": "Who is Bhrigu and what is his story with Vishnu?",
+      "answer": "<|assistant|>\nSage Bhrigu once tested the Trimurti to determine who among them was most tolerant. When he kicked Vishnu in the chest, Vishnu calmly apologized, showcasing his humility and patience. This story emphasizes Vishnu’s virtue of compassion."
+    },
+    {
+      "question": "What is the cosmic ocean in Hindu mythology?",
+      "answer": "<|assistant|>\nThe cosmic ocean, or Kshira Sagara, symbolizes the primordial waters of creation. Vishnu rests upon this ocean, signifying his eternal presence and role as the cosmic preserver."
+    },
+    {
+      "question": "What are the Vedas and how are they connected to Brahma?",
+      "answer": "<|assistant|>\nThe Vedas are ancient Hindu scriptures said to be created by Brahma. They contain hymns, rituals, and philosophical teachings essential to Sanatana Dharma."
+    },
+    {
+      "question": "How does Shiva embody both destruction and compassion?",
+      "answer": "<|assistant|>\nShiva’s destructive role is not malevolent but purifying. He dissolves ignorance and ego, making way for spiritual growth. Simultaneously, he is known as Ashutosh—easily pleased and full of compassion."
+    },
+    {
+      "question": "Why is Vishnu associated with dharma?",
+      "answer": "<|assistant|>\nVishnu is the protector of dharma, or righteous conduct. He incarnates on Earth whenever dharma is in decline, as stated in the Bhagavad Gita, to re-establish cosmic balance."
+    },
+    {
+      "question": "What does Nandi represent in Shiva temples?",
+      "answer": "<|assistant|>\nNandi, the bull, is the mount and devoted attendant of Lord Shiva. He symbolizes strength, truth, and unwavering devotion. In Shiva temples, devotees often seek Nandi’s permission before entering the sanctum."
+    },
+    {
+      "question": "How do devotees express reverence to Lord Vishnu?",
+      "answer": "<|assistant|>\nDevotees express reverence to Vishnu through prayer, chanting Vishnu Sahasranama, performing puja, observing fasts like Ekadashi, and visiting temples dedicated to his avatars such as Rama and Krishna."
+    },
+    {
+      "question": "What is Diwali and why is it celebrated?",
+      "answer": "<|assistant|>\nDiwali, also known as Deepavali, is the Hindu festival of lights. It celebrates the return of Lord Rama to Ayodhya after defeating Ravana and symbolizes the victory of light over darkness and good over evil."
+    },
+    {
+      "question": "What is the significance of Holi in Hinduism?",
+      "answer": "<|assistant|>\nHoli is the festival of colors, celebrated to mark the arrival of spring and the victory of devotion, as shown in the story of Prahlad and the defeat of Holika. It represents joy, unity, and divine love."
+    },
+    {
+      "question": "What are the Dashavatara of Vishnu?",
+      "answer": "<|assistant|>\nThe Dashavatara refers to the ten principal avatars of Vishnu, including Matsya, Kurma, Varaha, Narasimha, Vamana, Parashurama, Rama, Krishna, Buddha, and Kalki. Each avatar appears to restore cosmic order."
+    },
+    {
+      "question": "Who is Rama and what is his significance?",
+      "answer": "<|assistant|>\nLord Rama, the seventh avatar of Vishnu, is the hero of the epic Ramayana. He represents the ideal king, son, and husband, and his life exemplifies dharma, duty, and moral integrity."
+    },
+    {
+      "question": "Who is Krishna in Hindu mythology?",
+      "answer": "<|assistant|>\nLord Krishna is the eighth avatar of Vishnu, known for his wisdom, playfulness, and divine love. He is a central figure in the Mahabharata and the speaker of the Bhagavad Gita."
+    },
+    {
+      "question": "What is Janmashtami?",
+      "answer": "<|assistant|>\nJanmashtami is the festival celebrating the birth of Lord Krishna. Devotees observe fasting, night vigils, and reenactments of Krishna's childhood to honor his divine presence and teachings."
+    },
+    {
+      "question": "What is the Bhagavad Gita?",
+      "answer": "<|assistant|>\nThe Bhagavad Gita is a sacred Hindu scripture and philosophical dialogue between Krishna and Arjuna. It addresses duty, righteousness, and spiritual wisdom, and is part of the Mahabharata."
+    },
+    {
+      "question": "What is the Ramayana?",
+      "answer": "<|assistant|>\nThe Ramayana is one of the two great Hindu epics. It narrates the life of Lord Rama, his exile, the abduction of Sita, and his triumph over Ravana. It teaches ideals of devotion, courage, and dharma."
+    },
+    {
+      "question": "What is the Mahabharata?",
+      "answer": "<|assistant|>\nThe Mahabharata is a vast epic centered around the Kurukshetra war between the Pandavas and Kauravas. It includes the Bhagavad Gita and explores themes of righteousness, karma, and destiny."
+    },
+    {
+      "question": "What is Navaratri?",
+      "answer": "<|assistant|>\nNavaratri is a nine-night festival dedicated to the goddess Durga and her nine forms. It symbolizes the victory of good over evil and is celebrated with devotion, dance, fasting, and rituals."
+    },
+    {
+      "question": "What is Shivaratri?",
+      "answer": "<|assistant|>\nMaha Shivaratri is a night dedicated to Lord Shiva. Devotees fast, meditate, and chant mantras, seeking inner purification and spiritual awakening. It marks the cosmic dance of creation and dissolution."
+    },
+    {
+      "question": "Who is Narasimha?",
+      "answer": "<|assistant|>\nNarasimha, the fourth avatar of Vishnu, is a half-man, half-lion incarnation who appeared to protect the devotee Prahlada and destroy the demon Hiranyakashipu, symbolizing divine intervention against tyranny."
+    },
+    {
+      "question": "Who is Vamana?",
+      "answer": "<|assistant|>\nVamana is the fifth avatar of Vishnu, who took the form of a dwarf Brahmin to humble the demon king Bali. His story teaches humility and the limitations of material power."
+    },
+    {
+      "question": "Who is Parashurama?",
+      "answer": "<|assistant|>\nParashurama is the sixth avatar of Vishnu, known for his valor and asceticism. He destroyed corrupt Kshatriya rulers and is considered a warrior-sage who upheld dharma through penance and strength."
+    },
+    {
+      "question": "What is Kalki avatar?",
+      "answer": "<|assistant|>\nKalki is the prophesied tenth avatar of Vishnu, who will appear at the end of Kali Yuga to destroy evil, restore dharma, and initiate a new age of truth and righteousness."
+    },
+    {
+      "question": "What is the Srimad Bhagavatam?",
+      "answer": "<|assistant|>\nThe Srimad Bhagavatam is a revered Purana that narrates the stories of Vishnu’s avatars, especially Krishna. It emphasizes devotion (bhakti) and the divine play (leela) of God in the world."
+    },
+    {
+      "question": "Who was Sage Valmiki?",
+      "answer": "<|assistant|>\nSage Valmiki was the author of the Ramayana. Originally a highway robber, he transformed into a revered sage through deep penance and devotion, becoming one of Hinduism's greatest poets."
+    },
+    {
+      "question": "Who composed the Mahabharata?",
+      "answer": "<|assistant|>\nThe Mahabharata was composed by Sage Vyasa, also known as Vedavyasa. He is revered as a compiler of the Vedas and the Puranas, and is considered a literary and spiritual genius in Hinduism."
+    },
+    {
+      "question": "What is the significance of Gita Jayanti?",
+      "answer": "<|assistant|>\nGita Jayanti marks the day when Lord Krishna delivered the Bhagavad Gita to Arjuna on the battlefield of Kurukshetra. It is celebrated with readings, discussions, and reflections on spiritual duty."
+    },
+    {
+      "question": "What does the Gita say about selfless action?",
+      "answer": "<|assistant|>\nThe Bhagavad Gita teaches the principle of Karma Yoga, or selfless action. It encourages performing one's duty without attachment to the results, leading to liberation and inner peace."
+    },
+    {
+      "question": "What are the Puranas?",
+      "answer": "<|assistant|>\nThe Puranas are ancient Hindu texts that narrate myths, legends, cosmology, and religious teachings. They include stories of gods like Vishnu, Shiva, and Devi, making them vital to devotional practice."
+    },
+    {
+      "question": "What is Kartik Purnima?",
+      "answer": "<|assistant|>\nKartik Purnima is a sacred full moon day observed in honor of Lord Vishnu and Lord Shiva. It is considered highly auspicious for bathing in holy rivers and performing charitable deeds."
+    },
+    {
+      "question": "Why do Hindus celebrate Rama Navami?",
+      "answer": "<|assistant|>\nRama Navami celebrates the birth of Lord Rama, the seventh avatar of Vishnu. It is observed with devotional singing, readings from the Ramayana, and temple rituals to honor his virtues."
+    },
+    {
+      "question": "What is Govardhan Puja?",
+      "answer": "<|assistant|>\nGovardhan Puja commemorates Lord Krishna lifting the Govardhan hill to protect villagers from torrential rains. It highlights the values of protection, faith, and divine intervention in everyday life."
+    },
+    {
+      "question": "What does the mantra 'Aathma Raama Ananda Ramana Achyuta Keshava Hari Narayana' mean?",
+      "answer": "<|assistant|>\nThis beautiful mantra glorifies Lord Vishnu and his incarnations. 'Aathma Raama' means one who delights the soul, 'Ananda Ramana' means the joyous consort, and the names Achyuta, Keshava, Hari, Narayana are all divine names of Vishnu, reflecting his blissful and eternal nature."
+    },
+    {
+      "question": "What is Shri Hari Stotra?",
+      "answer": "<|assistant|>\nShri Hari Stotra is a devotional hymn dedicated to Lord Vishnu, composed by Shri Madhvacharya. It is a powerful stotra that praises various attributes of Hari (Vishnu) and is often chanted for spiritual upliftment and protection."
+    },
+    {
+      "question": "What is Shri Hari Shodashana?",
+      "answer": "<|assistant|>\nShri Hari Shodashana Stotra is a 16-verse hymn that describes and praises the 16 divine attributes and forms of Lord Vishnu. It is a sacred composition used in devotional worship within the Dvaita tradition."
+    },
+    {
+      "question": "What is Vishnu Sahasranama?",
+      "answer": "<|assistant|>\nThe Vishnu Sahasranama is a revered litany of 1,000 names of Lord Vishnu. Found in the Mahabharata, it is considered one of the most powerful and spiritually elevating chants in Hinduism, invoking the Lord's virtues and forms."
+    },
+    {
+      "question": "What is the meaning of 'Om Namo Bhagavate Vasudevaya'?",
+      "answer": "<|assistant|>\n'Om Namo Bhagavate Vasudevaya' is a sacred mantra devoted to Lord Vishnu, particularly in his form as Krishna. It means “I bow to the Supreme Lord Vasudeva,” and is used for surrendering the ego and invoking divine presence."
+    },
+    {
+      "question": "What does 'Govindam Adi Purusham Tam Aham Bhajami' mean?",
+      "answer": "<|assistant|>\nThis line is from the Brahma Samhita and means “I worship Govinda, the primeval Lord.” It is an expression of eternal devotion to Krishna as the original Supreme Being, source of all manifestations."
+    },
+    {
+      "question": "What is 'Sri Rama Rama Rameti' mantra?",
+      "answer": "<|assistant|>\n'Sri Rama Rama Rameti Rame Rame Manorame Sahasranama Tattulyam Rama Nama Varanane' is a powerful verse from the Vishnu Sahasranama. It proclaims that chanting the name of Rama once is equal to reciting all 1,000 names of Vishnu."
+    },
+    {
+      "question": "What is the meaning of 'Hare Rama Hare Rama, Rama Rama Hare Hare'?",
+      "answer": "<|assistant|>\nThis is the Hare Krishna Mahamantra. It invokes the divine energies of Lord Rama and Lord Krishna, and is chanted for attaining liberation, divine love, and transcendental bliss."
+    },
+    {
+      "question": "What is the significance of chanting 'Om Namo Narayanaya'?",
+      "answer": "<|assistant|>\n'Om Namo Narayanaya' is a sacred mantra that expresses surrender and devotion to Lord Narayana (Vishnu). It is believed to bring peace, remove obstacles, and align one’s soul with the divine cosmic order."
+    },
+    {
+      "question": "Explain the mantra 'Shivoham'.",
+      "answer": "<|assistant|>\n'‘Shivoham’ means ‘I am Shiva.’ It is a realization mantra used in Advaita Vedanta to express the non-dual truth that the individual soul (Atman) is one with the Supreme Consciousness (Shiva)."
+    },
+    {
+      "question": "What is the Lingashtakam Stotra?",
+      "answer": "<|assistant|>\nThe Lingashtakam is a devotional hymn of eight verses in praise of Lord Shiva’s symbol, the Shiva Linga. It is chanted to seek spiritual liberation and inner purification."
+    },
+    {
+      "question": "What does 'Aham Brahmasmi' mean?",
+      "answer": "<|assistant|>\n‘Aham Brahmasmi’ is a Mahavakya from the Upanishads meaning “I am Brahman.” It expresses the realization that the self is not separate from the ultimate universal reality."
+    },
+    {
+      "question": "What is the Dwadasha Stotra?",
+      "answer": "<|assistant|>\nThe Dwadasha Stotra consists of 12 hymns composed by Shri Madhvacharya in praise of Lord Vishnu. These verses are profound in philosophical depth and are chanted daily by followers of the Dvaita tradition."
+    },
+    {
+      "question": "What is the Madhurashtakam?",
+      "answer": "<|assistant|>\nThe Madhurashtakam is a beautiful hymn composed by Vallabhacharya, describing the divine sweetness of Lord Krishna. Every aspect of Krishna is described as 'Madhuram' (sweet), emphasizing his all-enchanting nature."
+    },
+    {
+      "question": "What is 'Asato Ma Sadgamaya'?",
+      "answer": "<|assistant|>\n‘Asato Ma Sadgamaya’ is a peace invocation from the Brihadaranyaka Upanishad. It means: “Lead me from the unreal to the real, from darkness to light, from death to immortality.”"
+    },
+    {
+      "question": "What is the Gayatri Mantra and its meaning?",
+      "answer": "<|assistant|>\nThe Gayatri Mantra is a revered Vedic chant: ‘Om Bhur Bhuvah Svah, Tat Savitur Varenyam, Bhargo Devasya Dhimahi, Dhiyo Yo Nah Prachodayat.’ It is a prayer for spiritual illumination and divine wisdom."
+    },
+    {
+      "question": "What is the Purusha Suktam?",
+      "answer": "<|assistant|>\nThe Purusha Suktam is a Vedic hymn from the Rigveda describing the cosmic being (Purusha) whose sacrifice created the universe. It is chanted in rituals to invoke divine harmony and order."
+    },
+    {
+      "question": "What does 'Hari Om Tat Sat' mean?",
+      "answer": "<|assistant|>\n‘Hari Om Tat Sat’ is a sacred phrase meaning “Om, That is the Truth.” It is used to affirm the ultimate reality and the presence of the divine in all creation."
+    },
+    {
+      "question": "What is the effect of chanting mantras daily?",
+      "answer": "<|assistant|>\nDaily mantra chanting aligns the mind with higher vibrations, brings mental clarity, reduces stress, and deepens spiritual connection. It is a powerful sadhana in many Hindu traditions."
+    },
+    {
+      "question": "What is the meaning of the mantra 'Aathma Raama Ananda Ramana Achyuta Keshava Hari Narayana'?",
+      "answer": "This beautiful mantra glorifies the Supreme Lord as the indwelling joy of the soul (Aathma Raama), the blissful consort of Lakshmi (Ananda Ramana), and by names like Achyuta (infallible), Keshava, Hari, and Narayana. Each name reflects a divine attribute of Lord Vishnu."
+    },
+    {
+      "question": "Can you explain the significance of Shri Hari Stotram?",
+      "answer": "Shri Hari Stotram is a revered Sanskrit hymn dedicated to Lord Vishnu, composed by Jagadguru Adi Shankaracharya. It extols Vishnu's qualities, names, and divine acts. Chanting it brings peace, protection, and spiritual elevation."
+    },
+    {
+      "question": "What is Shri Hari Shodashana Stotra?",
+      "answer": "Shri Hari Shodashana Stotra is a sacred hymn consisting of 16 verses (Shodasha) glorifying Lord Vishnu. Each verse elaborates on a divine name, invoking his protective, nurturing, and liberating aspects. Devotees chant it to attain moksha and divine grace."
+    },
+    {
+      "question": "Recite a powerful mantra for Lord Shiva.",
+      "answer": "One of the most powerful mantras for Lord Shiva is:\n\n🕉️ **Om Namah Shivaya** 🕉️\n\nIt means 'I bow to Shiva', the supreme consciousness and source of all transformation. It purifies mind and body and connects the soul with cosmic awareness."
+    },
+    {
+      "question": "Give a praise verse from Vishnu Sahasranama.",
+      "answer": "From the Vishnu Sahasranama:\n\n**\"Om Vishvam Vishnur Vashatkaro Bhootabhavyabhavatprabhuh\"**\n\nThis verse means: 'Vishnu is the all-pervading, the universe itself, the one who controls all times—past, present, and future.' It is the opening line of the thousand names of Vishnu."
+    },
+    {
+      "question": "Give a devotional mantra for Lord Brahma.",
+      "answer": "A traditional prayer to Lord Brahma:\n\n**\"Om Chaturmukhaya Vidmahe Hamsarudhaya Dhimahi Tanno Brahma Prachodayat\"**\n\nThis Gayatri mantra for Brahma seeks wisdom and enlightenment from the four-faced creator of the universe."
+    },
+    {
+      "question": "Share a mantra praising Goddess Saraswati.",
+      "answer": "A widely revered Saraswati mantra:\n\n**\"Ya Kundendu Tushara Hara Dhavala, Ya Shubhra Vastravrita...\"**\n\nThis hymn praises Saraswati as the embodiment of purity and wisdom. It is chanted to invoke intellect and artistic inspiration."
+    },
+    {
+      "question": "What is the 'Shiva Panchakshari Stotra'?",
+      "answer": "The 'Shiva Panchakshari Stotra' is a five-syllable chant: 'Na Ma Shi Va Ya', symbolizing earth, water, fire, air, and ether. It is one of the most powerful mantras in Shaivism and is considered a direct invocation of Lord Shiva's cosmic presence."
+    },
+    {
+      "question": "Give a verse that praises Lord Vishnu in his Krishna form.",
+      "answer": "\"Vasudeva Sutham Devam Kamsa Chanura Mardhanam, Devaki Paramanandam Krishnam Vande Jagadgurum\"\n\nTranslation: 'I bow to Krishna, the son of Vasudeva, the destroyer of Kamsa and Chanura, the delight of Devaki, and the teacher of the universe.'"
+    },
+    {
+      "question": "What is a popular chant during Navratri?",
+      "answer": "A commonly chanted verse during Navratri is:\n\n**\"Ya Devi Sarva Bhuteshu Shakti Rupena Samsthita, Namastasyai Namastasyai Namastasyai Namo Namah\"**\n\nIt means: 'To the goddess who resides in all beings as energy – salutations again and again.' It honors the Divine Feminine in all her forms."
+    },
+    {
+      "question": "Give me a powerful shloka from the Bhagavad Gita about selflessness.",
+      "answer": "असक्तो ह्याचरन्कर्म परमाप्नोति पूरुषः |\nत्यक्त्वा कर्मफलासङ्गं नित्यतृप्तो निराश्रयः ||\n(Chapter 4, Verse 20)\nTranslation: Performing one’s duties without attachment, a person attains the Supreme."
+    },
+    {
+      "question": "Share a verse from the Isha Upanishad about universal oneness.",
+      "answer": "ईशा वास्यमिदं सर्वं यत्किञ्च जगत्यां जगत् |\nतेन त्यक्तेन भुञ्जीथा मा गृधः कस्यस्विद्धनम् ||\n(Isha Upanishad, Verse 1)\nTranslation: All this—whatever exists in this changing universe—should be covered by the Lord. Protect the Self through detachment."
+    },
+    {
+      "question": "Give me a praise verse from the Vishnu Purana.",
+      "answer": "नमोस्तु ते वासुदेवाय शुद्धसत्त्वात्मने नमः |\nसर्वज्ञाय महापूर्त्यै विष्णवे ते नमो नमः ||\nTranslation: Salutations to you, O Vasudeva, embodiment of pure consciousness. You are all-knowing and complete. O Vishnu, I bow again and again."
+    },
+    {
+      "question": "Give a mantra from the Rig Veda that praises Agni.",
+      "answer": "अग्निमीळे पुरोहितं यज्ञस्य देवमृत्विजम् |\nहोतारं रत्नधातमम् ||\n(Rig Veda 1.1.1)\nTranslation: I praise Agni, the chosen priest, god, minister of the sacrifice, the bestower of treasures."
+    },
+    {
+      "question": "A devotional chant from the Shiva Purana praising Lord Shiva?",
+      "answer": "ॐ नमः शिवाय |\nTranslation: Salutations to Lord Shiva, the Supreme Consciousness.\nExtended Praise: करचरणकृतं वाक्कायजं कर्मजं वा |\nश्रवणनयनजं वा मानसं वापराधम् ||\nविहितमविहितं वा सर्वमेतत्क्षमस्व |\nजय जय करुणाब्धे श्रीमहादेव शम्भो ||"
+    },
+    {
+      "question": "Give a mantra dedicated to Lord Vishnu from the Narayana Upanishad.",
+      "answer": "ॐ नारायणाय विद्महे वासुदेवाय धीमहि |\nतन्नो विष्णुः प्रचोदयात् ||\n(Narayana Upanishad)\nTranslation: Om. Let us meditate on Narayana, the Supreme Being. Let us contemplate upon Vasudeva. May Vishnu inspire and enlighten us."
+    },
+    {
+      "question": "Give me a shloka that explains the eternal nature of the soul from the Bhagavad Gita.",
+      "answer": "न जायते म्रियते वा कदाचिन्\nनायं भूत्वा भविता वा न भूयः |\nअजो नित्यः शाश्वतोऽयं पुराणो\nन हन्यते हन्यमाने शरीरे ||\n(Chapter 2, Verse 20)\nTranslation: The soul is neither born, nor does it die. It is eternal and indestructible. It is not killed when the body is slain."
+    },
+    {
+      "question": "What is Shri Hari Stotram?",
+      "answer": "Shri Hari Stotram is a powerful hymn in praise of Lord Vishnu, describing his divine attributes, compassion, and cosmic presence. A famous verse is:\nशान्ताकारं भुजगशयनं पद्मनाभं सुरेशं |\nविश्वाधारं गगनसदृशं मेघवर्णं शुभाङ्गम् ||"
+    },
+    {
+      "question": "Share a chant or shloka glorifying Lord Rama.",
+      "answer": "श्रीराम राम रघुनन्दन राम राम |\nश्रीराम राम भरताग्रज राम राम ||\nTranslation: Salutations to Shri Rama, the delight of the Raghu clan, the elder brother of Bharata, embodiment of dharma and virtue."
+    },
+    {
+      "question": "Give a shloka about Lord Krishna from the Bhagavata Purana.",
+      "answer": "कृष्णाय वासुदेवाय हरये परमात्मने |\nप्रणतः क्लेशनाशाय गोविन्दाय नमो नमः ||\n(Bhagavata Purana)\nTranslation: I bow to Krishna, son of Vasudeva, the Supreme Being. I salute Govinda, the remover of afflictions of the devotees."
+    },
+    {
+      "question": "Give me a powerful Durga mantra.",
+      "answer": "ॐ ऐं ह्रीं क्लीं चामुण्डायै विच्चे॥\nThis is the *Navarna Mantra*, one of the most potent mantras of Goddess Durga, invoking her fierce and protective energy."
+    },
+    {
+      "question": "Give me a mantra to worship Goddess Lakshmi.",
+      "answer": "ॐ श्रीं ह्रीं श्रीं कमले कमलालये प्रसीद प्रसीद श्रीं ह्रीं श्रीं ॐ महालक्ष्म्यै नमः॥\nThis Lakshmi mantra is chanted for attracting prosperity, grace, and divine fortune."
+    },
+    {
+      "question": "Give a Saraswati Vandana mantra.",
+      "answer": "या कुन्देन्दुतुषारहारधवला या शुभ्रवस्त्रावृता।\nया वीणावरदण्डमण्डितकरा या श्वेतपद्मासना॥\nThis popular Saraswati Vandana invokes the goddess of knowledge and wisdom before beginning studies or music."
+    },
+    {
+      "question": "Quote a hymn from the Samaveda.",
+      "answer": "स वः शतक्रतुः शंभुः सविता सविरेदसत्।\n— *Samaveda, Hymn 1.1*.\nThis hymn glorifies the Sun (Savita) as the source of creation and energy."
+    },
+    {
+      "question": "Name and praise the avatars of Vishnu.",
+      "answer": "Vishnu took ten principal incarnations, known as the *Dashavatara*: Matsya (fish), Kurma (turtle), Varaha (boar), Narasimha (man-lion), Vamana (dwarf), Parashurama, Rama, Krishna, Buddha, and Kalki. Each avatar restored Dharma. For example:\n\"रामो विग्रहवान् धर्मः\" – *Rama is the embodiment of righteousness*.\n\"कृष्णं वन्दे जगद्गुरुम्\" – *I bow to Krishna, the teacher of the universe*."
+    },
+    {
+      "question": "Give a praise of Rudra, the fierce form of Shiva.",
+      "answer": "ॐ नमो भगवते रुद्राय। नमस्ते रुद्र मन्यव उतोत इषवे नमः।\n— *Shri Rudram, Yajurveda*\nThis Vedic chant is a powerful invocation of Rudra, the fierce yet compassionate form of Shiva."
+    },
+    {
+      "question": "Give a Tantric verse from a lesser-known Upanishad.",
+      "answer": "हंसः शुचिसद् वसुर्दाता ऋतावृधः।\n— *Hamsa Upanishad*\nThis mystical verse refers to the supreme soul as ‘Hamsa’, symbolizing the breath and the eternal witness in yogic practices."
+    },
+    {
+      "question": "Share a mantra from the Devi Upanishad.",
+      "answer": "ॐ क्रियाशक्त्या स्वरूपिण्यै नमः।\nThis verse from the *Devi Upanishad* worships the Goddess as the embodiment of action and manifestation energy (Kriya Shakti)."
+    },
+    {
+      "question": "Give a verse in praise of Narasimha, the lion-man avatar of Vishnu.",
+      "answer": "उग्रं वीरं महाविष्णुं ज्वलन्तं सर्वतोमुखम्।\nनृसिंहं भीषणं भद्रं मृत्युर्मृत्युः नमाम्यहम्॥\nThis is a powerful protective mantra from the *Narasimha Stuti* invoking the ferocious and protective energy of Lord Narasimha."
+    },
+    {
+      "question": "Give a praise from the Vishnu Purana.",
+      "answer": "नारायणं परं ब्रह्म।\n— *Vishnu Purana 1.2.10*\nThis verse declares Lord Vishnu (Narayana) as the supreme eternal reality, beyond all duality and change."
+    },
+    {
+      "question": "Can you share a powerful mantra dedicated to Goddess Durga?",
+      "answer": "ॐ ऐं ह्रीं क्लीं चामुण्डायै विच्चे।\nThis is the Durga Beej Mantra, invoking the goddess's power, wisdom, and ferocity."
+    },
+    {
+      "question": "A sacred chant for Goddess Lakshmi for wealth and prosperity?",
+      "answer": "ॐ श्रीं ह्रीं श्रीं कमले कमलालये प्रसीद प्रसीद\nॐ श्रीं ह्रीं श्रीं महालक्ष्म्यै नमः।\nThis mantra seeks blessings of abundance and grace from Mahalakshmi."
+    },
+    {
+      "question": "Recite a mantra for Saraswati, the goddess of wisdom.",
+      "answer": "या कुन्देन्दुतुषारहारधवला या शुभ्रवस्त्रावृता ।\nया वीणावरदण्डमण्डितकरा या श्वेतपद्मासना ॥\nThis is the Saraswati Vandana, seeking divine knowledge and eloquence."
+    },
+    {
+      "question": "Can you give me a Samaveda hymn about cosmic order?",
+      "answer": "\"Agnihi poorvebhir ṛṣibhir iḍyo nūtanair uta\"\nThis Samaveda hymn praises Agni as the link between humanity and the gods, maintaining ṛta (cosmic order)."
+    },
+    {
+      "question": "Which verse from the Samaveda speaks of divine light?",
+      "answer": "\"Ushā devī naḥ śocaya udyantī dṛśaye divi\"\nThis verse glorifies the dawn goddess Ushas as a bringer of light and awareness."
+    },
+    {
+      "question": "Praise Lord Narasimha, the fierce avatar of Vishnu.",
+      "answer": "Ugram Viram Maha Vishnum\nJvalantam Sarvato Mukham\nNṛsiṁhaṁ Bhīṣaṇaṁ Bhaktānām\nBhayaṅkaraṁ Mṛtyuṁ Mṛtyuṁ Namāmy Aham॥\nThis is the Narasimha mantra invoking him as the destroyer of fear and protector of devotees."
+    },
+    {
+      "question": "Give a verse glorifying Krishna's divine form.",
+      "answer": "श्रीभगवानुवाच —\nकालोऽस्मि लोकक्षयकृत्प्रवृद्धो\nलोकान्समाहर्तुमिह प्रवृत्तः।\nThis Bhagavad Gita verse (11.32) is from the Vishwarupa Darshan, where Krishna reveals his form as Time Eternal."
+    },
+    {
+      "question": "Any powerful chant for Lord Rudra?",
+      "answer": "ॐ नमो भगवते रुद्राय।\nThis is a powerful Vedic invocation from the Rudra Sukta of the Yajurveda."
+    },
+    {
+      "question": "Give a verse from the Rudram Chamakam.",
+      "answer": "नमः शम्भवाय च मयोभवाय च नमः शङ्कराय च मयस्कराय च।\nThis verse glorifies Rudra's forms as beneficent and auspicious, from Sri Rudram."
+    },
+    {
+      "question": "Quote from a lesser-known Upanishad on Kundalini?",
+      "answer": "In the Yoga Kundalini Upanishad:\n\"When the Kundalini sleeps, man is ignorant. When she is awakened, consciousness arises.\"\nThis quote emphasizes spiritual awakening through the energy coiled at the base of the spine."
+    },
+    {
+      "question": "Do you know any Tantric mantra of Kali?",
+      "answer": "ॐ क्रीं कालिकायै नमः।\nThis is a powerful Beej Mantra invoking Maa Kali's fierce protective energy in Tantric sadhana."
+    },
+    {
+      "question": "Share a hymn from the Devi Upanishad.",
+      "answer": "\"Aham eva svayam eva prakṛtiḥ – I myself am Nature.\"\nThis is a proclamation from Devi herself, asserting her as the source of all creation in the Devi Upanishad."
+    },
+    {
+      "question": "Recite the Lalita Sahasranama opening verse.",
+      "answer": "\"श्रीमाताऽश्रीमहारााज्ञी श्रीमत्त्वद्भूतविग्रहा।\"\nThe opening of the Lalita Sahasranama, extolling the Divine Mother in her thousand glorious names."
+    },
+    {
+      "question": "Give me a powerful shloka from the Bhagavad Gita with transliteration and meaning.",
+      "answer": "श्रीभगवानुवाच |\nकर्मण्येवाधिकारस्ते मा फलेषु कदाचन |\nमा कर्मफलहेतुर्भूर्मा ते संगोऽस्त्वकर्मणि ॥\n\n**Transliteration:**\nśrī-bhagavān uvāca:\nkarmaṇy-evādhikāras te mā phaleṣu kadācana\nmā karma-phala-hetur bhūr mā te saṅgo 'stv akarmaṇi\n\n**Meaning:**\nYou have a right to perform your prescribed duties, but you are not entitled to the fruits of your actions. Never consider yourself the cause of the results of your activities, and never be attached to not doing your duty."
+    },
+    {
+      "question": "Recite a hymn to Surya from the Rigveda with translation.",
+      "answer": "आदित्याय च सोमाय च |\n**Transliteration:**\nādityāya ca somāya ca\n\n**Meaning:**\nSalutations to the Sun God (Aditya) and to Soma, the Moon. This short hymn from the Rigveda pays homage to the cosmic powers that govern light and life."
+    },
+    {
+      "question": "Give me a mantra praising Lord Hanuman.",
+      "answer": "ॐ हनुमते नमः |\n**Transliteration:**\nOm Hanumate Namah\n\n**Meaning:**\nSalutations to Hanuman, the embodiment of strength, devotion, and wisdom. Chanting this mantra invokes courage, protection, and spiritual upliftment."
+    },
+    {
+      "question": "Give me the Shri Hari Shodashana Stotra with meaning.",
+      "answer": "श्रीहरिं परमात्मानं सर्वदोषविवर्जितम् |\nपूजयेच्चैव विधिवत् शोडशोपचारकैः ||\n\n**Transliteration:**\nśrīhariṁ paramātmānaṁ sarva-doṣa-vivarjitam |\npūjayec-caiva vidhivat ṣoḍaśopacārakaiḥ ||\n\n**Meaning:**\nOne should worship Shri Hari, the Supreme Being, free from all defects, using the sixteen forms of offerings (ṣoḍaśopacāra) in the proper ritualistic manner."
+    },
+    {
+      "question": "Give a verse on Mahadeva in Rudra form from the Yajurveda.",
+      "answer": "नमः शम्भवाय च मयोभवाय च |\n**Transliteration:**\nnamaḥ śambhavāya ca mayobhavāya ca\n\n**Meaning:**\nSalutations to the auspicious one (Shambhu) and to the source of bliss. This is part of the Sri Rudram from the Yajurveda, praising the fierce and benevolent aspects of Lord Shiva."
+    },
+    {
+      "question": "Give me a Tantric verse for Goddess Kali.",
+      "answer": "क्रीं कालिकायै नमः |\n**Transliteration:**\nKrīm Kālikāyai Namaḥ\n\n**Meaning:**\nSalutations to Goddess Kali, the fierce protector and the embodiment of time and power. The bija (seed) mantra 'Krīm' is used in Tantric practices to invoke Her energy."
+    },
+    {
+      "question": "Tell me about Lord Vishnu’s avatar Narasimha with a praise verse.",
+      "answer": "उग्रं वीरं महाविष्णुं ज्वलन्तं सर्वतोमुखम् |\nनृसिंहं भीषणं भद्रं मृत्युमृत्युं नमाम्यहम् ||\n\n**Transliteration:**\nugraṁ vīraṁ mahā-viṣṇuṁ jvalantaṁ sarvato-mukham |\nnṛsiṁhaṁ bhīṣaṇaṁ bhadraṁ mṛtyu-mṛtyuṁ namāmy aham ||\n\n**Meaning:**\nI bow to Lord Narasimha, the ferocious and heroic form of Vishnu, blazing with radiance and having faces in all directions. He is terrifying to the wicked, auspicious to the good, and the death of death itself."
+    },
+    {
+      "question": "Recite a hymn from the Samaveda for peace.",
+      "answer": "शं नो मित्रः शं वरुणः |\nशं नो भवत्वर्यमा |\nशं न इन्द्रो बृहस्पतिः |\nशं नो विष्णुरुरुक्रमः ||\n\n**Transliteration:**\nśaṁ no mitraḥ śaṁ varuṇaḥ\nśaṁ no bhavatv aryamā\nśaṁ na indro bṛhaspatiḥ\nśaṁ no viṣṇur urukramaḥ\n\n**Meaning:**\nMay Mitra be propitious to us, may Varuna be kind, may Aryama support us, may Indra and Brihaspati be gracious, and may Vishnu with wide strides bless us with peace."
+    },
+    {
+      "question": "Share a Saraswati mantra for knowledge and wisdom.",
+      "answer": "या कुन्देन्दुतुषारहारधवला या शुभ्रवस्त्रावृता |\nया वीणावरदण्डमण्डितकरा या श्वेतपद्मासना ||\n\n**Transliteration:**\nyā kundendu-tuṣāra-hāra-dhavalā yā śubhra-vastrāvṛtā |\nyā vīṇā-vara-daṇḍa-maṇḍita-karā yā śveta-padmasanā ||\n\n**Meaning:**\nShe who is fair like the jasmine flower, the moon, or snow, dressed in white, holds a veena and sits on a white lotus. I pray to Goddess Saraswati for blessings of wisdom and learning."
+    },
+    {
+      "question": "Give a verse on Lord Ganesha with meaning.",
+      "answer": "वक्रतुण्ड महाकाय सूर्यकोटिसमप्रभ |\nनिर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ||\n\n**Transliteration:**\nvakra-tuṇḍa mahākāya sūrya-koṭi-sama-prabha |\nnirvighnaṁ kuru me deva sarva-kāryeṣu sarvadā ||\n\n**Meaning:**\nO Lord with a curved trunk and a mighty body, shining like a million suns, please remove all obstacles from my endeavors, always and in every task."
+    }
+  ]
+}

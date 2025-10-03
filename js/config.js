@@ -62,7 +62,14 @@ const Config = {
             clearCache: '/api/cache/clear',
             
             // Health check
-            health: '/api/health'
+            health: '/api/health',
+            
+            // Chatbot endpoints
+            chatbot: '/api/chatbot/gemini',
+            chatbotModels: '/api/chatbot/models',
+            datasetUpload: '/api/chatbot/dataset/upload',
+            datasetList: '/api/chatbot/dataset',
+            datasetDelete: '/api/chatbot/dataset'
         },
         timeout: 10000, // 10 seconds for faster feedback
         retryAttempts: 3,
