@@ -64,12 +64,13 @@ const Config = {
             // Health check
             health: '/api/health',
             
-            // Chatbot endpoints
-            chatbot: '/api/chatbot/gemini',
-            chatbotModels: '/api/chatbot/models',
-            datasetUpload: '/api/chatbot/dataset/upload',
-            datasetList: '/api/chatbot/dataset',
-            datasetDelete: '/api/chatbot/dataset'
+    // Chatbot endpoints
+    chatbot: '/api/chatbot/gemini',
+    chatbotModels: '/api/chatbot/models',
+    datasetUpload: '/api/chatbot/dataset/upload',
+    datasetList: '/api/chatbot/dataset',
+    datasetDelete: '/api/chatbot/dataset',
+    chatHistory: '/api/chatbot/chats'
         },
         timeout: 10000, // 10 seconds for faster feedback
         retryAttempts: 3,

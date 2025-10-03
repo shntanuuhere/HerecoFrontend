@@ -20,16 +20,16 @@ class ChatbotService {
     /**
      * Initialize the chatbot
      */
-    init() {
+    async init() {
         // Wait a bit for Firebase to load, then check authentication
-        setTimeout(() => {
+        setTimeout(async () => {
             if (!this.checkAuthentication()) {
                 return;
             }
             
             this.setupEventListeners();
-            this.initializeChatFromURL();
-            this.updateChatHistory();
+            await this.initializeChatFromURL();
+            await this.updateChatHistory();
             this.testConnection();
             this.updateCharCount();
             this.autoResizeTextarea();
@@ -167,13 +167,13 @@ class ChatbotService {
     /**
      * Initialize chat from URL
      */
-    initializeChatFromURL() {
+    async initializeChatFromURL() {
         const chatId = this.getChatIdFromURL();
         
         if (chatId) {
             // Load existing chat
             this.currentChatId = chatId;
-            this.loadChatById(chatId);
+            await this.loadChatById(chatId);
         } else {
             // No chat ID in URL - show welcome screen without generating ID yet
             this.currentChatId = null;
@@ -191,7 +191,7 @@ class ChatbotService {
             }
             
             // Update chat history in sidebar
-            this.updateChatHistory();
+            await this.updateChatHistory();
             
             this.scrollToBottom();
         }
@@ -200,8 +200,8 @@ class ChatbotService {
     /**
      * Load chat by ID
      */
-    loadChatById(chatId) {
-        const chatData = this.getChatById(chatId);
+    async loadChatById(chatId) {
+        const chatData = await this.getChatById(chatId);
         
         if (chatData) {
             this.messages = chatData.messages || [];
@@ -237,30 +237,130 @@ class ChatbotService {
     /**
      * Get chat by ID from localStorage
      */
-    getChatById(chatId) {
-        const allChats = this.getAllChats();
+    async getChatById(chatId) {
+        const allChats = await this.getAllChats();
         return allChats.find(chat => chat.id === chatId);
     }
 
     /**
-     * Get all chats from localStorage (user-specific)
+     * Get all chats (user-specific) - tries backend first, then localStorage
      */
-    getAllChats() {
+    async getAllChats() {
         const userId = this.getCurrentUserId();
         if (!userId) return [];
         
+        try {
+            // Try to get from backend first
+            const backendChats = await this.getChatsFromBackend();
+            if (backendChats && backendChats.length > 0) {
+                console.log('Loaded chats from backend');
+                return backendChats;
+            }
+        } catch (error) {
+            console.log('Backend not available, using localStorage');
+        }
+        
+        // Fallback to localStorage
         const chats = localStorage.getItem(`chatbot-chats-${userId}`);
         return chats ? JSON.parse(chats) : [];
     }
 
     /**
-     * Save all chats to localStorage (user-specific)
+     * Save all chats (user-specific) - saves to both backend and localStorage
      */
-    saveAllChats(chats) {
+    async saveAllChats(chats) {
         const userId = this.getCurrentUserId();
         if (!userId) return;
         
+        // Save to localStorage first (immediate)
         localStorage.setItem(`chatbot-chats-${userId}`, JSON.stringify(chats));
+        
+        try {
+            // Try to save to backend for cross-domain sync
+            await this.saveChatsToBackend(chats);
+            console.log('Chats saved to backend for cross-domain sync');
+        } catch (error) {
+            console.log('Backend save failed, using localStorage only');
+        }
+    }
+
+    /**
+     * Get chats from backend API
+     */
+    async getChatsFromBackend() {
+        const userId = this.getCurrentUserId();
+        if (!userId) return [];
+        
+        // Get Firebase Auth token
+        let userToken = null;
+        if (typeof window.auth !== 'undefined' && window.auth.currentUser) {
+            try {
+                userToken = await window.auth.currentUser.getIdToken();
+            } catch (error) {
+                console.error('Failed to get Firebase token:', error);
+            }
+        }
+        
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+        
+        if (userToken) {
+            headers['Authorization'] = `Bearer ${userToken}`;
+        }
+        
+        const response = await fetch(Config.getApiUrl('chatHistory'), {
+            method: 'GET',
+            headers: headers
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            return result.chats || [];
+        } else {
+            throw new Error(`Backend request failed: ${response.status}`);
+        }
+    }
+
+    /**
+     * Save chats to backend API
+     */
+    async saveChatsToBackend(chats) {
+        const userId = this.getCurrentUserId();
+        if (!userId) return;
+        
+        // Get Firebase Auth token
+        let userToken = null;
+        if (typeof window.auth !== 'undefined' && window.auth.currentUser) {
+            try {
+                userToken = await window.auth.currentUser.getIdToken();
+            } catch (error) {
+                console.error('Failed to get Firebase token:', error);
+            }
+        }
+        
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+        
+        if (userToken) {
+            headers['Authorization'] = `Bearer ${userToken}`;
+        }
+        
+        const payload = {
+            userId: userId,
+            chats: chats
+        };
+        
+        const response = await fetch(Config.getApiUrl('chatHistory'), {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(payload)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Backend save failed: ${response.status}`);
+        }
     }
 
     /**
@@ -932,9 +1032,9 @@ class ChatbotService {
     /**
      * Update chat history in sidebar
      */
-    updateChatHistory() {
+    async updateChatHistory() {
         const historyList = document.getElementById('chat-history-list');
-        const allChats = this.getAllChats();
+        const allChats = await this.getAllChats();
         
         if (!historyList) return;
         
