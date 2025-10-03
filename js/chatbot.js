@@ -175,8 +175,25 @@ class ChatbotService {
             this.currentChatId = chatId;
             this.loadChatById(chatId);
         } else {
-            // Create new chat
-            this.startNewChat();
+            // No chat ID in URL - show welcome screen without generating ID yet
+            this.currentChatId = null;
+            this.messages = [];
+            this.conversationHistory = [];
+            
+            // Clear the chat display
+            const chatMessages = document.getElementById('chat-messages');
+            chatMessages.innerHTML = '';
+            
+            // Show welcome message
+            const welcomeMessage = document.getElementById('welcome-message');
+            if (welcomeMessage) {
+                welcomeMessage.classList.remove('hidden');
+            }
+            
+            // Update chat history in sidebar
+            this.updateChatHistory();
+            
+            this.scrollToBottom();
         }
     }
 
@@ -250,7 +267,14 @@ class ChatbotService {
      * Get current user ID for chat storage
      */
     getCurrentUserId() {
-        // First priority: URL parameters (for your site's format)
+        // First priority: Firebase Auth (most reliable for cross-device sync)
+        if (typeof window.auth !== 'undefined' && window.auth.currentUser) {
+            const firebaseUid = window.auth.currentUser.uid;
+            console.log('Using Firebase user ID:', firebaseUid);
+            return firebaseUid;
+        }
+        
+        // Second priority: URL parameters (for your site's format)
         const urlParams = new URLSearchParams(window.location.search);
         const uid = urlParams.get('uid');
         if (uid) {
@@ -258,18 +282,20 @@ class ChatbotService {
             return uid;
         }
         
-        // Second priority: Firebase Auth
-        if (typeof window.auth !== 'undefined' && window.auth.currentUser) {
-            const firebaseUid = window.auth.currentUser.uid;
-            console.log('Using Firebase user ID:', firebaseUid);
-            return firebaseUid;
-        }
-        
         // Third priority: authManager
         if (typeof window.authManager !== 'undefined' && window.authManager.getCurrentUser()) {
             const authManagerUid = window.authManager.getCurrentUser().uid;
             console.log('Using authManager user ID:', authManagerUid);
             return authManagerUid;
+        }
+        
+        // Fourth priority: Check if user is logged in via DOM (for production site)
+        const userProfile = document.querySelector('.user-profile');
+        if (userProfile) {
+            // Try to extract user ID from the profile or use a fallback
+            const username = userProfile.querySelector('.user-name')?.textContent || 'taleshereco';
+            console.log('Using username from DOM:', username);
+            return username;
         }
         
         console.log('No user ID found');
@@ -289,6 +315,45 @@ class ChatbotService {
         const url = new URL(window.location);
         url.searchParams.set('c', chatId);
         window.location.href = url.href;
+    }
+
+    /**
+     * Delete a specific chat
+     */
+    deleteChat(chatId) {
+        const chat = this.getChatById(chatId);
+        if (!chat) {
+            this.showNotification('Chat not found', 'error');
+            return;
+        }
+
+        const chatTitle = chat.title || 'Untitled Chat';
+        
+        if (confirm(`Are you sure you want to delete "${chatTitle}"? This action cannot be undone.`)) {
+            try {
+                // Get all chats
+                const allChats = this.getAllChats();
+                
+                // Remove the chat
+                const updatedChats = allChats.filter(chat => chat.id !== chatId);
+                
+                // Save updated chats
+                this.saveAllChats(updatedChats);
+                
+                // If this was the current chat, start a new one
+                if (chatId === this.currentChatId) {
+                    this.startNewChat();
+                } else {
+                    // Just update the history display
+                    this.updateChatHistory();
+                }
+                
+                this.showNotification(`Chat "${chatTitle}" deleted successfully`, 'success');
+            } catch (error) {
+                console.error('Failed to delete chat:', error);
+                this.showNotification('Failed to delete chat', 'error');
+            }
+        }
     }
 
     /**
@@ -560,6 +625,12 @@ class ChatbotService {
             return;
         }
 
+        // Generate chat ID if this is the first message
+        if (!this.currentChatId) {
+            this.currentChatId = this.generateChatId();
+            this.updateURL(this.currentChatId);
+        }
+
         // Clear input
         chatInput.value = '';
         this.updateCharCount();
@@ -828,11 +899,8 @@ class ChatbotService {
             this.saveCurrentChat();
         }
         
-        // Generate new chat ID
-        const newChatId = this.generateChatId();
-        this.currentChatId = newChatId;
-        
-        // Clear current session
+        // Clear current session (don't generate ID yet)
+        this.currentChatId = null;
         this.messages = [];
         this.conversationHistory = [];
         
@@ -846,8 +914,10 @@ class ChatbotService {
             welcomeMessage.classList.remove('hidden');
         }
         
-        // Update URL
-        this.updateURL(newChatId);
+        // Update URL to remove chat ID
+        const url = new URL(window.location);
+        url.searchParams.delete('c');
+        window.history.pushState({}, '', url.href);
         
         // Update chat history in sidebar
         this.updateChatHistory();
@@ -886,17 +956,37 @@ class ChatbotService {
                 historyItem.classList.add('active');
             }
             
-            // Show chat title with timestamp
+            // Show chat title with timestamp and delete button
             const title = chat.title || 'Untitled Chat';
             const date = new Date(chat.timestamp).toLocaleDateString();
             historyItem.innerHTML = `
-                <div class="history-title">${title}</div>
-                <div class="history-date">${date}</div>
+                <div class="history-content">
+                    <div class="history-title">${title}</div>
+                    <div class="history-date">${date}</div>
+                </div>
+                <button class="history-delete-btn" title="Delete chat" data-chat-id="${chat.id}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                </button>
             `;
             
-            historyItem.addEventListener('click', () => {
-                this.navigateToChat(chat.id);
+            // Add click event for navigation (excluding delete button)
+            historyItem.addEventListener('click', (e) => {
+                if (!e.target.closest('.history-delete-btn')) {
+                    this.navigateToChat(chat.id);
+                }
             });
+            
+            // Add delete button event
+            const deleteBtn = historyItem.querySelector('.history-delete-btn');
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.deleteChat(chat.id);
+            });
+            
             historyList.appendChild(historyItem);
         });
     }
