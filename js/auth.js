@@ -36,6 +36,11 @@ class AuthManager {
             this.currentUser = user;
             this.updateNavigation();
             this.notifyListeners(user);
+            
+            // Update play limit system and URL
+            if (typeof window.Utils !== 'undefined') {
+                window.Utils.checkLoginStatus();
+            }
         });
     }
 

@@ -24,6 +24,10 @@ const AppState = {
         animations: true,
         reducedMotion: false
     },
+    // Play limit system
+    playLimit: 1, // Maximum plays allowed without login
+    currentPlayCount: 0,
+    isLoggedIn: false,
     // Performance settings
     itemsPerPage: 12,
     currentDisplayedCount: 0,
@@ -487,6 +491,340 @@ const Utils = {
                 }
             }
         });
+    },
+
+    /**
+     * Play limit management
+     */
+    initPlayLimit() {
+        // Load play count from localStorage
+        const savedPlayCount = localStorage.getItem('hereco_play_count');
+        AppState.currentPlayCount = savedPlayCount ? parseInt(savedPlayCount) : 0;
+        
+        // Check if user is logged in
+        this.checkLoginStatus();
+        
+        // Set up periodic login status check
+        setInterval(() => {
+            this.checkLoginStatus();
+        }, 2000); // Check every 2 seconds
+        
+        // Preload video for ultra-fast modal display
+        this.preloadModalVideo();
+    },
+
+    preloadModalVideo() {
+        // Preload video in background for instant modal display (now with CORS support)
+        const video = document.createElement('video');
+        video.preload = 'auto';
+        video.muted = true;
+        video.src = 'https://shntanuuherebucket1.blob.core.windows.net/files/TVA.mov';
+        
+        // Store preloaded video globally for reuse
+        window.preloadedModalVideo = video;
+        
+        console.log('Preloading modal video for ultra-fast display');
+    },
+
+    checkLoginStatus() {
+        // Check if user is logged in via Firebase
+        if (typeof window.auth !== 'undefined' && window.auth.currentUser) {
+            AppState.isLoggedIn = true;
+            // Reset play count for logged-in users
+            this.resetPlayCount();
+            console.log('User is logged in, play limit reset');
+            
+            // Update URL for logged-in users
+            this.updateUserURL();
+        } else {
+            AppState.isLoggedIn = false;
+            console.log('User is not logged in');
+        }
+    },
+
+    updateUserURL() {
+        if (typeof window.auth !== 'undefined' && window.auth.currentUser) {
+            const user = window.auth.currentUser;
+            const username = user.displayName || user.email?.split('@')[0] || 'user';
+            const uid = user.uid;
+            
+            // Get current page name (e.g., 'index.html', 'contact.html')
+            const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+            
+            // Create user-specific URL structure: /username/uid/page.html
+            const userPath = `/${username}/${uid}/${currentPage}`;
+            const newURL = `${window.location.origin}${userPath}`;
+            
+            // Update URL without page reload
+            window.history.pushState({}, '', newURL);
+            
+            console.log('URL updated for logged-in user:', newURL);
+        }
+    },
+
+    generateRandomString(length) {
+        const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+    },
+
+    navigateToPage(pageName) {
+        if (typeof window.auth !== 'undefined' && window.auth.currentUser) {
+            const user = window.auth.currentUser;
+            const username = user.displayName || user.email?.split('@')[0] || 'user';
+            const uid = user.uid;
+            
+            // Create user-specific URL for the new page
+            const userPath = `/${username}/${uid}/${pageName}`;
+            const newURL = `${window.location.origin}${userPath}`;
+            
+            // Navigate to the new page
+            window.location.href = newURL;
+        } else {
+            // If not logged in, navigate normally
+            window.location.href = pageName;
+        }
+    },
+
+    canPlay() {
+        const canPlayResult = AppState.isLoggedIn || AppState.currentPlayCount < AppState.playLimit;
+        console.log('Can play check:', {
+            isLoggedIn: AppState.isLoggedIn,
+            currentPlayCount: AppState.currentPlayCount,
+            playLimit: AppState.playLimit,
+            canPlay: canPlayResult
+        });
+        return canPlayResult;
+    },
+
+    incrementPlayCount() {
+        if (!AppState.isLoggedIn) {
+            AppState.currentPlayCount++;
+            localStorage.setItem('hereco_play_count', AppState.currentPlayCount.toString());
+            console.log('Play count incremented:', AppState.currentPlayCount);
+        } else {
+            console.log('User is logged in, not incrementing play count');
+        }
+    },
+
+    resetPlayCount() {
+        AppState.currentPlayCount = 0;
+        localStorage.removeItem('hereco_play_count');
+    },
+
+    showLoginModal() {
+        console.log('Showing login modal - play limit reached');
+        
+        // Remove any existing login modal
+        const existingModal = document.querySelector('.login-required-modal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+        
+        // Create ultra-optimized modal with perfect centering
+        const modal = document.createElement('div');
+        modal.id = 'hereco-login-modal';
+        modal.className = 'login-required-modal';
+        
+        // Ultra-fast styling with perfect centering
+        Object.assign(modal.style, {
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            right: '0',
+            bottom: '0',
+            width: '100vw',
+            height: '100vh',
+            zIndex: '2147483647',
+            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            opacity: '1',
+            visibility: 'visible',
+            pointerEvents: 'auto',
+            margin: '0',
+            padding: '0',
+            border: 'none',
+            outline: 'none',
+            boxShadow: 'none',
+            transform: 'none',
+            transition: 'none',
+            overflow: 'hidden',
+            flexDirection: 'column'
+        });
+        
+        // Ultra-fast modal creation with perfect centering
+        const videoContainer = document.createElement('div');
+        Object.assign(videoContainer.style, {
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '100%',
+            zIndex: '1',
+            overflow: 'hidden'
+        });
+
+        // Use video with CORS support now available
+        let video;
+        
+        if (window.preloadedModalVideo && window.preloadedModalVideo.readyState >= 3) {
+            console.log('Using preloaded video for instant playback');
+            video = window.preloadedModalVideo.cloneNode(true);
+        } else {
+            console.log('Creating new video element');
+            video = document.createElement('video');
+            video.preload = 'auto';
+            video.muted = true;
+            video.src = 'https://shntanuuherebucket1.blob.core.windows.net/files/TVA.mov';
+        }
+        
+        // Set up video container
+        if (video) {
+            Object.assign(video.style, {
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                minWidth: '100%',
+                minHeight: '100%',
+                width: 'auto',
+                height: 'auto',
+                transform: 'translate(-50%, -50%)',
+                objectFit: 'cover',
+                opacity: '0.4',
+                willChange: 'transform',
+                backfaceVisibility: 'hidden',
+                zIndex: '1'
+            });
+            
+            // Ultra-fast video setup
+            video.autoplay = true;
+            video.muted = true;
+            video.loop = true;
+            video.playsInline = true;
+            video.setAttribute('webkit-playsinline', 'true');
+            video.setAttribute('playsinline', 'true');
+        }
+
+        const overlay = document.createElement('div');
+        Object.assign(overlay.style, {
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '100%',
+            background: 'rgba(0, 0, 0, 0.6)',
+            zIndex: '2'
+        });
+
+        const content = document.createElement('div');
+        Object.assign(content.style, {
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            color: 'white',
+            padding: '40px',
+            borderRadius: '20px',
+            textAlign: 'center',
+            maxWidth: '500px',
+            width: '90%',
+            maxHeight: '80vh',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+            fontFamily: 'Inter, Arial, sans-serif',
+            position: 'relative',
+            zIndex: '10',
+            textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+            margin: '0',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center'
+        });
+
+        content.innerHTML = `
+            <h2 style="margin: 0 0 20px 0; color: #ffffff; font-size: 32px; font-weight: 700; text-shadow: 0 2px 8px rgba(0,0,0,0.7);">🔒 Login Required</h2>
+            <p style="margin: 0 0 30px 0; color: rgba(255, 255, 255, 0.9); font-size: 18px; line-height: 1.6; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">You've reached the free play limit. Please log in to continue listening to podcasts and videos.</p>
+            <div style="margin: 30px 0;">
+                <a href="login.html" style="display: inline-block; background: linear-gradient(135deg, #f97316, #ea580c); color: white; padding: 15px 30px; text-decoration: none; border-radius: 12px; margin: 0 10px; font-weight: 600; font-size: 16px; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);">Login</a>
+                <a href="signup.html" style="display: inline-block; background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1)); color: white; padding: 15px 30px; text-decoration: none; border-radius: 12px; margin: 0 10px; font-weight: 600; font-size: 16px; border: 1px solid rgba(255, 255, 255, 0.3); cursor: pointer; backdrop-filter: blur(10px);">Sign Up</a>
+            </div>
+            <button onclick="document.getElementById('hereco-login-modal').remove()" style="background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.8); border: 1px solid rgba(255, 255, 255, 0.2); padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; margin-top: 10px; backdrop-filter: blur(10px);">Close</button>
+        `;
+
+        // Assemble modal
+        if (video) {
+            videoContainer.appendChild(video);
+        }
+        videoContainer.appendChild(overlay);
+        modal.appendChild(videoContainer);
+        modal.appendChild(content);
+
+        // Ultra-fast append and video setup
+        document.body.appendChild(modal);
+        
+        // Handle video playback
+        if (video) {
+            // Ultra-fast video playback with CORS fallback
+            const playVideo = async () => {
+                try {
+                    await video.play();
+                    console.log('Video playing instantly');
+                    video.style.opacity = '0.4';
+                } catch (e) {
+                    console.log('Video play failed, using fallback background');
+                    videoContainer.style.background = 'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%)';
+                    video.style.display = 'none';
+                }
+            };
+            
+            // Try to play immediately
+            playVideo();
+            
+            // Fallback if video needs to load
+            if (video.readyState < 3) {
+                video.addEventListener('canplay', playVideo, { once: true });
+                video.addEventListener('error', () => {
+                    console.log('Video load error, using fallback background');
+                    videoContainer.style.background = 'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%)';
+                    video.style.display = 'none';
+                }, { once: true });
+            }
+        } else {
+            console.log('No video available, using fallback background');
+            videoContainer.style.background = 'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%)';
+        }
+        
+        // Force perfect centering with transform if needed
+        requestAnimationFrame(() => {
+            const rect = content.getBoundingClientRect();
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            const contentCenterX = rect.left + rect.width / 2;
+            const contentCenterY = rect.top + rect.height / 2;
+            
+            const offsetX = centerX - contentCenterX;
+            const offsetY = centerY - contentCenterY;
+            
+            console.log('Modal centering check:', {
+                windowCenter: { x: centerX, y: centerY },
+                contentCenter: { x: contentCenterX, y: contentCenterY },
+                offsetX: Math.abs(offsetX),
+                offsetY: Math.abs(offsetY),
+                isCentered: Math.abs(offsetX) < 10 && Math.abs(offsetY) < 10
+            });
+            
+            // Force centering with transform if not centered
+            if (Math.abs(offsetX) > 10 || Math.abs(offsetY) > 10) {
+                console.log('Forcing centering with transform');
+                content.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+            }
+        });
+        
+        console.log('Ultra-fast login modal created and displayed');
     },
 
     /**
@@ -1389,6 +1727,17 @@ const ProjectsModule = {
      * @param {Element} button - Play button element
      */
     toggleAudioPlayback(button) {
+        console.log('toggleAudioPlayback called');
+        
+        // Check play limit before allowing playback
+        if (!Utils.canPlay()) {
+            console.log('Play limit reached, showing login modal');
+            Utils.showLoginModal();
+            return;
+        }
+        
+        console.log('Play limit not reached, proceeding with playback');
+
         const audioSrc = button.dataset.audioSrc;
         const audioType = button.dataset.audioType;
         
@@ -1453,6 +1802,9 @@ const ProjectsModule = {
                 if (playIcon) {
                     playIcon.style.display = 'none';
                 }
+                
+                // Increment play count for non-logged-in users
+                Utils.incrementPlayCount();
                 
                 // Show floating player
                 this.showFloatingPlayer(button, audio);
@@ -2712,6 +3064,7 @@ document.addEventListener('DOMContentLoaded', () => {
     Utils.initTheme();
     Utils.initAccessibility();
     Utils.initPerformanceOptimizations();
+    Utils.initPlayLimit();
     
     // Initialize modules
     ProjectsModule.init();
@@ -2756,5 +3109,82 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Podcast website initialized successfully!');
         console.log('Theme:', AppState.theme);
         console.log('Preferences:', AppState.preferences);
+        
+        // Add debugging functions to window for testing
+        window.testPlayLimit = () => {
+            console.log('Current play state:', {
+                isLoggedIn: AppState.isLoggedIn,
+                currentPlayCount: AppState.currentPlayCount,
+                playLimit: AppState.playLimit,
+                canPlay: Utils.canPlay(),
+                firebaseUser: window.auth ? window.auth.currentUser : 'Firebase not available'
+            });
+        };
+        
+        window.resetPlayLimit = () => {
+            Utils.resetPlayCount();
+            console.log('Play limit reset');
+        };
+        
+        window.forceLoginModal = () => {
+            Utils.showLoginModal();
+        };
+        
+        window.updateLoginStatus = () => {
+            Utils.checkLoginStatus();
+            console.log('Login status updated:', AppState.isLoggedIn);
+        };
+        
+        window.generateUserURL = () => {
+            Utils.updateUserURL();
+        };
+        
+        window.navigateToPage = (pageName) => {
+            Utils.navigateToPage(pageName);
+        };
+        
+        // Simple test modal for debugging
+        window.showSimpleModal = () => {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                background: rgba(0, 0, 0, 0.9) !important;
+                z-index: 999999 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    color: black;
+                    padding: 40px;
+                    border-radius: 10px;
+                    text-align: center;
+                    max-width: 400px;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+                ">
+                    <h2 style="margin-top: 0; color: #f97316;">Test Modal</h2>
+                    <p>This is a simple test modal to verify centering works.</p>
+                    <button onclick="this.parentElement.parentElement.remove()" style="
+                        margin-top: 20px;
+                        background: #f97316;
+                        color: white;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 5px;
+                        cursor: pointer;
+                    ">Close</button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            console.log('Simple test modal shown');
+        };
     }
 });

@@ -319,10 +319,10 @@
                 }
             });
 
-            // Video background handling
+            // Video background handling - now with CORS support
             const video = document.querySelector('.video-background video');
+            
             if (video) {
-                
                 // Handle video loading errors
                 video.addEventListener('error', function() {
                     console.log('Video failed to load, using fallback background');

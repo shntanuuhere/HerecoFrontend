@@ -4126,15 +4126,7 @@ a:focus {
 }
 
 /* Login Page Styles */
-.video-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -2;
-    overflow: hidden;
-}
+/* Original video-background container - now overridden by box style above */
 
 /* Hide any existing background images on login pages only */
 body.login-page {
@@ -4149,6 +4141,21 @@ body.login-page::before {
     background: none !important;
 }
 
+.video-background {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    transform: none !important;
+    background: #1a1a1a !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+    z-index: -2 !important;
+}
+
 .video-background video {
     position: absolute;
     top: 50%;
@@ -4159,6 +4166,7 @@ body.login-page::before {
     height: auto;
     transform: translate(-50%, -50%);
     object-fit: cover;
+    border-radius: 0;
 }
 
 .video-overlay {
@@ -4197,15 +4205,10 @@ body.login-page::before {
     }
 }
 
-/* Mobile optimizations */
+/* Mobile optimizations for video background */
 @media (max-width: 768px) {
-    .video-background {
-        /* Reduce video quality on mobile for better performance */
-        transform: scale(1.1);
-    }
-    
     .video-overlay {
-        background: rgba(0, 0, 0, 0.7);
+        background: rgba(0, 0, 0, 0.8);
     }
 }
 
@@ -4224,6 +4227,179 @@ body.login-page::before {
         height: 100%;
         background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
         z-index: 1;
+    }
+}
+
+/* Login Required Modal */
+.login-required-modal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 99999 !important;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    display: block !important;
+}
+
+.login-required-modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.login-required-modal .modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-4);
+}
+
+.login-required-modal .modal-content {
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.95) 0%, 
+        rgba(255, 255, 255, 0.9) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--border-radius-xl);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    max-width: 400px;
+    width: 100%;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.login-required-modal.show .modal-content {
+    transform: scale(1);
+}
+
+.login-required-modal .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-6) var(--spacing-6) var(--spacing-4);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.login-required-modal .modal-header h3 {
+    margin: 0;
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.login-required-modal .modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: var(--spacing-2);
+    border-radius: var(--border-radius-md);
+    transition: all 0.3s ease;
+}
+
+.login-required-modal .modal-close:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: var(--text-primary);
+}
+
+.login-required-modal .modal-body {
+    padding: var(--spacing-6);
+}
+
+.login-required-modal .modal-body p {
+    margin: 0 0 var(--spacing-6);
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.login-required-modal .modal-actions {
+    display: flex;
+    gap: var(--spacing-3);
+    justify-content: center;
+}
+
+.login-required-modal .btn {
+    padding: var(--spacing-3) var(--spacing-6);
+    border-radius: var(--border-radius-lg);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 120px;
+}
+
+.login-required-modal .btn-primary {
+    background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+    color: white;
+    border: none;
+}
+
+.login-required-modal .btn-primary:hover {
+    background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(249, 115, 22, 0.3);
+}
+
+.login-required-modal .btn-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border: 2px solid var(--border-color);
+}
+
+.login-required-modal .btn-secondary:hover {
+    background: var(--secondary-100);
+    border-color: var(--primary-500);
+    color: var(--primary-600);
+}
+
+/* Dark theme for login modal */
+[data-theme="dark"] .login-required-modal .modal-content {
+    background: linear-gradient(135deg, 
+        rgba(20, 20, 20, 0.95) 0%, 
+        rgba(30, 30, 30, 0.9) 100%);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .login-required-modal .modal-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .login-required-modal .modal-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .login-required-modal .btn-secondary {
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .login-required-modal .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary-500);
+}
+
+/* Animated gradient background for localhost modal */
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
     }
 }
 
