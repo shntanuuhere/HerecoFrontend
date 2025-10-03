@@ -170,7 +170,24 @@
 
             <!-- Main Chat Area -->
             <div class="chatbot-main-area">
-                <!-- Top Bar -->
+                <!-- Mobile Header with Hamburger -->
+                <div class="mobile-header">
+                    <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle chat history">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                    </button>
+                    <h1 class="mobile-chat-title">AI Assistant</h1>
+                    <div class="mobile-actions">
+                        <button id="mobile-new-chat" class="mobile-action-btn" title="New chat">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14M5 12h14"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Top Bar (Desktop Only) -->
                 <div class="chatbot-topbar">
                     <div class="topbar-left">
                         <h1 class="chat-title">AI Assistant</h1>
@@ -271,6 +288,37 @@
             </div>
         </div>
     </main>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div id="mobile-sidebar-overlay" class="mobile-sidebar-overlay"></div>
+    
+    <!-- Mobile Sidebar -->
+    <div id="mobile-sidebar" class="mobile-sidebar">
+        <div class="mobile-sidebar-header">
+            <h3 class="mobile-sidebar-title">Chat History</h3>
+            <button id="mobile-sidebar-close" class="mobile-sidebar-close" aria-label="Close sidebar">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="mobile-sidebar-content">
+            <button id="mobile-new-chat-btn" class="new-chat-btn">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12h14"></path>
+                </svg>
+                New chat
+            </button>
+            <div class="chat-history">
+                <div class="history-section">
+                    <h3 class="history-title">Recent</h3>
+                    <div id="mobile-chat-history-list" class="history-list">
+                        <!-- Mobile chat history will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Chatbot Features Modal -->
     <div id="features-modal" class="modal-overlay hidden">

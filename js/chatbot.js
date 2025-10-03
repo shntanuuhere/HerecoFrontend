@@ -602,6 +602,39 @@ class ChatbotService {
             });
         }
 
+        // Mobile sidebar functionality
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const mobileSidebarOverlay = document.getElementById('mobile-sidebar-overlay');
+        const mobileSidebarClose = document.getElementById('mobile-sidebar-close');
+        const mobileNewChat = document.getElementById('mobile-new-chat');
+        const mobileNewChatBtn = document.getElementById('mobile-new-chat-btn');
+        
+        if (mobileMenuToggle) {
+            mobileMenuToggle.addEventListener('click', () => this.toggleMobileSidebar());
+        }
+        
+        if (mobileSidebarOverlay) {
+            mobileSidebarOverlay.addEventListener('click', () => this.closeMobileSidebar());
+        }
+        
+        if (mobileSidebarClose) {
+            mobileSidebarClose.addEventListener('click', () => this.closeMobileSidebar());
+        }
+        
+        if (mobileNewChat) {
+            mobileNewChat.addEventListener('click', () => {
+                this.startNewChat();
+                this.closeMobileSidebar();
+            });
+        }
+        
+        if (mobileNewChatBtn) {
+            mobileNewChatBtn.addEventListener('click', () => {
+                this.startNewChat();
+                this.closeMobileSidebar();
+            });
+        }
+
         // User message actions (copy and edit)
         document.addEventListener('click', (e) => {
             if (e.target.closest('.copy-btn')) {
@@ -1637,6 +1670,57 @@ class ChatbotService {
         } catch (error) {
             console.error('Error uploading dataset:', error);
             this.showNotification('Failed to upload dataset', 'error');
+        }
+    }
+
+    /**
+     * Toggle mobile sidebar
+     */
+    toggleMobileSidebar() {
+        const mobileSidebar = document.getElementById('mobile-sidebar');
+        const mobileSidebarOverlay = document.getElementById('mobile-sidebar-overlay');
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        
+        if (mobileSidebar && mobileSidebarOverlay && mobileMenuToggle) {
+            const isOpen = mobileSidebar.classList.contains('active');
+            
+            if (isOpen) {
+                this.closeMobileSidebar();
+            } else {
+                this.openMobileSidebar();
+            }
+        }
+    }
+
+    /**
+     * Open mobile sidebar
+     */
+    openMobileSidebar() {
+        const mobileSidebar = document.getElementById('mobile-sidebar');
+        const mobileSidebarOverlay = document.getElementById('mobile-sidebar-overlay');
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        
+        if (mobileSidebar && mobileSidebarOverlay && mobileMenuToggle) {
+            mobileSidebar.classList.add('active');
+            mobileSidebarOverlay.classList.add('active');
+            mobileMenuToggle.setAttribute('aria-expanded', 'true');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    /**
+     * Close mobile sidebar
+     */
+    closeMobileSidebar() {
+        const mobileSidebar = document.getElementById('mobile-sidebar');
+        const mobileSidebarOverlay = document.getElementById('mobile-sidebar-overlay');
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        
+        if (mobileSidebar && mobileSidebarOverlay && mobileMenuToggle) {
+            mobileSidebar.classList.remove('active');
+            mobileSidebarOverlay.classList.remove('active');
+            mobileMenuToggle.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
         }
     }
 }
