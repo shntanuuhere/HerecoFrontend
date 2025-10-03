@@ -20,6 +20,57 @@ class ApiService {
         this.minRequestInterval = 1000; // 1 second between requests
         this.requestQueue = [];
         this.isProcessingQueue = false;
+        
+        // Performance optimizations
+        this.requestCache = new Map();
+        this.cacheHitCount = 0;
+        this.cacheMissCount = 0;
+        this.errorCount = 0;
+        this.maxErrors = 10;
+        
+        // Initialize performance monitoring
+        this.initPerformanceMonitoring();
+    }
+
+    /**
+     * Initialize performance monitoring
+     */
+    initPerformanceMonitoring() {
+        // Monitor memory usage
+        if (performance.memory) {
+            setInterval(() => {
+                const memory = performance.memory;
+                if (memory.usedJSHeapSize > memory.jsHeapSizeLimit * 0.8) {
+                    console.warn('High memory usage detected:', {
+                        used: Math.round(memory.usedJSHeapSize / 1024 / 1024) + 'MB',
+                        limit: Math.round(memory.jsHeapSizeLimit / 1024 / 1024) + 'MB'
+                    });
+                    this.clearOldCache();
+                }
+            }, 30000); // Check every 30 seconds
+        }
+
+        // Monitor cache performance
+        setInterval(() => {
+            const totalRequests = this.cacheHitCount + this.cacheMissCount;
+            if (totalRequests > 0) {
+                const hitRate = (this.cacheHitCount / totalRequests * 100).toFixed(1);
+                console.log(`Cache hit rate: ${hitRate}% (${this.cacheHitCount}/${totalRequests})`);
+            }
+        }, 60000); // Log every minute
+    }
+
+    /**
+     * Clear old cache entries to free memory
+     */
+    clearOldCache() {
+        const now = Date.now();
+        for (const [key, value] of this.cache.entries()) {
+            if (now - value.timestamp > this.cacheTimeout) {
+                this.cache.delete(key);
+            }
+        }
+        console.log('Cleared old cache entries');
     }
 
     /**

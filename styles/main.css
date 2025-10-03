@@ -6118,6 +6118,8 @@ a:focus,
     width: 90% !important;
     left: 50% !important;
     transform: translateX(-50%) translateY(100px) !important;
+    will-change: transform, opacity !important;
+    contain: layout style paint !important;
 }
 
 .floating-player.show {
@@ -6151,9 +6153,108 @@ a:focus,
     height: 32px !important;
     background: rgba(255, 255, 255, 0.2) !important;
     border-radius: 50% !important;
+    border: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
 }
 
 .floating-play-btn:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+    transform: scale(1.05) !important;
+}
+
+/* Make all floating control buttons perfect circles */
+.floating-control-btn {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+    max-width: 28px !important;
+    max-height: 28px !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 50% !important;
+    border: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    color: white !important;
+    font-size: 14px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+.floating-control-btn:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+    transform: scale(1.05) !important;
+}
+
+/* Make the main play button larger as shown in reference */
+.floating-play-btn {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    max-width: 36px !important;
+    max-height: 36px !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 50% !important;
+    border: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+.floating-play-btn:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+    transform: scale(1.05) !important;
+}
+
+/* Force all floating player buttons to be perfect circles */
+#floating-prev-btn,
+#floating-next-btn,
+#floating-volume-btn,
+#floating-expand-btn,
+#floating-close {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+    max-width: 28px !important;
+    max-height: 28px !important;
+    border-radius: 50% !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+#floating-prev-btn:hover,
+#floating-next-btn:hover,
+#floating-volume-btn:hover,
+#floating-expand-btn:hover,
+#floating-close:hover {
     background: rgba(255, 255, 255, 0.3) !important;
     transform: scale(1.05) !important;
 }
@@ -6199,8 +6300,41 @@ a:focus,
     }
     
     .floating-play-btn {
-        width: 28px !important;
-        height: 28px !important;
+        width: 32px !important;
+        height: 32px !important;
+        border-radius: 50% !important;
+    }
+    
+    .floating-control-btn {
+        width: 24px !important;
+        height: 24px !important;
+        min-width: 24px !important;
+        min-height: 24px !important;
+        max-width: 24px !important;
+        max-height: 24px !important;
+        border-radius: 50% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+    
+    #floating-prev-btn,
+    #floating-next-btn,
+    #floating-volume-btn,
+    #floating-expand-btn,
+    #floating-close {
+        width: 24px !important;
+        height: 24px !important;
+        min-width: 24px !important;
+        min-height: 24px !important;
+        max-width: 24px !important;
+        max-height: 24px !important;
+        border-radius: 50% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
     }
     
     .floating-play-icon {
@@ -6281,6 +6415,10 @@ a:focus,
     cursor: pointer !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
     transition: all 0.2s ease !important;
+    will-change: transform, background-color !important;
+    contain: layout style paint !important;
+    position: relative !important;
+    overflow: hidden !important;
 }
 
 .custom-play-button::before {
@@ -6463,6 +6601,29 @@ a:focus,
     background: rgba(255, 255, 255, 0.1) !important;
 }
 
+/* Performance Optimizations */
+* {
+    box-sizing: border-box;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    loading: lazy;
+}
+
+/* Optimize animations for better performance */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
 /* Mobile Responsive Audio Players */
 @media (max-width: 768px) {
     /* Main Audio Player Mobile */
@@ -6497,6 +6658,7 @@ a:focus,
     .custom-play-button {
         width: 40px !important;
         height: 40px !important;
+        border-radius: 50% !important;
     }
     
     .play-icon {
@@ -6616,6 +6778,7 @@ a:focus,
     .custom-play-button {
         width: 36px !important;
         height: 36px !important;
+        border-radius: 50% !important;
     }
     
     .play-icon {

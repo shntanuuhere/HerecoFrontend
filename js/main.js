@@ -286,6 +286,22 @@ const Utils = {
         };
     },
 
+    debounce(func, wait, immediate) {
+        let timeout;
+        return function() {
+            const context = this;
+            const args = arguments;
+            const later = function() {
+                timeout = null;
+                if (!immediate) func.apply(context, args);
+            };
+            const callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            if (callNow) func.apply(context, args);
+        };
+    },
+
     /**
      * Check if element is in viewport
      * @param {Element} element - Element to check
@@ -961,7 +977,19 @@ const Utils = {
                     if (entry.isIntersecting) {
                         const img = entry.target;
                         if (img.dataset.src) {
+                            // Add loading state for smooth transition
+                            img.style.opacity = '0';
+                            img.style.transition = 'opacity 0.3s ease';
+                            
                             img.src = img.dataset.src;
+                            img.onload = () => {
+                                img.style.opacity = '1';
+                            };
+                            img.onerror = () => {
+                                img.style.opacity = '1';
+                                // Fallback image for broken images
+                                img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOTk5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+SW1hZ2U8L3RleHQ+PC9zdmc+';
+                            };
                             img.removeAttribute('data-src');
                             img.classList.remove('lazy');
                             observer.unobserve(img);
@@ -969,7 +997,7 @@ const Utils = {
                     }
                 });
             }, {
-                rootMargin: '50px 0px',
+                rootMargin: '100px 0px',
                 threshold: 0.01
             });
 
@@ -1785,6 +1813,9 @@ const ProjectsModule = {
             if (playIcon) {
                 playIcon.style.display = 'block';
             }
+            
+            // Hide floating player when paused
+            this.hideFloatingPlayer();
         } else {
             // Stop any other currently playing audio
             const allAudios = document.querySelectorAll('audio');
@@ -1836,6 +1867,8 @@ const ProjectsModule = {
                 if (playIcon) {
                     playIcon.style.display = 'block';
                 }
+                // Hide floating player when audio ends
+                this.hideFloatingPlayer();
             });
 
             // Add time update listener
@@ -2035,10 +2068,30 @@ const ProjectsModule = {
                     audio.play();
                     floatingPlayBtn.querySelector('.floating-play-icon').textContent = '⏸';
                     floatingPlayer.classList.add('playing');
+                    
+                    // Sync main player button
+                    const mainButton = button;
+                    if (mainButton) {
+                        mainButton.classList.add('playing');
+                        const playIcon = mainButton.querySelector('.play-icon');
+                        if (playIcon) {
+                            playIcon.style.display = 'none';
+                        }
+                    }
                 } else {
                     audio.pause();
                     floatingPlayBtn.querySelector('.floating-play-icon').textContent = '▶';
                     floatingPlayer.classList.remove('playing');
+                    
+                    // Sync main player button
+                    const mainButton = button;
+                    if (mainButton) {
+                        mainButton.classList.remove('playing');
+                        const playIcon = mainButton.querySelector('.play-icon');
+                        if (playIcon) {
+                            playIcon.style.display = 'block';
+                        }
+                    }
                 }
             };
         }
@@ -2141,6 +2194,19 @@ const ProjectsModule = {
                 floatingProgressHandle.style.left = `${percentage}%`;
             }
         }
+        
+        // Also update the main player's progress bar if it exists
+        const mainProgressFill = document.querySelector('.progress-fill');
+        const mainProgressHandle = document.querySelector('.progress-handle');
+        
+        if (mainProgressFill && audio.duration) {
+            const percentage = (audio.currentTime / audio.duration) * 100;
+            mainProgressFill.style.width = `${percentage}%`;
+            
+            if (mainProgressHandle) {
+                mainProgressHandle.style.left = `${percentage}%`;
+            }
+        }
     },
 
     /**
@@ -2156,6 +2222,17 @@ const ProjectsModule = {
         }
         if (floatingTotalTime && audio.duration) {
             floatingTotalTime.textContent = this.formatTime(audio.duration);
+        }
+        
+        // Also update the main player's time display if it exists
+        const mainCurrentTime = document.querySelector('.audio-current-time');
+        const mainTotalTime = document.querySelector('.audio-total-time');
+        
+        if (mainCurrentTime) {
+            mainCurrentTime.textContent = this.formatTime(audio.currentTime);
+        }
+        if (mainTotalTime && audio.duration) {
+            mainTotalTime.textContent = this.formatTime(audio.duration);
         }
     },
 
@@ -2183,6 +2260,27 @@ const ProjectsModule = {
                 volumeIcon.textContent = '🔉';
             } else {
                 volumeIcon.textContent = '🔊';
+            }
+        }
+        
+        // Also update the main player's volume display if it exists
+        const mainVolumeFill = document.querySelector('.volume-fill');
+        const mainVolumeHandle = document.querySelector('.volume-handle');
+        const mainVolumeIcon = document.querySelector('.volume-icon');
+        
+        if (mainVolumeFill) {
+            mainVolumeFill.style.width = `${percentage}%`;
+        }
+        if (mainVolumeHandle) {
+            mainVolumeHandle.style.left = `${percentage}%`;
+        }
+        if (mainVolumeIcon) {
+            if (volume === 0) {
+                mainVolumeIcon.textContent = '🔇';
+            } else if (volume < 0.5) {
+                mainVolumeIcon.textContent = '🔉';
+            } else {
+                mainVolumeIcon.textContent = '🔊';
             }
         }
     },
@@ -3074,17 +3172,46 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.classList.remove('show');
     });
     
-    // Initialize core systems first
-    Utils.initTheme();
-    Utils.initAccessibility();
-    Utils.initPerformanceOptimizations();
-    Utils.initPlayLimit();
+    // Initialize core systems first with error handling
+    try {
+        Utils.initTheme();
+        Utils.initAccessibility();
+        Utils.initPerformanceOptimizations();
+        Utils.initPlayLimit();
+        
+        // Initialize modules
+        ProjectsModule.init();
+        GalleryModule.init();
+        MobileNavigation.init();
+        SmoothScrolling.init();
+        
+        console.log('Application initialized successfully');
+    } catch (error) {
+        console.error('Failed to initialize application:', error);
+        // Show a simple error message to user
+        const errorDiv = document.createElement('div');
+        errorDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #ff4444; color: white; padding: 10px; border-radius: 4px; z-index: 10000; font-family: Arial, sans-serif;';
+        errorDiv.textContent = 'Application failed to load. Please refresh the page.';
+        document.body.appendChild(errorDiv);
+        
+        // Auto-remove error message after 5 seconds
+        setTimeout(() => {
+            if (errorDiv.parentNode) {
+                errorDiv.parentNode.removeChild(errorDiv);
+            }
+        }, 5000);
+    }
     
-    // Initialize modules
-    ProjectsModule.init();
-    GalleryModule.init();
-    MobileNavigation.init();
-    SmoothScrolling.init();
+    // Add global error handlers
+    window.addEventListener('error', (event) => {
+        console.error('Unhandled error:', event.error);
+        // Don't show error to user, just log it for debugging
+    });
+    
+    window.addEventListener('unhandledrejection', (event) => {
+        console.error('Unhandled promise rejection:', event.reason);
+        // Don't show error to user, just log it for debugging
+    });
     
     // Initialize theme toggle
     const themeToggle = document.querySelector('.theme-toggle');
