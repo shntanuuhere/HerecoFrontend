@@ -405,10 +405,10 @@ class ChatbotService {
     /**
      * Navigate to a specific chat
      */
-    navigateToChat(chatId) {
+    async navigateToChat(chatId) {
         // Save current chat before switching
         if (this.messages.length > 0 && this.currentChatId) {
-            this.saveCurrentChat();
+            await this.saveCurrentChat();
         }
         
         // Navigate to the chat URL with query parameter
@@ -780,7 +780,7 @@ class ChatbotService {
         }
 
         // Save current chat and update sidebar
-        this.saveCurrentChat();
+        await this.saveCurrentChat();
         this.saveChatHistory();
     }
 
@@ -966,7 +966,7 @@ class ChatbotService {
     /**
      * Clear chat
      */
-    clearChat() {
+    async clearChat() {
         if (this.messages.length === 0) {
             this.showNotification('Chat is already empty', 'info');
             return;
@@ -984,7 +984,7 @@ class ChatbotService {
                 welcomeMessage.classList.remove('hidden');
             }
             
-            this.saveCurrentChat();
+            await this.saveCurrentChat();
             this.saveChatHistory();
             this.showNotification('Chat cleared successfully', 'success');
         }
@@ -993,10 +993,10 @@ class ChatbotService {
     /**
      * Start a new chat
      */
-    startNewChat() {
+    async startNewChat() {
         // Save current chat if it has messages
         if (this.messages.length > 0 && this.currentChatId) {
-            this.saveCurrentChat();
+            await this.saveCurrentChat();
         }
         
         // Clear current session (don't generate ID yet)
@@ -1144,12 +1144,12 @@ class ChatbotService {
     /**
      * Load chat from history
      */
-    loadChatFromHistory(index) {
+    async loadChatFromHistory(index) {
         const history = this.getChatHistory();
         if (history[index]) {
             // Save current chat before switching
             if (this.messages.length > 0) {
-                this.saveCurrentChat();
+                await this.saveCurrentChat();
             }
             
             const chat = history[index];
@@ -1184,7 +1184,7 @@ class ChatbotService {
             }
             
             // Save the loaded chat as current
-            this.saveCurrentChat();
+            await this.saveCurrentChat();
             
             this.scrollToBottom();
             
@@ -1321,7 +1321,7 @@ class ChatbotService {
             
             if (response && response.success) {
                 this.addMessage('assistant', response.response);
-                this.saveCurrentChat();
+                await this.saveCurrentChat();
                 this.saveChatHistory();
             } else {
                 throw new Error(response?.error || 'Failed to regenerate response');
@@ -1409,7 +1409,7 @@ class ChatbotService {
     /**
      * Save current chat to localStorage
      */
-    saveCurrentChat() {
+    async saveCurrentChat() {
         try {
             if (!this.currentChatId) return;
             
@@ -1429,7 +1429,15 @@ class ChatbotService {
             };
             
             // Save to all chats
-            const allChats = this.getAllChats();
+            const allChats = await this.getAllChats();
+            
+            // Ensure allChats is an array
+            if (!Array.isArray(allChats)) {
+                console.warn('allChats is not an array, initializing empty array');
+                await this.saveAllChats([chatData]);
+                return;
+            }
+            
             const existingIndex = allChats.findIndex(chat => chat.id === this.currentChatId);
             
             if (existingIndex >= 0) {
@@ -1443,7 +1451,7 @@ class ChatbotService {
                 allChats.splice(50);
             }
             
-            this.saveAllChats(allChats);
+            await this.saveAllChats(allChats);
         } catch (error) {
             console.error('Failed to save current chat:', error);
         }
