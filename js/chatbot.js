@@ -420,8 +420,8 @@ class ChatbotService {
     /**
      * Delete a specific chat
      */
-    deleteChat(chatId) {
-        const chat = this.getChatById(chatId);
+    async deleteChat(chatId) {
+        const chat = await this.getChatById(chatId);
         if (!chat) {
             this.showNotification('Chat not found', 'error');
             return;
@@ -432,20 +432,27 @@ class ChatbotService {
         if (confirm(`Are you sure you want to delete "${chatTitle}"? This action cannot be undone.`)) {
             try {
                 // Get all chats
-                const allChats = this.getAllChats();
+                const allChats = await this.getAllChats();
+                
+                // Ensure allChats is an array
+                if (!Array.isArray(allChats)) {
+                    console.warn('allChats is not an array, cannot delete chat');
+                    this.showNotification('Failed to delete chat', 'error');
+                    return;
+                }
                 
                 // Remove the chat
                 const updatedChats = allChats.filter(chat => chat.id !== chatId);
                 
                 // Save updated chats
-                this.saveAllChats(updatedChats);
+                await this.saveAllChats(updatedChats);
                 
                 // If this was the current chat, start a new one
                 if (chatId === this.currentChatId) {
-                    this.startNewChat();
+                    await this.startNewChat();
                 } else {
                     // Just update the history display
-                    this.updateChatHistory();
+                    await this.updateChatHistory();
                 }
                 
                 this.showNotification(`Chat "${chatTitle}" deleted successfully`, 'success');
@@ -1082,9 +1089,9 @@ class ChatbotService {
             
             // Add delete button event
             const deleteBtn = historyItem.querySelector('.history-delete-btn');
-            deleteBtn.addEventListener('click', (e) => {
+            deleteBtn.addEventListener('click', async (e) => {
                 e.stopPropagation();
-                this.deleteChat(chat.id);
+                await this.deleteChat(chat.id);
             });
             
             historyList.appendChild(historyItem);
