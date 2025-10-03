@@ -250,23 +250,29 @@ class ChatbotService {
      * Get current user ID for chat storage
      */
     getCurrentUserId() {
-        // Try Firebase Auth first
-        if (typeof window.auth !== 'undefined' && window.auth.currentUser) {
-            return window.auth.currentUser.uid;
-        }
-        
-        // Try authManager
-        if (typeof window.authManager !== 'undefined' && window.authManager.getCurrentUser()) {
-            return window.authManager.getCurrentUser().uid;
-        }
-        
-        // Fallback: check URL parameters (for your site's format)
+        // First priority: URL parameters (for your site's format)
         const urlParams = new URLSearchParams(window.location.search);
         const uid = urlParams.get('uid');
         if (uid) {
+            console.log('Using user ID from URL:', uid);
             return uid;
         }
         
+        // Second priority: Firebase Auth
+        if (typeof window.auth !== 'undefined' && window.auth.currentUser) {
+            const firebaseUid = window.auth.currentUser.uid;
+            console.log('Using Firebase user ID:', firebaseUid);
+            return firebaseUid;
+        }
+        
+        // Third priority: authManager
+        if (typeof window.authManager !== 'undefined' && window.authManager.getCurrentUser()) {
+            const authManagerUid = window.authManager.getCurrentUser().uid;
+            console.log('Using authManager user ID:', authManagerUid);
+            return authManagerUid;
+        }
+        
+        console.log('No user ID found');
         return null;
     }
 
@@ -446,8 +452,22 @@ class ChatbotService {
         statusText.textContent = 'Testing AI service connection...';
 
         try {
+            // Create a test message for the connection test
+            const testMessage = {
+                role: 'user',
+                content: 'Hello, are you working?',
+                timestamp: new Date().toISOString()
+            };
+            
+            // Temporarily add the test message to conversation history
+            const originalHistory = [...this.conversationHistory];
+            this.conversationHistory = [testMessage];
+            
             // Test with a simple message
             const testResponse = await this.sendToAI('Hello, are you working?');
+            
+            // Restore original conversation history
+            this.conversationHistory = originalHistory;
             
             if (testResponse && testResponse.success) {
                 this.isConnected = true;
@@ -487,6 +507,8 @@ class ChatbotService {
                 max_tokens: 1000,
                 temperature: 0.7
             };
+
+            console.log('Sending payload to backend:', payload);
 
             // Get Firebase Auth token
             let userToken = null;
