@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat - Hereco</title>
+    <meta name="description" content="Chat with our AI assistant powered by Gemini 2.0 Flash (FREE). Get help, ask questions, and have conversations with our intelligent chatbot.">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="AI Chat - Hereco">
+    <meta property="og:description" content="Chat with our AI assistant powered by Gemini 2.0 Flash (FREE). Get help, ask questions, and have conversations with our intelligent chatbot.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://hereco.xyz/chatbot">
+    <meta property="og:image" content="https://hereco.xyz/favicon.ico">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AI Chat - Hereco">
+    <meta name="twitter:description" content="Chat with our AI assistant powered by Gemini 2.0 Flash (FREE). Get help, ask questions, and have conversations with our intelligent chatbot.">
+    <meta name="twitter:image" content="https://hereco.xyz/favicon.ico">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- Chatbot Stylesheet -->
+    <link rel="stylesheet" href="styles/chatbot.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html" class="nav-logo">
+                    <img src="favicon.ico" alt="Hereco" class="logo-img">
+                    <span class="logo-text">Hereco</span>
+                </a>
+            </div>
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="about.html" class="nav-link">About</a>
+                </li>
+                <li class="nav-item">
+                    <a href="contact.html" class="nav-link">Contact</a>
+                </li>
+                <li class="nav-item">
+                    <a href="chatbot.html" class="nav-link">AI Chat</a>
+                </li>
+                <li class="nav-item auth-links">
+                    <a href="login.html" class="nav-link">Login</a>
+                </li>
+                <li class="nav-item auth-links">
+                    <a href="signup.html" class="nav-link">Sign Up</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main chatbot-main" role="main">
+        <div class="chatbot-layout">
+            <!-- Sidebar -->
+            <div class="chatbot-sidebar">
+                <div class="sidebar-header">
+                    <div class="sidebar-header-top">
+                        <button id="dataset-btn" class="dataset-btn" title="Upload Dataset">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14,2 14,8 20,8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10,9 9,9 8,9"></polyline>
+                            </svg>
+                        </button>
+                        <button id="new-chat-btn-small" class="new-chat-btn-small" title="New chat">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14M5 12h14"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <button id="new-chat-btn" class="new-chat-btn">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 5v14M5 12h14"></path>
+                        </svg>
+                        New chat
+                    </button>
+                </div>
+                
+                <div class="sidebar-content">
+                    <div class="chat-history">
+                        <div class="history-section">
+                            <h3 class="history-title">Recent</h3>
+                            <div id="chat-history-list" class="history-list">
+                                <!-- Chat history will be dynamically added here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Chat Area -->
+            <div class="chatbot-main-area">
+                <!-- Top Bar -->
+                <div class="chatbot-topbar">
+                    <div class="topbar-left">
+                        <h1 class="chat-title">AI Assistant</h1>
+                    </div>
+                  <div class="topbar-actions">
+                      <button id="clear-chat-btn" class="topbar-btn" title="Clear current chat">
+                          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
+                              <line x1="10" y1="11" x2="10" y2="17"></line>
+                              <line x1="14" y1="11" x2="14" y2="17"></line>
+                          </svg>
+                      </button>
+                      <button id="share-chat-btn" class="topbar-btn" title="Share chat">
+                          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                              <polyline points="16,6 12,2 8,6"></polyline>
+                              <line x1="12" y1="2" x2="12" y2="15"></line>
+                          </svg>
+                      </button>
+                      <button id="menu-btn" class="topbar-btn" title="Menu">
+                          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <circle cx="12" cy="12" r="1"></circle>
+                              <circle cx="19" cy="12" r="1"></circle>
+                              <circle cx="5" cy="12" r="1"></circle>
+                          </svg>
+                      </button>
+                  </div>
+                </div>
+
+                <!-- Chat Container -->
+                <div class="chat-container">
+                    <!-- Welcome Message -->
+                    <div id="welcome-message" class="welcome-message">
+                        <div class="welcome-content">
+                            <div class="welcome-icon">✨</div>
+                            <h2>How can I help you today?</h2>
+                            <div class="suggestion-chips">
+                                <button class="suggestion-chip" data-suggestion="Explain quantum computing">Explain quantum computing</button>
+                                <button class="suggestion-chip" data-suggestion="Write a creative story">Write a creative story</button>
+                                <button class="suggestion-chip" data-suggestion="Help me plan a trip">Help me plan a trip</button>
+                                <button class="suggestion-chip" data-suggestion="Solve a math problem">Solve a math problem</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Messages -->
+                    <div id="chat-messages" class="chat-messages" role="log" aria-label="Chat conversation">
+                        <!-- Messages will be dynamically added here -->
+                    </div>
+
+                    <!-- Typing Indicator -->
+                    <div id="typing-indicator" class="typing-indicator hidden">
+                        <div class="message-container ai-message">
+                            <div class="message-avatar">
+                                <div class="avatar-icon">🤖</div>
+                            </div>
+                            <div class="message-content">
+                                <div class="typing-dots">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input -->
+                <div class="chat-input-container">
+                    <div class="input-wrapper">
+                        <div class="input-container">
+                            <textarea 
+                                id="chat-input" 
+                                class="chat-input" 
+                                placeholder="Ask anything..."
+                                rows="1"
+                                aria-label="Type your message"
+                                autocomplete="off"
+                                spellcheck="true"
+                            ></textarea>
+                            <button id="send-btn" class="send-btn" aria-label="Send message" disabled>
+                                <svg class="send-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 2L11 13"></path>
+                                    <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Connection Status -->
+                <div id="connection-status" class="connection-status hidden">
+                    <div class="status-indicator">
+                        <span class="status-icon">🔗</span>
+                        <span class="status-text">Connecting to AI service...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/chatbot.js"></script>
+</body>
+</html>

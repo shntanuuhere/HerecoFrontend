@@ -1,31 +1,31 @@
 {
-  "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "**/*",
-      "use": "@vercel/static"
+      "source": "/c/:chatId",
+      "destination": "/c.html"
+    },
+    {
+      "source": "/chatbot",
+      "destination": "/chatbot.html"
     }
   ],
-  "routes": [
+  "headers": [
     {
-      "src": "/(.*)",
-      "dest": "/$1"
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
     }
-  ],
-  "env": {
-    "NODE_ENV": "production",
-    "DEBUG_MODE": "true",
-    "DEV_TOOLS": "false",
-    "CORS_DEBUG": "true",
-    "CORS_ORIGINS": "*",
-    "AZURE_WEB_APP_NAME": "hereco-backend",
-    "AZURE_REGION": "eastus",
-    "LOCAL_BACKEND_URL": "http://localhost:3000",
-    "LOCAL_DEV_MODE": "false",
-    "API_TIMEOUT": "10000",
-    "ENABLE_CACHING": "true",
-    "ENABLE_LAZY_LOADING": "true",
-    "SHOW_DETAILED_ERRORS": "true",
-    "ENABLE_ERROR_REPORTING": "false"
-  }
+  ]
 }
