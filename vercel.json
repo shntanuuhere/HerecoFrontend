@@ -1,8 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/c/:chatId",
-      "destination": "/c.html"
+      "source": "/c",
+      "destination": "/chatbot.html"
     },
     {
       "source": "/chatbot",

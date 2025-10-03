@@ -129,21 +129,22 @@ class ChatbotService {
     }
 
     /**
-     * Get chat ID from current URL
+     * Get chat ID from current URL query parameters
      */
     getChatIdFromURL() {
-        const path = window.location.pathname;
-        const match = path.match(/\/c\/([a-z0-9]+)/);
-        return match ? match[1] : null;
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('c') || null;
     }
 
     /**
-     * Update URL with chat ID
+     * Update URL with chat ID using query parameters
      */
     updateURL(chatId) {
-        const newPath = `/c/${chatId}`;
-        if (window.location.pathname !== newPath) {
-            window.history.pushState({ chatId }, '', newPath);
+        const url = new URL(window.location);
+        url.searchParams.set('c', chatId);
+        
+        if (window.location.href !== url.href) {
+            window.history.pushState({ chatId }, '', url.href);
         }
     }
 
@@ -232,8 +233,10 @@ class ChatbotService {
             this.saveCurrentChat();
         }
         
-        // Navigate to the chat URL
-        window.location.href = `/c/${chatId}`;
+        // Navigate to the chat URL with query parameter
+        const url = new URL(window.location);
+        url.searchParams.set('c', chatId);
+        window.location.href = url.href;
     }
 
     /**
