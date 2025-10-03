@@ -106,6 +106,8 @@ class ChatbotService {
                 console.log('Firebase auth state changed in chatbot:', user ? 'Logged in' : 'Logged out');
                 if (!user) {
                     this.showAuthRequired();
+                } else {
+                    this.onUserChanged();
                 }
             });
         }
@@ -116,8 +118,22 @@ class ChatbotService {
                 console.log('AuthManager state changed in chatbot:', user ? 'Logged in' : 'Logged out');
                 if (!user) {
                     this.showAuthRequired();
+                } else {
+                    this.onUserChanged();
                 }
             });
+        }
+    }
+
+    /**
+     * Handle user change (login/logout/switch)
+     */
+    onUserChanged() {
+        const userId = this.getCurrentUserId();
+        if (userId) {
+            // User logged in, refresh chat history
+            this.updateChatHistory();
+            this.showNotification(`Welcome back! Loading your chat history...`, 'info');
         }
     }
 
@@ -210,18 +226,48 @@ class ChatbotService {
     }
 
     /**
-     * Get all chats from localStorage
+     * Get all chats from localStorage (user-specific)
      */
     getAllChats() {
-        const chats = localStorage.getItem('chatbot-all-chats');
+        const userId = this.getCurrentUserId();
+        if (!userId) return [];
+        
+        const chats = localStorage.getItem(`chatbot-chats-${userId}`);
         return chats ? JSON.parse(chats) : [];
     }
 
     /**
-     * Save all chats to localStorage
+     * Save all chats to localStorage (user-specific)
      */
     saveAllChats(chats) {
-        localStorage.setItem('chatbot-all-chats', JSON.stringify(chats));
+        const userId = this.getCurrentUserId();
+        if (!userId) return;
+        
+        localStorage.setItem(`chatbot-chats-${userId}`, JSON.stringify(chats));
+    }
+
+    /**
+     * Get current user ID for chat storage
+     */
+    getCurrentUserId() {
+        // Try Firebase Auth first
+        if (typeof window.auth !== 'undefined' && window.auth.currentUser) {
+            return window.auth.currentUser.uid;
+        }
+        
+        // Try authManager
+        if (typeof window.authManager !== 'undefined' && window.authManager.getCurrentUser()) {
+            return window.authManager.getCurrentUser().uid;
+        }
+        
+        // Fallback: check URL parameters (for your site's format)
+        const urlParams = new URLSearchParams(window.location.search);
+        const uid = urlParams.get('uid');
+        if (uid) {
+            return uid;
+        }
+        
+        return null;
     }
 
     /**
@@ -802,13 +848,30 @@ class ChatbotService {
         
         historyList.innerHTML = '';
         
+        if (allChats.length === 0) {
+            const emptyMessage = document.createElement('div');
+            emptyMessage.className = 'history-empty';
+            emptyMessage.textContent = 'No chat history yet';
+            emptyMessage.style.cssText = 'text-align: center; color: var(--text-muted); padding: 1rem; font-style: italic;';
+            historyList.appendChild(emptyMessage);
+            return;
+        }
+        
         allChats.forEach((chat, index) => {
             const historyItem = document.createElement('div');
             historyItem.className = 'history-item';
             if (chat.id === this.currentChatId) {
                 historyItem.classList.add('active');
             }
-            historyItem.textContent = chat.title || 'Untitled Chat';
+            
+            // Show chat title with timestamp
+            const title = chat.title || 'Untitled Chat';
+            const date = new Date(chat.timestamp).toLocaleDateString();
+            historyItem.innerHTML = `
+                <div class="history-title">${title}</div>
+                <div class="history-date">${date}</div>
+            `;
+            
             historyItem.addEventListener('click', () => {
                 this.navigateToChat(chat.id);
             });
@@ -1138,11 +1201,18 @@ class ChatbotService {
         try {
             if (!this.currentChatId) return;
             
+            const userId = this.getCurrentUserId();
+            if (!userId) {
+                console.warn('No user ID found, cannot save chat');
+                return;
+            }
+            
             const chatData = {
                 id: this.currentChatId,
                 title: this.getChatTitle(),
                 messages: this.messages,
                 conversationHistory: this.conversationHistory,
+                userId: userId,
                 timestamp: new Date().toISOString()
             };
             
