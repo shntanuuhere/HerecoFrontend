@@ -1,0 +1,29 @@
+{
+  "name": "podcast-website-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for podcast website with RSS feed integration and file gallery",
+  "main": "index.html",
+  "scripts": {
+    "start": "echo 'Frontend ready for deployment - no build process required'"
+  },
+  "keywords": [
+    "podcast",
+    "rss",
+    "frontend",
+    "vanilla-js",
+    "azure",
+    "gallery"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/podcast-website.git",
+    "directory": "frontend"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/podcast-website/issues"
+  },
+  "homepage": "https://github.com/yourusername/podcast-website#readme"
+}

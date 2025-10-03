@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "**/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production",
+    "DEBUG_MODE": "true",
+    "DEV_TOOLS": "false",
+    "CORS_DEBUG": "true",
+    "CORS_ORIGINS": "*",
+    "AZURE_WEB_APP_NAME": "hereco-backend",
+    "AZURE_REGION": "eastus",
+    "LOCAL_BACKEND_URL": "http://localhost:3000",
+    "LOCAL_DEV_MODE": "false",
+    "API_TIMEOUT": "10000",
+    "ENABLE_CACHING": "true",
+    "ENABLE_LAZY_LOADING": "true",
+    "SHOW_DETAILED_ERRORS": "true",
+    "ENABLE_ERROR_REPORTING": "false"
+  }
+}

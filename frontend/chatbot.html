@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Chat with our AI assistant powered by Gemini 2.0 Flash (FREE). Get help, ask questions, and have conversations with our intelligent chatbot.">
+    <meta name="keywords" content="chatbot, AI, Gemini, assistant, chat, conversation, help">
+    <meta name="author" content="Hereco">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Performance Optimizations -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="theme-color" content="#f97316">
+    <meta name="msapplication-TileColor" content="#f97316">
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="styles/main.css" as="style">
+    <link rel="preload" href="js/main.js" as="script">
+    <link rel="preload" href="js/chatbot.js" as="script">
+    
+    <!-- DNS Prefetch for External Resources -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link rel="dns-prefetch" href="//generativelanguage.googleapis.com">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="AI Chatbot - Hereco">
+    <meta property="og:description" content="Chat with our AI assistant powered by Gemini 1.5 8B model. Get help, ask questions, and have conversations with our intelligent chatbot.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <meta property="og:site_name" content="Hereco">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AI Chatbot - Hereco">
+    <meta name="twitter:description" content="Chat with our AI assistant powered by Gemini 2.0 Flash (FREE). Get help, ask questions, and have conversations with our intelligent chatbot.">
+    <meta name="twitter:image" content="">
+    
+    <!-- Theme and Accessibility -->
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#2563eb">
+    
+    <title>AI Chatbot - Hereco</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- Chatbot Stylesheet -->
+    <link rel="stylesheet" href="styles/chatbot.css">
+    
+    <!-- Environment Configuration Meta Tags -->
+    <meta name="env-backend-api-url" content="%BACKEND_API_URL%">
+    <meta name="env-node-env" content="%NODE_ENV%">
+    <meta name="env-debug-mode" content="%DEBUG_MODE%">
+    <meta name="env-gemini-api-key" content="%GEMINI_API_KEY%">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB1TMKnRNnH1pMEq26gAKYcxulUoyUFJRI",
+            authDomain: "hereco-17.firebaseapp.com",
+            projectId: "hereco-17",
+            storageBucket: "hereco-17.firebasestorage.app",
+            messagingSenderId: "114911168209",
+            appId: "1:114911168209:web:8c77ab79ae3f172a6827f0"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Make auth available globally
+        window.auth = auth;
+        window.signOut = signOut;
+        
+        // Dispatch event when Firebase is ready
+        window.dispatchEvent(new CustomEvent('firebase-ready'));
+    </script>
+</head>
+<body>
+    <header class="header" role="banner">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="site-title">
+                    <a href="index.html" class="site-title-link" aria-label="Hereco - Home">Hereco</a>
+                </h1>
+                <nav class="navigation" role="navigation" aria-label="Main navigation">
+                    <ul class="nav-list">
+                        <li class="nav-item dropdown">
+                            <a href="index.html#projects" class="nav-link">
+                                Episodes
+                                <span class="dropdown-arrow">▼</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="about.html" class="nav-link">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="index.html#gallery" class="nav-link">Gallery</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="contact.html" class="nav-link">Contact</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="chatbot.html" class="nav-link active">AI Chat</a>
+                        </li>
+                        <li class="nav-item auth-links">
+                            <a href="login.html" class="nav-link">Login</a>
+                        </li>
+                        <li class="nav-item auth-links">
+                            <a href="signup.html" class="nav-link">Sign Up</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Chatbot Section -->
+    <main class="main chatbot-main" role="main">
+        <div class="chatbot-layout">
+            <!-- Sidebar -->
+            <div class="chatbot-sidebar">
+                <div class="sidebar-header">
+                    <div class="sidebar-header-top">
+                        <button id="dataset-btn" class="dataset-btn" title="Upload Dataset">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14,2 14,8 20,8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10,9 9,9 8,9"></polyline>
+                            </svg>
+                        </button>
+                        <button id="new-chat-btn-small" class="new-chat-btn-small" title="New chat">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14M5 12h14"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <button id="new-chat-btn" class="new-chat-btn">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 5v14M5 12h14"></path>
+                        </svg>
+                        New chat
+                    </button>
+                </div>
+                
+                <div class="sidebar-content">
+                    <div class="chat-history">
+                        <div class="history-section">
+                            <h3 class="history-title">Recent</h3>
+                            <div id="chat-history-list" class="history-list">
+                                <!-- Chat history will be dynamically added here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+
+            <!-- Main Chat Area -->
+            <div class="chatbot-main-area">
+                <!-- Top Bar -->
+                <div class="chatbot-topbar">
+                    <div class="topbar-left">
+                        <h1 class="chat-title">AI Assistant</h1>
+                    </div>
+                  <div class="topbar-actions">
+                      <button id="clear-chat-btn" class="topbar-btn" title="Clear current chat">
+                          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
+                              <line x1="10" y1="11" x2="10" y2="17"></line>
+                              <line x1="14" y1="11" x2="14" y2="17"></line>
+                          </svg>
+                      </button>
+                      <button id="share-chat-btn" class="topbar-btn" title="Share chat">
+                          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                              <polyline points="16,6 12,2 8,6"></polyline>
+                              <line x1="12" y1="2" x2="12" y2="15"></line>
+                          </svg>
+                      </button>
+                      <button id="menu-btn" class="topbar-btn" title="Menu">
+                          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <circle cx="12" cy="12" r="1"></circle>
+                              <circle cx="19" cy="12" r="1"></circle>
+                              <circle cx="5" cy="12" r="1"></circle>
+                          </svg>
+                      </button>
+                  </div>
+                </div>
+
+                <!-- Chat Container -->
+                <div class="chat-container">
+                    <!-- Welcome Message -->
+                    <div id="welcome-message" class="welcome-message">
+                        <div class="welcome-content">
+                            <div class="welcome-icon">✨</div>
+                            <h2>How can I help you today?</h2>
+                            <div class="suggestion-chips">
+                                <button class="suggestion-chip" data-suggestion="Explain quantum computing">Explain quantum computing</button>
+                                <button class="suggestion-chip" data-suggestion="Write a creative story">Write a creative story</button>
+                                <button class="suggestion-chip" data-suggestion="Help me plan a trip">Help me plan a trip</button>
+                                <button class="suggestion-chip" data-suggestion="Solve a math problem">Solve a math problem</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Messages -->
+                    <div id="chat-messages" class="chat-messages" role="log" aria-label="Chat conversation">
+                        <!-- Messages will be dynamically added here -->
+                    </div>
+
+                    <!-- Typing Indicator -->
+                    <div id="typing-indicator" class="typing-indicator hidden">
+                        <div class="message-container ai-message">
+                            <div class="message-avatar">
+                                <div class="avatar-icon">🤖</div>
+                            </div>
+                            <div class="message-content">
+                                <div class="typing-dots">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input -->
+                <div class="chat-input-container">
+                    <div class="input-wrapper">
+                        <div class="input-container">
+                            <textarea 
+                                id="chat-input" 
+                                class="chat-input" 
+                                placeholder="Ask anything..."
+                                rows="1"
+                                aria-label="Type your message"
+                                autocomplete="off"
+                                spellcheck="true"
+                            ></textarea>
+                            <button id="send-btn" class="send-btn" aria-label="Send message" disabled>
+                                <svg class="send-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 2L11 13"></path>
+                                    <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Connection Status -->
+                <div id="connection-status" class="connection-status hidden">
+                    <div class="status-indicator">
+                        <span class="status-icon">🔗</span>
+                        <span class="status-text">Connecting to AI service...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Chatbot Features Modal -->
+    <div id="features-modal" class="modal-overlay hidden">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">AI Chat Features</h3>
+                <button class="modal-close" onclick="Utils.closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">💬</div>
+                        <h4>Natural Conversations</h4>
+                        <p>Engage in natural, human-like conversations on any topic</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🧠</div>
+                        <h4>Intelligent Responses</h4>
+                        <p>Get thoughtful, context-aware responses powered by advanced AI</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">⚡</div>
+                        <h4>Fast Responses</h4>
+                        <p>Quick response times with the efficient Gemini 1.5 8B model</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🔒</div>
+                        <h4>Privacy Focused</h4>
+                        <p>Your conversations are not stored or used for training</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="Utils.closeModal()">Got it!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div id="error-modal" class="modal-overlay hidden">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">Error</h3>
+                <button class="modal-close" onclick="Utils.closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="error-content" class="error-content">
+                    <!-- Error content will be inserted here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="Utils.closeModal()">Close</button>
+                <button id="retry-btn" class="btn btn-primary">Retry</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Application Scripts -->
+    <script src="js/simple-env.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/apiService.js"></script>
+    <script src="js/chatbot.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

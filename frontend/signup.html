@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Hereco</title>
+    <meta name="description" content="Create your Hereco account - Join our podcast community and access exclusive content.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB1TMKnRNnH1pMEq26gAKYcxulUoyUFJRI",
+            authDomain: "hereco-17.firebaseapp.com",
+            projectId: "hereco-17",
+            storageBucket: "hereco-17.firebasestorage.app",
+            messagingSenderId: "114911168209",
+            appId: "1:114911168209:web:8c77ab79ae3f172a6827f0"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        window.auth = auth;
+        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+        window.signInWithPopup = signInWithPopup;
+        window.provider = provider;
+    </script>
+</head>
+<body class="login-page">
+
+    <!-- Background Video -->
+    <div class="video-background">
+        <video autoplay muted loop playsinline>
+            <source src="https://shntanuuherebucket1.blob.core.windows.net/files/TVA.mov" type="video/quicktime">
+            <source src="https://shntanuuherebucket1.blob.core.windows.net/files/TVA.mov" type="video/mp4">
+            <!-- Fallback image if video doesn't load -->
+        </video>
+        <div class="video-overlay"></div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="login-main">
+        <div class="login-container">
+            <div class="login-content">
+                <div class="login-header">
+                    <h1 class="login-title">Join Hereco</h1>
+                    <p class="login-subtitle">Create your account to get started</p>
+                </div>
+
+                <div class="login-card">
+                    <div class="social-login-section">
+                        <h2 class="section-title">Choose your preferred social account for instant access.</h2>
+                        
+                        <button type="button" class="social-btn google-btn" id="googleSignupBtn">
+                            <span class="social-icon google-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24">
+                                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                                </svg>
+                            </span>
+                            <span class="social-text">Continue with Google</span>
+                        </button>
+                    </div>
+
+                    <div class="divider">
+                        <span class="divider-text">Or</span>
+                    </div>
+
+                    <div class="email-section">
+                        <button type="button" class="email-toggle" id="emailToggle">
+                            <span class="email-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                    <polyline points="22,6 12,13 2,6"/>
+                                </svg>
+                            </span>
+                            <span class="email-text">Continue via Email</span>
+                            <span class="toggle-arrow">▼</span>
+                        </button>
+
+                        <div class="email-form-container" id="emailFormContainer" style="display: none;">
+                            <form class="email-form" id="signupForm">
+                                <div class="form-group">
+                                    <label for="fullName" class="form-label">Full Name</label>
+                                    <input 
+                                        type="text" 
+                                        id="fullName" 
+                                        name="fullName" 
+                                        class="form-input" 
+                                        placeholder="John Doe"
+                                        required
+                                    >
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="email" class="form-label">Email address</label>
+                                    <input 
+                                        type="email" 
+                                        id="email" 
+                                        name="email" 
+                                        class="form-input" 
+                                        placeholder="email@example.com"
+                                        required
+                                    >
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="password" class="form-label">Password</label>
+                                    <div class="password-wrapper">
+                                        <input 
+                                            type="password" 
+                                            id="password" 
+                                            name="password" 
+                                            class="form-input" 
+                                            placeholder="Create a strong password"
+                                            required
+                                        >
+                                        <button type="button" class="password-toggle" id="passwordToggle">
+                                            <span class="toggle-icon">👁️</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                                    <div class="password-wrapper">
+                                        <input 
+                                            type="password" 
+                                            id="confirmPassword" 
+                                            name="confirmPassword" 
+                                            class="form-input" 
+                                            placeholder="Confirm your password"
+                                            required
+                                        >
+                                        <button type="button" class="password-toggle" id="confirmPasswordToggle">
+                                            <span class="toggle-icon">👁️</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="form-options">
+                                    <label class="checkbox-wrapper">
+                                        <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
+                                        <span class="checkbox-custom"></span>
+                                        <span class="checkbox-label">I agree to the <a href="terms.html" class="terms-link">Terms of Service</a> and <a href="privacy.html" class="terms-link">Privacy Policy</a></span>
+                                    </label>
+                                </div>
+
+                                <button type="submit" class="login-btn" id="signupBtn">
+                                    <span class="btn-text">Create Account</span>
+                                    <span class="btn-loader" style="display: none;">
+                                        <div class="spinner"></div>
+                                    </span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="login-footer">
+                    <p class="terms-text">
+                        Already have an account? 
+                        <a href="login.html" class="terms-link">Sign in here</a>
+                    </p>
+                </div>
+
+                <!-- Error/Success Messages -->
+                <div class="message-container" id="messageContainer" style="display: none;">
+                    <div class="message" id="message">
+                        <span class="message-icon"></span>
+                        <span class="message-text"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Signup functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is already logged in
+            if (window.auth) {
+                window.auth.onAuthStateChanged((user) => {
+                    if (user) {
+                        // User is already logged in, redirect to home
+                        window.location.href = 'index.html';
+                    }
+                });
+            }
+            const signupForm = document.getElementById('signupForm');
+            const googleSignupBtn = document.getElementById('googleSignupBtn');
+            const messageContainer = document.getElementById('messageContainer');
+            const message = document.getElementById('message');
+            const signupBtn = document.getElementById('signupBtn');
+            const emailToggle = document.getElementById('emailToggle');
+            const emailFormContainer = document.getElementById('emailFormContainer');
+            const passwordToggle = document.getElementById('passwordToggle');
+            const confirmPasswordToggle = document.getElementById('confirmPasswordToggle');
+
+            // Password toggle functionality
+            function setupPasswordToggle(toggleBtn, inputId) {
+                toggleBtn.addEventListener('click', function() {
+                    const input = document.getElementById(inputId);
+                    const icon = toggleBtn.querySelector('.toggle-icon');
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.textContent = '🙈';
+                    } else {
+                        input.type = 'password';
+                        icon.textContent = '👁️';
+                    }
+                });
+            }
+
+            setupPasswordToggle(passwordToggle, 'password');
+            setupPasswordToggle(confirmPasswordToggle, 'confirmPassword');
+
+            // Email toggle functionality
+            emailToggle.addEventListener('click', function() {
+                const isExpanded = emailFormContainer.style.display !== 'none';
+                const arrow = emailToggle.querySelector('.toggle-arrow');
+                
+                if (isExpanded) {
+                    emailFormContainer.style.display = 'none';
+                    arrow.textContent = '▼';
+                } else {
+                    emailFormContainer.style.display = 'block';
+                    arrow.textContent = '▲';
+                }
+            });
+
+            // Video background handling
+            const video = document.querySelector('.video-background video');
+            if (video) {
+                
+                // Handle video loading errors
+                video.addEventListener('error', function() {
+                    console.log('Video failed to load, using fallback background');
+                    document.querySelector('.video-background').style.display = 'none';
+                    document.querySelector('.login-main').style.background = 'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%)';
+                });
+
+                // Pause video when page is not visible (performance optimization)
+                document.addEventListener('visibilitychange', function() {
+                    if (document.hidden) {
+                        video.pause();
+                    } else {
+                        video.play().catch(e => console.log('Video autoplay prevented:', e));
+                    }
+                });
+
+                // Handle video loading
+                video.addEventListener('loadeddata', function() {
+                    console.log('Background video loaded successfully');
+                    // Ensure video is visible
+                    video.style.display = 'block';
+                    document.querySelector('.video-background').style.display = 'block';
+                });
+
+                // Force video to be visible
+                video.style.display = 'block';
+                document.querySelector('.video-background').style.display = 'block';
+            }
+
+            // Show message function
+            function showMessage(text, type = 'error') {
+                const messageIcon = message.querySelector('.message-icon');
+                const messageText = message.querySelector('.message-text');
+                
+                messageIcon.textContent = type === 'error' ? '❌' : '✅';
+                messageText.textContent = text;
+                messageContainer.style.display = 'block';
+                message.className = `message ${type}`;
+                
+                setTimeout(() => {
+                    messageContainer.style.display = 'none';
+                }, 5000);
+            }
+
+            // Toggle loading state
+            function toggleLoading(isLoading) {
+                const btnText = signupBtn.querySelector('.btn-text');
+                const btnLoader = signupBtn.querySelector('.btn-loader');
+                
+                if (isLoading) {
+                    btnText.style.display = 'none';
+                    btnLoader.style.display = 'flex';
+                    signupBtn.disabled = true;
+                } else {
+                    btnText.style.display = 'block';
+                    btnLoader.style.display = 'none';
+                    signupBtn.disabled = false;
+                }
+            }
+
+            // Form validation
+            function validateForm(formData) {
+                const { fullName, email, password, confirmPassword, agreeTerms } = formData;
+                
+                if (!fullName.trim()) {
+                    showMessage('Please enter your full name', 'error');
+                    return false;
+                }
+                
+                if (!email.trim()) {
+                    showMessage('Please enter your email address', 'error');
+                    return false;
+                }
+                
+                if (password.length < 6) {
+                    showMessage('Password must be at least 6 characters long', 'error');
+                    return false;
+                }
+                
+                if (password !== confirmPassword) {
+                    showMessage('Passwords do not match', 'error');
+                    return false;
+                }
+                
+                if (!agreeTerms) {
+                    showMessage('Please agree to the Terms of Service and Privacy Policy', 'error');
+                    return false;
+                }
+                
+                return true;
+            }
+
+            // Signup with email and password
+            signupForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = {
+                    fullName: document.getElementById('fullName').value,
+                    email: document.getElementById('email').value,
+                    password: document.getElementById('password').value,
+                    confirmPassword: document.getElementById('confirmPassword').value,
+                    agreeTerms: document.getElementById('agreeTerms').checked
+                };
+
+                if (!validateForm(formData)) {
+                    return;
+                }
+
+                toggleLoading(true);
+                messageContainer.style.display = 'none';
+
+                try {
+                    const userCredential = await window.createUserWithEmailAndPassword(
+                        window.auth, 
+                        formData.email, 
+                        formData.password
+                    );
+                    
+                    // Update user profile with full name
+                    await userCredential.user.updateProfile({
+                        displayName: formData.fullName
+                    });
+                    
+                    showMessage('Account created successfully! Redirecting...', 'success');
+                    
+                    // Redirect to main page after successful signup
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                    
+                } catch (error) {
+                    console.error('Signup error:', error);
+                    let errorMessage = 'Signup failed. Please try again.';
+                    
+                    switch (error.code) {
+                        case 'auth/email-already-in-use':
+                            errorMessage = 'This email is already registered. Please sign in instead.';
+                            break;
+                        case 'auth/invalid-email':
+                            errorMessage = 'Please enter a valid email address.';
+                            break;
+                        case 'auth/weak-password':
+                            errorMessage = 'Password is too weak. Please choose a stronger password.';
+                            break;
+                        case 'auth/network-request-failed':
+                            errorMessage = 'Network error. Please check your connection and try again.';
+                            break;
+                    }
+                    
+                    showMessage(errorMessage, 'error');
+                } finally {
+                    toggleLoading(false);
+                }
+            });
+
+            // Google signup
+            googleSignupBtn.addEventListener('click', async function() {
+                toggleLoading(true);
+                messageContainer.style.display = 'none';
+
+                try {
+                    const result = await window.signInWithPopup(window.auth, window.provider);
+                    showMessage('Account created successfully! Redirecting...', 'success');
+                    
+                    // Redirect to main page after successful signup
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                    
+                } catch (error) {
+                    console.error('Google signup error:', error);
+                    let errorMessage = 'Google signup failed. Please try again.';
+                    
+                    if (error.code === 'auth/popup-closed-by-user') {
+                        errorMessage = 'Signup cancelled. Please try again.';
+                    } else if (error.code === 'auth/network-request-failed') {
+                        errorMessage = 'Network error. Please check your connection and try again.';
+                    }
+                    
+                    showMessage(errorMessage, 'error');
+                } finally {
+                    toggleLoading(false);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
