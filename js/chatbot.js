@@ -433,6 +433,7 @@ class ChatbotService {
             try {
                 // Get all chats
                 const allChats = await this.getAllChats();
+                console.log('Before deletion - allChats:', allChats.length, 'chats');
                 
                 // Ensure allChats is an array
                 if (!Array.isArray(allChats)) {
@@ -443,17 +444,19 @@ class ChatbotService {
                 
                 // Remove the chat
                 const updatedChats = allChats.filter(chat => chat.id !== chatId);
+                console.log('After deletion - updatedChats:', updatedChats.length, 'chats');
                 
                 // Save updated chats
                 await this.saveAllChats(updatedChats);
+                console.log('Chats saved to backend/localStorage');
                 
                 // If this was the current chat, start a new one
                 if (chatId === this.currentChatId) {
                     await this.startNewChat();
-                } else {
-                    // Just update the history display
-                    await this.updateChatHistory();
                 }
+                
+                // Always update the history display
+                await this.updateChatHistory();
                 
                 this.showNotification(`Chat "${chatTitle}" deleted successfully`, 'success');
             } catch (error) {
@@ -1040,10 +1043,15 @@ class ChatbotService {
      * Update chat history in sidebar
      */
     async updateChatHistory() {
+        console.log('updateChatHistory called');
         const historyList = document.getElementById('chat-history-list');
         const allChats = await this.getAllChats();
+        console.log('updateChatHistory - allChats:', allChats.length, 'chats');
         
-        if (!historyList) return;
+        if (!historyList) {
+            console.warn('historyList element not found');
+            return;
+        }
         
         historyList.innerHTML = '';
         
