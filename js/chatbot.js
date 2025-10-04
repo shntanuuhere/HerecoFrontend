@@ -708,10 +708,13 @@ class ChatbotService {
                 return null;
             }
 
-            // Prepare request payload with current conversation history
+            // Validate and prepare conversation history
+            const validatedHistory = this.validateConversationHistory();
+            
+            // Prepare request payload with validated conversation history
             const payload = {
                 model: this.currentModel,
-                messages: this.conversationHistory,
+                messages: validatedHistory,
                 max_tokens: 1000,
                 temperature: 0.7
             };
@@ -728,7 +731,55 @@ class ChatbotService {
                 }
             }
 
-            // Make API request to backend
+            // Make API request to backend with retry logic
+            const response = await this.makeApiRequest(payload, userToken);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Backend error response:', errorText);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+
+            return data;
+        } catch (error) {
+            console.error('Error sending message to AI:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Validate conversation history format
+     * @returns {Array} Validated conversation history
+     */
+    validateConversationHistory() {
+        if (!Array.isArray(this.conversationHistory)) {
+            console.warn('Conversation history is not an array, initializing empty array');
+            return [];
+        }
+
+        return this.conversationHistory
+            .filter(msg => msg && typeof msg === 'object')
+            .map(msg => ({
+                role: msg.role || 'user',
+                content: msg.content || '',
+                timestamp: msg.timestamp || new Date().toISOString()
+            }))
+            .filter(msg => msg.content.trim().length > 0);
+    }
+
+    /**
+     * Make API request with retry logic
+     * @param {Object} payload - Request payload
+     * @param {string} userToken - Firebase auth token
+     * @returns {Promise<Response>} API response
+     */
+    async makeApiRequest(payload, userToken, retryCount = 0) {
+        const maxRetries = 3;
+        const retryDelay = 1000; // 1 second
+
+        try {
             const headers = {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
@@ -744,17 +795,38 @@ class ChatbotService {
                 body: JSON.stringify(payload)
             });
 
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            // If 400 error and we have retries left, try again
+            if (!response.ok && response.status === 400 && retryCount < maxRetries) {
+                console.warn(`400 error on attempt ${retryCount + 1}, retrying in ${retryDelay}ms...`);
+                
+                // If this is the first retry and we have conversation history, try with empty history
+                if (retryCount === 0 && payload.messages.length > 0) {
+                    console.warn('Trying with empty conversation history...');
+                    payload.messages = [];
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, retryDelay));
+                return this.makeApiRequest(payload, userToken, retryCount + 1);
             }
 
-            const data = await response.json();
-
-            return data;
+            return response;
         } catch (error) {
-            console.error('Error sending message to AI:', error);
+            if (retryCount < maxRetries) {
+                console.warn(`Network error on attempt ${retryCount + 1}, retrying in ${retryDelay}ms...`);
+                await new Promise(resolve => setTimeout(resolve, retryDelay));
+                return this.makeApiRequest(payload, userToken, retryCount + 1);
+            }
             throw error;
         }
+    }
+
+    /**
+     * Reset conversation history if corrupted
+     */
+    resetConversationHistory() {
+        console.warn('Resetting conversation history due to corruption');
+        this.conversationHistory = [];
+        this.showNotification('Conversation history has been reset', 'info');
     }
 
     /**
@@ -817,9 +889,31 @@ class ChatbotService {
             // Hide typing indicator
             this.hideTypingIndicator();
 
+            // Handle specific error types with better user feedback
+            let errorMessage = 'An error occurred while processing your message.';
+            
+            if (error.message.includes('HTTP 400')) {
+                errorMessage = 'Invalid request format. Please try again.';
+            } else if (error.message.includes('HTTP 401')) {
+                errorMessage = 'Authentication required. Please log in again.';
+            } else if (error.message.includes('HTTP 403')) {
+                errorMessage = 'Access denied. Please check your permissions.';
+            } else if (error.message.includes('HTTP 429')) {
+                errorMessage = 'Too many requests. Please wait a moment and try again.';
+            } else if (error.message.includes('HTTP 500')) {
+                errorMessage = 'Server error. Please try again later.';
+            } else if (error.message.includes('Failed to fetch')) {
+                errorMessage = 'Network error. Please check your connection.';
+            } else if (error.message.includes('timeout')) {
+                errorMessage = 'Request timed out. Please try again.';
+            }
+
             // Show error message
-            this.addMessage('system', `Error: ${error.message}`);
-            this.showErrorModal(error.message);
+            this.addMessage('system', `Error: ${errorMessage}`);
+            this.showErrorModal(errorMessage);
+            
+            // Log detailed error for debugging
+            console.error('Detailed error:', error);
         }
 
         // Save current chat and update sidebar

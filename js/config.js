@@ -70,7 +70,13 @@ const Config = {
     datasetUpload: '/api/chatbot/dataset/upload',
     datasetList: '/api/chatbot/dataset',
     datasetDelete: '/api/chatbot/dataset',
-    chatHistory: '/api/chatbot/chats'
+    chatHistory: '/api/chatbot/chats',
+    
+    // Search endpoints
+    searchStatus: '/api/search/status',
+    searchComprehensive: '/api/search/comprehensive',
+    searchGoogle: '/api/search/google',
+    searchWikipedia: '/api/search/wikipedia'
         },
         timeout: 10000, // 10 seconds for faster feedback
         retryAttempts: 3,
