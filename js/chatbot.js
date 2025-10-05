@@ -686,6 +686,15 @@ class ChatbotService {
                 this.closeMobileSidebar();
             });
         }
+        
+        // Mobile sidebar small new chat button
+        const mobileNewChatBtnSmall = document.getElementById('mobile-new-chat-btn-small');
+        if (mobileNewChatBtnSmall) {
+            mobileNewChatBtnSmall.addEventListener('click', () => {
+                this.startNewChat();
+                this.closeMobileSidebar();
+            });
+        }
 
         // User message actions (copy and edit)
         document.addEventListener('click', (e) => {
