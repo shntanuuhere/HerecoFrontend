@@ -206,6 +206,7 @@ class ChatbotService {
         console.log('Chat data loaded:', chatData);
         
         if (chatData) {
+            console.log('Chat found, loading messages...');
             // Convert messages from database format to display format
             this.messages = (chatData.messages || []).map(msg => ({
                 ...msg,
@@ -237,6 +238,7 @@ class ChatbotService {
             this.showNotification(`Loaded chat: ${chatData.title || 'Untitled'}`, 'info');
         } else {
             // Chat not found, create new one
+            console.log('Chat not found, creating new chat');
             this.startNewChat();
         }
     }
@@ -414,8 +416,11 @@ class ChatbotService {
      * Navigate to a specific chat
      */
     async navigateToChat(chatId) {
+        console.log('navigateToChat called with chatId:', chatId);
+        
         // Save current chat before switching
         if (this.messages.length > 0 && this.currentChatId) {
+            console.log('Saving current chat before switching');
             await this.saveCurrentChat();
         }
         
@@ -423,12 +428,19 @@ class ChatbotService {
         const url = new URL(window.location);
         url.searchParams.set('c', chatId);
         window.history.pushState({}, '', url.href);
+        console.log('URL updated to:', url.href);
         
         // Load the chat directly
+        console.log('Loading chat with ID:', chatId);
         await this.loadChatById(chatId);
         
         // Update sidebar active state
         this.updateSidebarActiveState(chatId);
+        
+        // Close mobile sidebar if open
+        this.closeMobileSidebar();
+        
+        console.log('Navigation completed for chatId:', chatId);
     }
 
     /**
@@ -640,8 +652,17 @@ class ChatbotService {
         const mobileNewChat = document.getElementById('mobile-new-chat');
         const mobileNewChatBtn = document.getElementById('mobile-new-chat-btn');
         
+        // Mobile message promotional banner
+        const mobileMessagePromo = document.getElementById('mobile-message-promo');
+        const closeMessagePromo = document.getElementById('close-message-promo');
+        
         if (mobileMenuToggle) {
             mobileMenuToggle.addEventListener('click', () => this.toggleMobileSidebar());
+        }
+        
+        // Mobile message promotional banner event listeners
+        if (closeMessagePromo) {
+            closeMessagePromo.addEventListener('click', () => this.hideMobileMessagePromo());
         }
         
         if (mobileSidebarOverlay) {
@@ -950,6 +971,9 @@ class ChatbotService {
         // Save current chat and update sidebar
         await this.saveCurrentChat();
         this.saveChatHistory();
+        
+        // Check for mobile promotional banner after 5 messages
+        this.checkMobilePromo();
     }
 
     /**
@@ -1211,6 +1235,7 @@ class ChatbotService {
     async updateChatHistory() {
         console.log('updateChatHistory called');
         const historyList = document.getElementById('chat-history-list');
+        const mobileHistoryList = document.getElementById('mobile-chat-history-list');
         const allChats = await this.getAllChats();
         console.log('updateChatHistory - allChats:', allChats.length, 'chats');
         
@@ -1219,7 +1244,13 @@ class ChatbotService {
             return;
         }
         
+        // Update desktop sidebar
         historyList.innerHTML = '';
+        
+        // Update mobile sidebar if it exists
+        if (mobileHistoryList) {
+            mobileHistoryList.innerHTML = '';
+        }
         
         if (allChats.length === 0) {
             const emptyMessage = document.createElement('div');
@@ -1227,6 +1258,12 @@ class ChatbotService {
             emptyMessage.textContent = 'No chat history yet';
             emptyMessage.style.cssText = 'text-align: center; color: var(--text-muted); padding: 1rem; font-style: italic;';
             historyList.appendChild(emptyMessage);
+            
+            // Add empty message to mobile sidebar too
+            if (mobileHistoryList) {
+                const mobileEmptyMessage = emptyMessage.cloneNode(true);
+                mobileHistoryList.appendChild(mobileEmptyMessage);
+            }
             return;
         }
         
@@ -1269,6 +1306,7 @@ class ChatbotService {
             // Add click event for navigation (excluding delete button)
             historyItem.addEventListener('click', (e) => {
                 if (!e.target.closest('.history-delete-btn')) {
+                    console.log('Desktop sidebar: Navigating to chat:', chat.id);
                     this.navigateToChat(chat.id);
                 }
             });
@@ -1281,6 +1319,30 @@ class ChatbotService {
             });
             
             historyList.appendChild(historyItem);
+            
+            // Also add to mobile sidebar if it exists
+            if (mobileHistoryList) {
+                const mobileHistoryItem = historyItem.cloneNode(true);
+                
+                // Add click event for navigation (excluding delete button)
+                mobileHistoryItem.addEventListener('click', (e) => {
+                    if (!e.target.closest('.history-delete-btn')) {
+                        console.log('Mobile sidebar: Navigating to chat:', chat.id);
+                        this.navigateToChat(chat.id);
+                    }
+                });
+                
+                // Add delete button event
+                const mobileDeleteBtn = mobileHistoryItem.querySelector('.history-delete-btn');
+                if (mobileDeleteBtn) {
+                    mobileDeleteBtn.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        await this.deleteChat(chat.id);
+                    });
+                }
+                
+                mobileHistoryList.appendChild(mobileHistoryItem);
+            }
         });
     }
 
@@ -1880,6 +1942,54 @@ class ChatbotService {
             mobileSidebarOverlay.classList.remove('active');
             mobileMenuToggle.setAttribute('aria-expanded', 'false');
             document.body.style.overflow = '';
+        }
+    }
+
+    /**
+     * Show mobile message promotional banner
+     */
+    showMobileMessagePromo() {
+        const mobileMessagePromo = document.getElementById('mobile-message-promo');
+        if (mobileMessagePromo) {
+            mobileMessagePromo.style.display = 'block';
+            // Store in localStorage that promo was shown
+            localStorage.setItem('mobile-promo-shown', 'true');
+        }
+    }
+
+    /**
+     * Hide mobile message promotional banner
+     */
+    hideMobileMessagePromo() {
+        const mobileMessagePromo = document.getElementById('mobile-message-promo');
+        if (mobileMessagePromo) {
+            mobileMessagePromo.style.display = 'none';
+        }
+    }
+
+    /**
+     * Check if mobile promotional banner should be shown
+     */
+    checkMobilePromo() {
+        // Only show on mobile devices
+        if (window.innerWidth > 768) {
+            return;
+        }
+        
+        // Check if promo was already shown
+        if (localStorage.getItem('mobile-promo-shown') === 'true') {
+            return;
+        }
+        
+        // Count user messages in current conversation
+        const userMessages = this.messages.filter(msg => msg.type === 'user' || msg.role === 'user');
+        
+        // Show promo after 5 user messages
+        if (userMessages.length >= 5) {
+            // Add a small delay to make it feel natural
+            setTimeout(() => {
+                this.showMobileMessagePromo();
+            }, 2000);
         }
     }
 }

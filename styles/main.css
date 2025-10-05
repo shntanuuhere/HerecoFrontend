@@ -5499,6 +5499,11 @@ body.login-page::before {
 }
 
 @media (max-width: 768px) {
+    /* Hide header on mobile */
+    .header {
+        display: none;
+    }
+    
     /* Mobile Navigation - Show all tabs */
     .header-container {
         padding: 0 var(--spacing-4);
