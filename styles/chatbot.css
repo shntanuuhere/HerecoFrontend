@@ -497,7 +497,8 @@
     flex-direction: row-reverse;
 }
 
-.message-container.ai-message {
+.message-container.ai-message,
+.message-container.assistant-message {
     align-self: flex-start;
 }
 
@@ -518,7 +519,8 @@
     box-shadow: 0 2px 8px rgba(255, 149, 0, 0.3);
 }
 
-.ai-message .message-avatar {
+.ai-message .message-avatar,
+.assistant-message .message-avatar {
     background: linear-gradient(135deg, #10b981, #059669);
     color: white;
 }
@@ -600,7 +602,8 @@
     color: #ff9500;
 }
 
-.ai-message .message-bubble {
+.ai-message .message-bubble,
+.assistant-message .message-bubble {
     background: rgba(255, 255, 255, 0.15);
     color: var(--text-primary);
     backdrop-filter: blur(20px);
@@ -623,6 +626,13 @@
 .user-message .message-time {
     text-align: left;
     color: rgba(255, 165, 0, 0.7);
+    font-size: 0.75rem;
+}
+
+.ai-message .message-time,
+.assistant-message .message-time {
+    text-align: left;
+    color: rgba(16, 185, 129, 0.7);
     font-size: 0.75rem;
 }
 

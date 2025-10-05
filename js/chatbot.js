@@ -201,12 +201,19 @@ class ChatbotService {
      * Load chat by ID
      */
     async loadChatById(chatId) {
+        console.log('Loading chat with ID:', chatId);
         const chatData = await this.getChatById(chatId);
+        console.log('Chat data loaded:', chatData);
         
         if (chatData) {
-            this.messages = chatData.messages || [];
+            // Convert messages from database format to display format
+            this.messages = (chatData.messages || []).map(msg => ({
+                ...msg,
+                type: msg.role || msg.type || 'user'
+            }));
             this.conversationHistory = chatData.conversationHistory || [];
             this.currentChatId = chatId;
+            console.log('Messages loaded:', this.messages.length, 'messages');
             
             // Clear current messages
             document.getElementById('chat-messages').innerHTML = '';
@@ -252,12 +259,13 @@ class ChatbotService {
         try {
             // Try to get from backend first
             const backendChats = await this.getChatsFromBackend();
+            console.log('Backend chats received:', backendChats);
             if (backendChats && backendChats.length > 0) {
-                console.log('Loaded chats from backend');
+                console.log('Loaded chats from backend:', backendChats.length, 'chats');
                 return backendChats;
             }
         } catch (error) {
-            console.log('Backend not available, using localStorage');
+            console.log('Backend not available, using localStorage:', error);
         }
         
         // Fallback to localStorage
@@ -411,10 +419,33 @@ class ChatbotService {
             await this.saveCurrentChat();
         }
         
-        // Navigate to the chat URL with query parameter
+        // Update URL without page reload
         const url = new URL(window.location);
         url.searchParams.set('c', chatId);
-        window.location.href = url.href;
+        window.history.pushState({}, '', url.href);
+        
+        // Load the chat directly
+        await this.loadChatById(chatId);
+        
+        // Update sidebar active state
+        this.updateSidebarActiveState(chatId);
+    }
+
+    /**
+     * Update sidebar active state
+     */
+    updateSidebarActiveState(chatId) {
+        // Remove active class from all history items
+        const historyItems = document.querySelectorAll('.history-item');
+        historyItems.forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        // Add active class to current chat
+        const currentItem = document.querySelector(`.history-item[data-chat-id="${chatId}"]`);
+        if (currentItem) {
+            currentItem.classList.add('active');
+        }
     }
 
     /**
@@ -956,7 +987,15 @@ class ChatbotService {
     renderMessage(message) {
         const chatMessages = document.getElementById('chat-messages');
         const messageElement = document.createElement('div');
-        messageElement.className = `message-container ${message.type}-message`;
+        // Handle both 'type' and 'role' fields for backward compatibility
+        const messageType = message.type || message.role || 'user';
+        
+        // Ensure we have the correct message type for rendering
+        if (messageType === 'assistant') {
+            messageElement.className = `message-container assistant-message`;
+        } else {
+            messageElement.className = `message-container ${messageType}-message`;
+        }
         messageElement.setAttribute('data-message-id', message.id);
 
         const timestamp = new Date(message.timestamp).toLocaleTimeString('en-US', {
@@ -966,7 +1005,7 @@ class ChatbotService {
 
         let messageHTML = '';
 
-      if (message.type === 'user') {
+      if (messageType === 'user') {
           messageHTML = `
               <div class="message-avatar">
                   <div class="avatar-icon">👤</div>
@@ -992,7 +1031,7 @@ class ChatbotService {
                   </div>
               </div>
           `;
-        } else if (message.type === 'assistant') {
+        } else if (messageType === 'assistant') {
             messageHTML = `
                 <div class="message-avatar">
                     <div class="avatar-icon">🤖</div>
@@ -1136,8 +1175,8 @@ class ChatbotService {
             await this.saveCurrentChat();
         }
         
-        // Clear current session (don't generate ID yet)
-        this.currentChatId = null;
+        // Generate new chat ID immediately
+        this.currentChatId = this.generateChatId();
         this.messages = [];
         this.conversationHistory = [];
         
@@ -1151,13 +1190,13 @@ class ChatbotService {
             welcomeMessage.classList.remove('hidden');
         }
         
-        // Update URL to remove chat ID
+        // Update URL with new chat ID
         const url = new URL(window.location);
-        url.searchParams.delete('c');
+        url.searchParams.set('c', this.currentChatId);
         window.history.pushState({}, '', url.href);
         
-        // Update chat history in sidebar
-        this.updateChatHistory();
+        // Add new chat to sidebar
+        await this.updateChatHistory();
         
         // Show notification
         this.showNotification('New chat started', 'success');
@@ -1200,7 +1239,19 @@ class ChatbotService {
             
             // Show chat title with timestamp and delete button
             const title = chat.title || 'Untitled Chat';
-            const date = new Date(chat.timestamp).toLocaleDateString();
+            let date = 'Recent';
+            try {
+                const timestamp = chat.timestamp || chat.updatedAt || chat.createdAt;
+                if (timestamp) {
+                    const dateObj = new Date(timestamp);
+                    if (!isNaN(dateObj.getTime())) {
+                        date = dateObj.toLocaleDateString();
+                    }
+                }
+            } catch (error) {
+                console.warn('Error parsing date:', error);
+            }
+            historyItem.setAttribute('data-chat-id', chat.id);
             historyItem.innerHTML = `
                 <div class="history-content">
                     <div class="history-title">${title}</div>
@@ -1274,7 +1325,10 @@ class ChatbotService {
      * Get chat title from first user message
      */
     getChatTitle() {
-        const firstUserMessage = this.messages.find(msg => msg.type === 'user');
+        // Handle both 'type' and 'role' fields for backward compatibility
+        const firstUserMessage = this.messages.find(msg => 
+            (msg.type === 'user') || (msg.role === 'user')
+        );
         if (firstUserMessage) {
             return firstUserMessage.content.length > 50 
                 ? firstUserMessage.content.substring(0, 50) + '...'
@@ -1561,10 +1615,16 @@ class ChatbotService {
                 return;
             }
             
+            // Convert messages to use 'role' field for database compatibility
+            const convertedMessages = this.messages.map(msg => ({
+                ...msg,
+                role: msg.type || msg.role || 'user'
+            }));
+            
             const chatData = {
                 id: this.currentChatId,
                 title: this.getChatTitle(),
-                messages: this.messages,
+                messages: convertedMessages,
                 conversationHistory: this.conversationHistory,
                 userId: userId,
                 timestamp: new Date().toISOString()
@@ -1577,6 +1637,8 @@ class ChatbotService {
             if (!Array.isArray(allChats)) {
                 console.warn('allChats is not an array, initializing empty array');
                 await this.saveAllChats([chatData]);
+                // Update sidebar after saving
+                await this.updateChatHistory();
                 return;
             }
             
@@ -1594,6 +1656,9 @@ class ChatbotService {
             }
             
             await this.saveAllChats(allChats);
+            
+            // Update sidebar after saving
+            await this.updateChatHistory();
         } catch (error) {
             console.error('Failed to save current chat:', error);
         }
