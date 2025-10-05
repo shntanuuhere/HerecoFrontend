@@ -4593,6 +4593,52 @@ body.login-page::before {
     .user-name {
         max-width: 80px;
     }
+    
+    /* Mobile user profile - show only avatar */
+    .user-profile {
+        flex-shrink: 0;
+        margin-left: var(--spacing-xs);
+    }
+    
+    .user-profile .user-button {
+        padding: 0;
+        gap: 0;
+        min-width: auto;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border: none;
+        background: transparent;
+    }
+    
+    .user-profile .user-name {
+        display: none;
+    }
+    
+    .user-profile .dropdown-arrow {
+        display: none;
+    }
+    
+    .user-profile .user-avatar {
+        width: 28px;
+        height: 28px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+    
+    /* Mobile user menu positioning */
+    .user-profile .user-menu {
+        right: 0;
+        left: auto;
+        min-width: 180px;
+        margin-top: var(--spacing-1);
+    }
 }
 
 .login-main {
@@ -5499,9 +5545,60 @@ body.login-page::before {
 }
 
 @media (max-width: 768px) {
-    /* Hide header on mobile */
+    /* Mobile header adjustments */
     .header {
+        display: block;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    
+    .header-content {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--spacing-sm) var(--spacing-md);
+        gap: var(--spacing-sm);
+    }
+    
+    .site-title {
+        font-size: var(--font-size-lg);
+        text-align: left;
+        flex-shrink: 0;
+    }
+    
+    .navigation {
+        flex: 1;
+        overflow: hidden;
+    }
+    
+    .nav-list {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: flex-end;
+        gap: var(--spacing-xs);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    
+    .nav-list::-webkit-scrollbar {
         display: none;
+    }
+    
+    .nav-item {
+        flex-shrink: 0;
+    }
+    
+    .nav-link {
+        font-size: var(--font-size-xs);
+        padding: var(--spacing-xs);
+        white-space: nowrap;
     }
     
     /* Mobile Navigation - Show all tabs */
