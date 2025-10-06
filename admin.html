@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hereco Admin Dashboard</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Main Styles -->
+    <link rel="stylesheet" href="styles/main.css">
+    
+    <style>
+        /* Clean Minimal Design - Samsung Style */
+        .admin-page {
+            min-height: 100vh;
+            background: #ffffff;
+            padding: 0;
+            position: relative;
+        }
+
+        /* Background */
+        .hero-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://i.ibb.co/tp4YJ8ZJ/podcast-background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            opacity: 0.05;
+            z-index: -1;
+        }
+
+        /* Clean Header */
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #e5e5e5;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 16px 0;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .site-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333333;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .site-title-link {
+            text-decoration: none;
+            color: #333333;
+        }
+
+        .nav {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #666666;
+            text-decoration: none;
+            font-weight: 400;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: #333333;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: #333333;
+            margin: 0 0 8px 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .page-subtitle {
+            font-size: 16px;
+            color: #666666;
+            margin: 0 0 40px 0;
+        }
+
+        /* Cards */
+        .card {
+            background: #ffffff;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333333;
+            margin: 0 0 20px 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333333;
+            margin-bottom: 8px;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            font-size: 14px;
+            background: #ffffff;
+            transition: border-color 0.2s ease;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #f97316;
+        }
+
+        /* Buttons */
+        .btn {
+            background: #f97316;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s ease;
+            margin-right: 12px;
+            margin-bottom: 12px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .btn:hover {
+            background: #ea580c;
+        }
+
+        .btn:active {
+            background: #c2410c;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+               .btn-success:hover {
+                   background: #218838;
+               }
+               
+               .btn-danger {
+                   background: #dc3545;
+               }
+               
+               .btn-danger:hover {
+                   background: #c82333;
+               }
+               
+               /* Login Screen Styles */
+               .login-screen {
+                   position: fixed;
+                   top: 0;
+                   left: 0;
+                   width: 100%;
+                   height: 100%;
+                   background: rgba(255, 255, 255, 0.95);
+                   backdrop-filter: blur(10px);
+                   display: flex;
+                   align-items: center;
+                   justify-content: center;
+                   z-index: 10000;
+               }
+               
+               .login-container {
+                   background: #ffffff;
+                   border: 1px solid #e5e5e5;
+                   border-radius: 12px;
+                   padding: 40px;
+                   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                   max-width: 400px;
+                   width: 90%;
+               }
+               
+               .login-header {
+                   text-align: center;
+                   margin-bottom: 30px;
+               }
+               
+               .login-title {
+                   font-size: 28px;
+                   font-weight: 600;
+                   color: #333333;
+                   margin: 0 0 8px 0;
+                   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+               }
+               
+               .login-subtitle {
+                   font-size: 14px;
+                   color: #666666;
+                   margin: 0;
+               }
+               
+               .login-form {
+                   display: flex;
+                   flex-direction: column;
+                   gap: 20px;
+               }
+               
+               .form-input {
+                   width: 100%;
+                   padding: 12px 16px;
+                   border: 1px solid #e5e5e5;
+                   border-radius: 4px;
+                   font-size: 14px;
+                   background: #ffffff;
+                   transition: border-color 0.2s ease;
+                   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+               }
+               
+               .form-input:focus {
+                   outline: none;
+                   border-color: #f97316;
+               }
+               
+               .btn-login {
+                   background: #f97316;
+                   color: white;
+                   border: none;
+                   border-radius: 4px;
+                   padding: 12px 20px;
+                   font-size: 14px;
+                   font-weight: 500;
+                   cursor: pointer;
+                   transition: background-color 0.2s ease;
+                   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+               }
+               
+               .btn-login:hover {
+                   background: #ea580c;
+               }
+               
+               .btn-login:active {
+                   background: #c2410c;
+               }
+               
+               .login-error {
+                   background: #f8d7da;
+                   border: 1px solid #f5c6cb;
+                   color: #721c24;
+                   padding: 12px 16px;
+                   border-radius: 4px;
+                   font-size: 14px;
+                   text-align: center;
+               }
+               
+               .dashboard-content {
+                   min-height: 100vh;
+               }
+
+        /* Status */
+        .status-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .status-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-online {
+            background: #28a745;
+        }
+
+        .status-offline {
+            background: #dc3545;
+        }
+
+        .status-unknown {
+            background: #ffc107;
+        }
+
+        .status-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333333;
+        }
+
+        .status-value {
+            font-size: 14px;
+            color: #666666;
+        }
+
+        /* Model Info */
+        .model-info {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .model-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333333;
+            margin: 0 0 8px 0;
+        }
+
+        .model-info p {
+            font-size: 13px;
+            color: #666666;
+            margin: 4px 0;
+        }
+
+        /* Logs */
+        .logs-container {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 16px;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 16px;
+        }
+
+        .log-entry {
+            margin-bottom: 4px;
+            padding: 2px 0;
+        }
+
+        .log-timestamp {
+            color: #999999;
+        }
+
+        .log-success {
+            color: #28a745;
+        }
+
+        .log-error {
+            color: #dc3545;
+        }
+
+        .log-warning {
+            color: #ffc107;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-content {
+                padding: 24px 16px;
+            }
+            
+            .page-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-page">
+        <!-- Background -->
+        <div class="hero-background"></div>
+        
+        <!-- Login Screen -->
+        <div id="login-screen" class="login-screen">
+            <div class="login-container">
+                <div class="login-header">
+                    <h1 class="login-title">Admin Access</h1>
+                    <p class="login-subtitle">Enter admin credentials to continue</p>
+                </div>
+                <form id="login-form" class="login-form">
+                    <div class="form-group">
+                        <label class="form-label" for="admin-email">Email Address</label>
+                        <input type="email" class="form-input" id="admin-email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="admin-password">Password</label>
+                        <input type="password" class="form-input" id="admin-password" placeholder="Enter your password" required>
+                    </div>
+                    <button type="submit" class="btn btn-login">Sign In with Firebase</button>
+                    <div id="login-error" class="login-error" style="display: none;"></div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Main Dashboard (Hidden until authenticated) -->
+        <div id="dashboard-content" class="dashboard-content" style="display: none;">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-content">
+                    <a href="/" class="site-title-link">
+                        <h1 class="site-title">Hereco Admin</h1>
+                    </a>
+                    <nav class="nav">
+                        <a href="/" class="nav-link">Home</a>
+                        <a href="/chatbot.html" class="nav-link">Chatbot</a>
+                        <a href="/download.html" class="nav-link">Download</a>
+                        <span id="admin-user-info" class="nav-link" style="color: #666; font-size: 14px;"></span>
+                        <button class="btn btn-secondary" onclick="logout()">Logout</button>
+                    </nav>
+                </div>
+            </header>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <h1 class="page-title">Admin Dashboard</h1>
+            <p class="page-subtitle">AI Model Management & System Control</p>
+            <div class="alert alert-warning">
+                <strong>Security Notice:</strong> This dashboard uses Firebase authentication. Only authorized admin emails can access this dashboard. Session will expire after 30 minutes of inactivity.
+            </div>
+            
+            <div id="alert-container"></div>
+            
+            <div class="grid">
+                <!-- Model Management -->
+                <div class="card">
+                    <h2 class="card-title">Model Management</h2>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="primary-model">Primary Model</label>
+                        <select class="form-select" id="primary-model">
+                            <option value="">Loading models...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="fallback-model-1">Fallback Model 1</label>
+                        <select class="form-select" id="fallback-model-1">
+                            <option value="">Loading models...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="fallback-model-2">Fallback Model 2</label>
+                        <select class="form-select" id="fallback-model-2">
+                            <option value="">Loading models...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="fallback-model-3">Fallback Model 3</label>
+                        <select class="form-select" id="fallback-model-3">
+                            <option value="">Loading models...</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn btn-success" onclick="updateModelConfiguration()">
+                        Save Configuration
+                    </button>
+                    
+                    <button class="btn btn-secondary" onclick="resetToDefaults()">
+                        Reset to Defaults
+                    </button>
+                </div>
+                
+                <!-- System Status -->
+                <div class="card">
+                    <h2 class="card-title">System Status</h2>
+                    
+                    <div class="model-info">
+                        <h4>Current Configuration</h4>
+                        <p><strong>Primary Model:</strong> <span id="current-primary">Loading...</span></p>
+                        <p><strong>Fallback Chain:</strong> <span id="current-fallback">Loading...</span></p>
+                        <p><strong>Last Updated:</strong> <span id="last-updated">Never</span></p>
+                    </div>
+                    
+                    <div class="model-info">
+                        <h4>Service Status</h4>
+                        <div class="status-item">
+                            <div class="status-info">
+                                <span class="status-indicator status-unknown"></span>
+                                <span class="status-label">Ollama</span>
+                            </div>
+                            <span class="status-value" id="ollama-status">Checking...</span>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-info">
+                                <span class="status-indicator status-unknown"></span>
+                                <span class="status-label">Gemini</span>
+                            </div>
+                            <span class="status-value" id="gemini-status">Checking...</span>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-info">
+                                <span class="status-indicator status-unknown"></span>
+                                <span class="status-label">Cohere</span>
+                            </div>
+                            <span class="status-value" id="cohere-status">Checking...</span>
+                        </div>
+                    </div>
+                    
+                    <button class="btn" onclick="refreshSystemStatus()">
+                        Refresh Status
+                    </button>
+                    
+                    <button class="btn btn-secondary" onclick="testCurrentModel()">
+                        Test Current Model
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Available Models -->
+            <div class="card">
+                <h2 class="card-title">Available Models</h2>
+                <div id="available-models">
+                    <p>Loading available models...</p>
+                </div>
+                <button class="btn" onclick="loadAvailableModels()">
+                    Refresh Models
+                </button>
+            </div>
+            
+            <!-- User Management -->
+            <div class="card">
+                <h2 class="card-title">User Management</h2>
+                <div id="users-list">
+                    <p>Loading users...</p>
+                </div>
+                <button class="btn" onclick="loadUsers()">
+                    Refresh Users
+                </button>
+            </div>
+            
+            <!-- Health Monitoring -->
+            <div class="card">
+                <h2 class="card-title">Health Monitoring</h2>
+                <div id="health-status">
+                    <p>Loading health status...</p>
+                </div>
+                <button class="btn" onclick="loadHealthStatus()">
+                    Refresh Health
+                </button>
+            </div>
+            
+            <!-- System Logs -->
+            <div class="card">
+                <h2 class="card-title">System Logs</h2>
+                <div class="logs-container" id="system-logs">
+                    <div class="log-entry">
+                        <span class="log-timestamp">[Loading...]</span>
+                        <span class="log-success">Admin dashboard initialized</span>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" onclick="clearLogs()">
+                    Clear Logs
+                </button>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB1TMKnRNnH1pMEq26gAKYcxulUoyUFJRI",
+            authDomain: "hereco-17.firebaseapp.com",
+            projectId: "hereco-17",
+            storageBucket: "hereco-17.firebasestorage.app",
+            messagingSenderId: "114911168209",
+            appId: "1:114911168209:web:8c77ab79ae3f172a6827f0"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Make auth available globally
+        window.auth = auth;
+        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+        window.signOut = signOut;
+        
+        // Dispatch event when Firebase is ready
+        window.dispatchEvent(new CustomEvent('firebase-ready'));
+    </script>
+    
+    <script src="js/config.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

@@ -65,7 +65,7 @@ const Config = {
             health: '/api/health',
             
     // Chatbot endpoints
-    chatbot: '/api/chatbot/gemini',
+    chatbot: '/api/chatbot/ollama',
     chatbotModels: '/api/chatbot/models',
     datasetUpload: '/api/chatbot/dataset/upload',
     datasetList: '/api/chatbot/dataset',

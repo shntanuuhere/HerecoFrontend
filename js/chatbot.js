@@ -7,11 +7,12 @@ class ChatbotService {
     constructor() {
         this.messages = [];
         this.isTyping = false;
-        this.currentModel = 'gemini-1.5-8b'; // Always use free model
+        this.currentModel = null; // Will be fetched dynamically
         this.maxMessageLength = 4000;
         this.conversationHistory = [];
         this.isConnected = false;
         this.currentChatId = null;
+        this.configStream = null; // SSE connection for real-time updates
         
         // Initialize chatbot
         this.init();
@@ -27,7 +28,11 @@ class ChatbotService {
                 return;
             }
             
+            // Load current model configuration
+            await this.loadCurrentModel();
+            
             this.setupEventListeners();
+            this.setupRealTimeConfig(); // Setup real-time configuration updates
             await this.initializeChatFromURL();
             await this.updateChatHistory();
             this.testConnection();
@@ -81,6 +86,97 @@ class ChatbotService {
         console.log('No authentication found, showing auth required');
         this.showAuthRequired();
         return false;
+    }
+
+    /**
+     * Load current model configuration from backend
+     */
+    async loadCurrentModel() {
+        try {
+            const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.chatbot}/status`);
+            const data = await response.json();
+            
+            if (data.success && data.services && data.services.ollama) {
+                this.currentModel = data.services.ollama.model;
+                console.log('Current model loaded:', this.currentModel);
+            } else {
+                // Fallback to default model
+                this.currentModel = 'gemma2:2b';
+                console.log('Using fallback model:', this.currentModel);
+            }
+        } catch (error) {
+            console.error('Error loading current model:', error);
+            // Fallback to default model
+            this.currentModel = 'gemma2:2b';
+            console.log('Using fallback model due to error:', this.currentModel);
+        }
+    }
+
+    /**
+     * Refresh model configuration (can be called externally)
+     */
+    async refreshModelConfiguration() {
+        await this.loadCurrentModel();
+        console.log('Model configuration refreshed:', this.currentModel);
+    }
+    
+    /**
+     * Setup real-time configuration updates via Server-Sent Events
+     */
+    setupRealTimeConfig() {
+        try {
+            const apiBaseUrl = typeof API_CONFIG !== 'undefined' ? 
+                `${API_CONFIG.baseUrl}${API_CONFIG.chatbot}`.replace('/chatbot', '') : 
+                'https://hereco-backend.azurewebsites.net/api';
+            
+            this.configStream = new EventSource(`${apiBaseUrl}/config/stream`);
+            
+            this.configStream.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    
+                    if (data.type === 'config' || data.type === 'config_update') {
+                        // Update current model from real-time config
+                        this.currentModel = data.data.primary;
+                        console.log('Real-time config update received:', data.data);
+                        
+                        // Show notification to user
+                        this.showNotification('AI model configuration updated in real-time!', 'success');
+                    } else if (data.type === 'ping') {
+                        // Keep connection alive
+                        console.log('Config stream ping received');
+                    }
+                } catch (error) {
+                    console.error('Error parsing config stream data:', error);
+                }
+            };
+            
+            this.configStream.onerror = (error) => {
+                console.error('Config stream error:', error);
+                // Attempt to reconnect after 5 seconds
+                setTimeout(() => {
+                    if (this.configStream) {
+                        this.configStream.close();
+                        this.setupRealTimeConfig();
+                    }
+                }, 5000);
+            };
+            
+            console.log('Real-time configuration stream connected');
+        } catch (error) {
+            console.error('Failed to setup real-time config:', error);
+        }
+    }
+    
+    /**
+     * Cleanup real-time configuration stream
+     */
+    cleanupRealTimeConfig() {
+        if (this.configStream) {
+            this.configStream.close();
+            this.configStream = null;
+            console.log('Real-time configuration stream disconnected');
+        }
     }
 
     /**
@@ -768,6 +864,9 @@ class ChatbotService {
                 this.showNotification('Authentication required to use AI chatbot', 'error');
                 return null;
             }
+
+            // Refresh current model configuration before each request
+            await this.loadCurrentModel();
 
             // Validate and prepare conversation history
             const validatedHistory = this.validateConversationHistory();
@@ -2018,7 +2117,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Wait for environment to be initialized
     setTimeout(function() {
         window.chatbot = new ChatbotService();
+        window.chatbotService = window.chatbot; // Make it available for admin dashboard
     }, 1000);
+});
+
+// Cleanup when page unloads
+window.addEventListener('beforeunload', function() {
+    if (window.chatbot && window.chatbot.cleanupRealTimeConfig) {
+        window.chatbot.cleanupRealTimeConfig();
+    }
 });
 
 // Export for use in other modules

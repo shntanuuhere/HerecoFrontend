@@ -68,7 +68,7 @@ flutter build web --release
 
 The app connects to your backend API at:
 - **Base URL**: `https://hereco-backend.azurewebsites.net`
-- **Chatbot Endpoint**: `/api/chatbot/gemini`
+- **Chatbot Endpoint**: `/api/chatbot/ollama`
 - **Chat History Endpoint**: `/api/chatbot/chats`
 
 ### Authentication
@@ -119,9 +119,9 @@ lib/
 
 ### Chatbot API
 ```dart
-POST /api/chatbot/gemini
+POST /api/chatbot/ollama
 {
-  "model": "gemini-1.5-8b",
+  "model": "gpt-oss:20b",
   "messages": [...],
   "max_tokens": 1000,
   "temperature": 0.7
