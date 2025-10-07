@@ -262,7 +262,9 @@ class ChatbotService {
             };
             
             this.configStream.onerror = (error) => {
-                console.error('Config stream error:', error);
+                console.error('❌ SSE ERROR - readyState:', this.configStream?.readyState, 'error:', error);
+                console.error('SSE URL:', this.sseUrl);
+                console.error('Ever connected:', this.everConnected);
                 this.sseConnected = false;
                 
                 // Check if the connection was ever established
@@ -308,16 +310,21 @@ class ChatbotService {
         // SSE connections are lightweight and can stay open even when tab is hidden
         console.log('Page visibility handling disabled - SSE will stay connected');
 
-        // Optional: Only reconnect if connection is actually lost
+        // Optional: Only reconnect if connection is actually lost (CLOSED state)
         if (typeof document.hidden !== 'undefined') {
             document.addEventListener('visibilitychange', () => {
                 if (!document.hidden) {
-                    // Page became visible - check if SSE is still connected
-                    if (!this.sseConnected || !this.configStream || this.configStream.readyState !== 1) {
-                        console.log('Page visible and SSE disconnected, reconnecting...');
+                    // Page became visible - check if SSE is CLOSED (not just disconnected or connecting)
+                    // readyState: 0 = CONNECTING, 1 = OPEN, 2 = CLOSED
+                    const isClosed = !this.configStream || this.configStream.readyState === 2;
+
+                    if (isClosed) {
+                        console.log('Page visible and SSE is CLOSED, reconnecting...');
                         setTimeout(() => {
                             this.setupRealTimeConfig();
                         }, 500);
+                    } else {
+                        console.log('Page visible, SSE state:', this.configStream?.readyState, '(0=CONNECTING, 1=OPEN, 2=CLOSED) - no action needed');
                     }
                 }
             });
