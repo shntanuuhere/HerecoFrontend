@@ -3,6 +3,12 @@
  * Handles chat functionality, message management, and AI communication
  */
 
+// Global API configuration for chatbot
+window.API_CONFIG = {
+    baseUrl: Config.api.baseUrl,
+    chatbot: Config.api.endpoints.chatbot
+};
+
 class ChatbotService {
     constructor() {
         this.messages = [];
@@ -10,9 +16,13 @@ class ChatbotService {
         this.currentModel = null; // Will be fetched dynamically
         this.maxMessageLength = 4000;
         this.conversationHistory = [];
-        this.isConnected = false;
+        this.isConnected = false; // AI service connectivity
+        this.sseConnected = false; // SSE connection state
         this.currentChatId = null;
         this.configStream = null; // SSE connection for real-time updates
+        this.reconnectTimer = null; // Timer for SSE reconnection attempts
+        this.sseModelPriority = false; // Tracks if SSE has provided the current model
+        this.apiBaseUrl = Config.api.baseUrl;
         
         // Initialize chatbot
         this.init();
@@ -33,6 +43,7 @@ class ChatbotService {
             
             this.setupEventListeners();
             this.setupRealTimeConfig(); // Setup real-time configuration updates
+            this.setupVisibilityHandling(); // Setup page visibility handling
             await this.initializeChatFromURL();
             await this.updateChatHistory();
             this.testConnection();
@@ -93,22 +104,65 @@ class ChatbotService {
      */
     async loadCurrentModel() {
         try {
-            const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.chatbot}/status`);
+            // Check if SSE has already provided a fresher model
+            if (this.sseModelPriority && this.currentModel) {
+                console.log('Using SSE model, skipping backend fetch:', this.currentModel);
+                return;
+            }
+
+            // Get SSE timestamp for freshness comparison
+            const sseTimestamp = sessionStorage.getItem('modelLastUpdated');
+            
+            // Use Config directly instead of API_CONFIG
+            const response = await fetch(`${this.apiBaseUrl}/api/chatbot/status`);
             const data = await response.json();
             
             if (data.success && data.services && data.services.ollama) {
-                this.currentModel = data.services.ollama.model;
+                const newModel = data.services.ollama.model;
+                
+                // Check if we should update based on SSE timestamp
+                if (sseTimestamp) {
+                    const ts = Date.parse(sseTimestamp);
+                    if (!Number.isFinite(ts)) {
+                        console.warn('Invalid SSE timestamp, treating as no timestamp');
+                    } else {
+                        const sseAge = Date.now() - ts;
+                        if (sseAge < 300000) { // 5 minutes
+                            console.log('Backend model is stale, keeping SSE model:', this.currentModel);
+                            return;
+                        }
+                    }
+                }
+                
+                this.currentModel = newModel;
                 console.log('Current model loaded:', this.currentModel);
+                // Save to localStorage as backup and update timestamp
+                localStorage.setItem('currentModel', this.currentModel);
+                sessionStorage.setItem('modelLastUpdated', new Date().toISOString());
             } else {
-                // Fallback to default model
-                this.currentModel = 'gemma2:2b';
-                console.log('Using fallback model:', this.currentModel);
+                // Try to get from localStorage first
+                const savedModel = localStorage.getItem('currentModel');
+                if (savedModel) {
+                    this.currentModel = savedModel;
+                    console.log('Using saved model from localStorage:', this.currentModel);
+                } else {
+                    // Fallback to default model
+                    this.currentModel = 'gemma2:2b';
+                    console.log('Using fallback model:', this.currentModel);
+                }
             }
         } catch (error) {
             console.error('Error loading current model:', error);
-            // Fallback to default model
-            this.currentModel = 'gemma2:2b';
-            console.log('Using fallback model due to error:', this.currentModel);
+            // Try to get from localStorage first
+            const savedModel = localStorage.getItem('currentModel');
+            if (savedModel) {
+                this.currentModel = savedModel;
+                console.log('Using saved model from localStorage after error:', this.currentModel);
+            } else {
+                // Fallback to default model
+                this.currentModel = 'gemma2:2b';
+                console.log('Using fallback model due to error:', this.currentModel);
+            }
         }
     }
 
@@ -116,8 +170,10 @@ class ChatbotService {
      * Refresh model configuration (can be called externally)
      */
     async refreshModelConfiguration() {
+        // Explicit refresh requested by admin - temporarily bypass SSE priority
+        this.sseModelPriority = false;
         await this.loadCurrentModel();
-        console.log('Model configuration refreshed:', this.currentModel);
+        console.log('Model configuration force-refreshed:', this.currentModel);
     }
     
     /**
@@ -125,25 +181,71 @@ class ChatbotService {
      */
     setupRealTimeConfig() {
         try {
-            const apiBaseUrl = typeof API_CONFIG !== 'undefined' ? 
-                `${API_CONFIG.baseUrl}${API_CONFIG.chatbot}`.replace('/chatbot', '') : 
-                'https://hereco-backend.azurewebsites.net/api';
+            // Use the class instance's apiBaseUrl
+            const apiBaseUrl = this.apiBaseUrl || Config.api.baseUrl;
             
-            this.configStream = new EventSource(`${apiBaseUrl}/config/stream`);
+            // Clean up any existing connection and timers
+            this.cleanupRealTimeConfig();
+            
+            console.log('Setting up new SSE connection');
+            
+            // Use stored URL if available, otherwise use default URL
+            const defaultUrl = `${apiBaseUrl}/api/config/stream`;
+            this.sseUrl = this.sseUrl || defaultUrl;
+            console.log('Connecting SSE to:', this.sseUrl);
+            this.configStream = new EventSource(this.sseUrl);
+            
+            // Track connection state
+            this.isConnected = false;
+            
+            this.configStream.onopen = () => {
+                console.log('SSE connection established to:', this.sseUrl);
+                this.sseConnected = true;
+                this.everConnected = true;
+                this.reconnectAttempts = 0; // Reset attempts on successful connection
+                this.sseModelPriority = false; // Reset priority on new connection
+                console.log('SSE connected, waiting for config update');
+                
+                // Request initial config on connection
+                this.requestCurrentConfig();
+                
+                // Show success notification on first connection
+                if (!this.hasShownConnectionSuccess) {
+                    this.showNotification('Real-time updates connected', 'success');
+                    this.hasShownConnectionSuccess = true;
+                }
+            };
             
             this.configStream.onmessage = (event) => {
                 try {
                     const data = JSON.parse(event.data);
+                    console.log('SSE message received:', data);
                     
                     if (data.type === 'config' || data.type === 'config_update') {
                         // Update current model from real-time config
                         const oldModel = this.currentModel;
-                        this.currentModel = data.data.primary;
-                        console.log('Real-time config update received:', data.data);
+                        const newModel = data.data.primary;
                         
-                        // Show notification only if model actually changed
-                        if (oldModel !== this.currentModel) {
-                            this.showNotification(`AI model updated to: ${this.currentModel}`, 'success');
+                        if (oldModel !== newModel) {
+                            console.log(`Model change detected: ${oldModel} -> ${newModel}`);
+                            
+                            // Update model in memory and storage
+                            this.currentModel = newModel;
+                            window.CURRENT_MODEL = newModel; // Global backup
+                            localStorage.setItem('currentModel', newModel);
+                            sessionStorage.setItem('modelLastUpdated', new Date().toISOString());
+                            
+                            // Set SSE priority flag
+                            this.sseModelPriority = true;
+                            
+                            // Broadcast model change event
+                            const event = new CustomEvent('modelChanged', { 
+                                detail: { oldModel, newModel } 
+                            });
+                            window.dispatchEvent(event);
+                            
+                            this.showNotification(`AI model updated to: ${newModel}`, 'success');
+                            console.log('Model update completed');
                         }
                     } else if (data.type === 'ping') {
                         // Keep connection alive
@@ -156,13 +258,35 @@ class ChatbotService {
             
             this.configStream.onerror = (error) => {
                 console.error('Config stream error:', error);
-                // Attempt to reconnect after 5 seconds
-                setTimeout(() => {
-                    if (this.configStream) {
-                        this.configStream.close();
-                        this.setupRealTimeConfig();
+                this.sseConnected = false;
+                
+                // Check if the connection was ever established
+                if (!this.everConnected) {
+                    console.log('SSE connection never established, trying alternative URL');
+                    // Try alternative URL format if first attempt failed
+                    if (this.sseUrl.includes('/api/config/stream')) {
+                        this.sseUrl = `${apiBaseUrl}/config/stream`;
+                    } else {
+                        this.sseUrl = `${apiBaseUrl}/api/config/stream`;
                     }
-                }, 5000);
+                }
+                
+                // Attempt to reconnect with exponential backoff
+                const backoff = (this.reconnectAttempts || 0) * 1000 + 1000; // Start at 1s, increment by 1s each time
+                this.reconnectAttempts = (this.reconnectAttempts || 0) + 1;
+                
+                console.log(`Attempting reconnection in ${backoff}ms (attempt ${this.reconnectAttempts})`);
+                
+                // Clear any existing reconnect timer before scheduling a new one
+                if (this.reconnectTimer) {
+                    clearTimeout(this.reconnectTimer);
+                    this.reconnectTimer = null;
+                }
+                
+                this.reconnectTimer = setTimeout(() => {
+                    this.cleanupRealTimeConfig();
+                    this.setupRealTimeConfig();
+                }, Math.min(backoff, 10000)); // Cap at 10 seconds
             };
             
             console.log('Real-time configuration stream connected');
@@ -172,14 +296,58 @@ class ChatbotService {
     }
     
     /**
-     * Cleanup real-time configuration stream
+     * Setup page visibility handling to manage SSE connection lifecycle
+     */
+    setupVisibilityHandling() {
+        // Only setup if Page Visibility API is supported
+        if (typeof document.hidden !== 'undefined') {
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    // Page is hidden - cleanup to save resources
+                    console.log('Page hidden, cleaning up SSE connection');
+                    this.cleanupRealTimeConfig();
+                } else {
+                    // Page is visible again - reconnect
+                    console.log('Page visible, reconnecting SSE');
+                    // Small delay to ensure page is fully active
+                    setTimeout(() => {
+                        this.setupRealTimeConfig();
+                    }, 500);
+                }
+            });
+            console.log('Page visibility handling enabled');
+        }
+    }
+
+    /**
+     * Cleanup real-time configuration stream and all related resources
      */
     cleanupRealTimeConfig() {
-        if (this.configStream) {
-            this.configStream.close();
-            this.configStream = null;
-            console.log('Real-time configuration stream disconnected');
+        console.log('Cleaning up SSE connection and resources...');
+        
+        // Clear any pending reconnection timer
+        if (this.reconnectTimer) {
+            clearTimeout(this.reconnectTimer);
+            this.reconnectTimer = null;
+            console.log('Cleared pending reconnection timer');
         }
+        
+        // Close and cleanup EventSource
+        if (this.configStream) {
+            try {
+                this.configStream.close();
+                console.log('SSE connection closed');
+            } catch (error) {
+                console.error('Error closing SSE connection:', error);
+            }
+            this.configStream = null;
+        }
+        
+        // Reset connection state flags
+        this.sseConnected = false;
+        this.sseModelPriority = false;
+        
+        console.log('Real-time configuration cleanup completed (SSE priority reset)');
     }
 
     /**
@@ -868,18 +1036,69 @@ class ChatbotService {
                 return null;
             }
 
-            // Use the current model from SSE config (no need to refresh)
-            // If no model set, load it
-            if (!this.currentModel) {
-                await this.loadCurrentModel();
+            // Model selection priority:
+            // 1. SSE connection active model
+            // 2. localStorage saved model
+            // 3. Global backup
+            // 4. Backend API
+            // 5. Default fallback
+            
+            let selectedModel;
+            const modelSources = [];
+            
+            // 1. Check SSE connection model (using sseConnected or readyState)
+            if ((this.sseConnected || this.configStream?.readyState === 1) && this.currentModel) {
+                selectedModel = this.currentModel;
+                modelSources.push('SSE');
             }
-
+            
+            // 2. Check localStorage (with timestamp validation)
+            if (!selectedModel) {
+                const savedModel = localStorage.getItem('currentModel');
+                const lastUpdated = sessionStorage.getItem('modelLastUpdated');
+                
+                if (savedModel && lastUpdated) {
+                    const updateAge = Date.now() - new Date(lastUpdated).getTime();
+                    if (updateAge < 300000) { // 5 minutes
+                        selectedModel = savedModel;
+                        modelSources.push('localStorage');
+                    }
+                }
+            }
+            
+            // 3. Check global backup
+            if (!selectedModel && window.CURRENT_MODEL) {
+                selectedModel = window.CURRENT_MODEL;
+                modelSources.push('global');
+            }
+            
+            // 4. Load from backend if still no model
+            if (!selectedModel) {
+                try {
+                    await this.loadCurrentModel();
+                    if (this.currentModel) {
+                        selectedModel = this.currentModel;
+                        modelSources.push('backend');
+                    }
+                } catch (error) {
+                    console.warn('Failed to load model from backend:', error);
+                }
+            }
+            
+            // 5. Use fallback if all else fails
+            if (!selectedModel) {
+                selectedModel = 'gemma2:2b';
+                modelSources.push('fallback');
+            }
+            
+            console.log(`Selected model: ${selectedModel} (sources: ${modelSources.join(', ')}, SSE connected: ${this.sseConnected}, readyState: ${this.configStream?.readyState ?? 'none'}, SSE priority: ${this.sseModelPriority})`);
+            
             // Validate and prepare conversation history
             const validatedHistory = this.validateConversationHistory();
             
             // Prepare request payload with validated conversation history
             const payload = {
-                model: this.currentModel || 'gemma2:2b', // Use current or fallback
+                model: selectedModel,
                 messages: validatedHistory,
                 max_tokens: 1000,
                 temperature: 0.7
@@ -1275,6 +1494,45 @@ class ChatbotService {
         const hasText = chatInput.value.trim().length > 0;
         
         sendBtn.disabled = !hasText || this.isTyping;
+    }
+
+    /**
+     * Request current configuration from backend
+     */
+    async requestCurrentConfig() {
+        try {
+            // Use consistent API base URL resolution
+            const response = await fetch(`${this.apiBaseUrl}/api/config`);
+            const data = await response.json();
+            
+            if (data.type === 'config') {
+                const newModel = data.data.primary;
+                if (this.currentModel !== newModel) {
+                    const oldModel = this.currentModel;
+                    console.log(`Updating model from config request: ${oldModel} -> ${newModel} (via requestCurrentConfig)`);
+                    this.currentModel = newModel;
+                    window.CURRENT_MODEL = newModel;
+                    localStorage.setItem('currentModel', newModel);
+                    sessionStorage.setItem('modelLastUpdated', new Date().toISOString());
+                    this.sseModelPriority = true;
+
+                    // Dispatch model change event for consistency with SSE updates
+                    window.dispatchEvent(new CustomEvent('modelChanged', { 
+                        detail: { oldModel, newModel } 
+                    }));
+                    
+                    // Show notification if we haven't shown one recently
+                    const lastNotification = sessionStorage.getItem('lastModelNotification');
+                    const now = Date.now();
+                    if (!lastNotification || (now - Number(lastNotification)) > 5000) { // 5 second debounce
+                        this.showNotification(`AI model updated to: ${newModel}`, 'success');
+                        sessionStorage.setItem('lastModelNotification', now.toString());
+                    }
+                }
+            }
+        } catch (error) {
+            console.warn('Failed to request current config:', error);
+        }
     }
 
     /**

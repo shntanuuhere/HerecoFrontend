@@ -517,6 +517,98 @@ class ApiService {
         return data;
     }
 
+    // Chatbot API Methods
+
+    /**
+     * Send message to chatbot
+     * @param {string} message - User message
+     * @param {string} model - Model name
+     * @param {Object} options - Additional options
+     * @returns {Promise<Object>} Chatbot response
+     */
+    async sendChatMessage(message, model = "mistralai/mistral-nemo:free", options = {}) {
+        if (!message) {
+            throw new Error('Message is required');
+        }
+        
+        // Fallback models in case the primary one fails
+        const fallbackModels = [
+            "google/gemma-2-9b-it:free",
+            "mistralai/mistral-7b-instruct:free"
+        ];
+
+        const url = Config.getApiUrl('chat');
+        const body = {
+            message: message,
+            model: model,
+            ...options
+        };
+
+        try {
+            return await this.makeRequest(url, {
+                method: 'POST',
+                body: JSON.stringify(body)
+            });
+        } catch (error) {
+            // If primary model fails, try fallback models
+            for (const fallbackModel of fallbackModels) {
+                try {
+                    console.log(`Trying fallback model: ${fallbackModel}`);
+                    body.model = fallbackModel;
+                    return await this.makeRequest(url, {
+                        method: 'POST',
+                        body: JSON.stringify(body)
+                    });
+                } catch (fallbackError) {
+                    console.log(`Fallback model ${fallbackModel} failed:`, fallbackError);
+                    continue;
+                }
+            }
+            // If all fallbacks fail, throw the original error
+            throw error;
+        }
+    }
+
+    /**
+     * Get available models
+     * @returns {Promise<Object>} Available models data
+     */
+    async getAvailableModels() {
+        const cacheKey = 'available_models';
+        const cached = this.getCachedData(cacheKey);
+        if (cached) {
+            Config.debug('Returning cached models data');
+            return cached;
+        }
+
+        const url = Config.getApiUrl('models');
+        const data = await this.makeRequest(url);
+        
+        this.setCachedData(cacheKey, data);
+        return data;
+    }
+
+    /**
+     * Test model availability
+     * @param {string} model - Model name to test
+     * @returns {Promise<Object>} Model test result
+     */
+    async testModel(model) {
+        if (!model) {
+            throw new Error('Model name is required');
+        }
+
+        const url = Config.getApiUrl('testModel');
+        const body = {
+            model: model
+        };
+
+        return await this.makeRequest(url, {
+            method: 'POST',
+            body: JSON.stringify(body)
+        });
+    }
+
     // Health Check API Method
 
     /**
