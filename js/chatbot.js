@@ -220,32 +220,34 @@ class ChatbotService {
                 try {
                     const data = JSON.parse(event.data);
                     console.log('SSE message received:', data);
-                    
+
                     if (data.type === 'config' || data.type === 'config_update') {
                         // Update current model from real-time config
                         const oldModel = this.currentModel;
                         const newModel = data.data.primary;
-                        
+
+                        // Always update the model, even if it's the same (for reconnection cases)
+                        this.currentModel = newModel;
+                        window.CURRENT_MODEL = newModel; // Global backup
+                        localStorage.setItem('currentModel', newModel);
+                        sessionStorage.setItem('modelLastUpdated', new Date().toISOString());
+
+                        // Set SSE priority flag
+                        this.sseModelPriority = true;
+
                         if (oldModel !== newModel) {
                             console.log(`Model change detected: ${oldModel} -> ${newModel}`);
-                            
-                            // Update model in memory and storage
-                            this.currentModel = newModel;
-                            window.CURRENT_MODEL = newModel; // Global backup
-                            localStorage.setItem('currentModel', newModel);
-                            sessionStorage.setItem('modelLastUpdated', new Date().toISOString());
-                            
-                            // Set SSE priority flag
-                            this.sseModelPriority = true;
-                            
+
                             // Broadcast model change event
-                            const event = new CustomEvent('modelChanged', { 
-                                detail: { oldModel, newModel } 
+                            const event = new CustomEvent('modelChanged', {
+                                detail: { oldModel, newModel }
                             });
                             window.dispatchEvent(event);
-                            
+
                             this.showNotification(`AI model updated to: ${newModel}`, 'success');
                             console.log('Model update completed');
+                        } else {
+                            console.log(`Model confirmed via SSE: ${newModel}`);
                         }
                     } else if (data.type === 'ping') {
                         // Keep connection alive
@@ -324,14 +326,14 @@ class ChatbotService {
      */
     cleanupRealTimeConfig() {
         console.log('Cleaning up SSE connection and resources...');
-        
+
         // Clear any pending reconnection timer
         if (this.reconnectTimer) {
             clearTimeout(this.reconnectTimer);
             this.reconnectTimer = null;
             console.log('Cleared pending reconnection timer');
         }
-        
+
         // Close and cleanup EventSource
         if (this.configStream) {
             try {
@@ -342,12 +344,13 @@ class ChatbotService {
             }
             this.configStream = null;
         }
-        
+
         // Reset connection state flags
         this.sseConnected = false;
-        this.sseModelPriority = false;
-        
-        console.log('Real-time configuration cleanup completed (SSE priority reset)');
+        // DON'T reset sseModelPriority or currentModel - keep the last known model
+        // This ensures the model persists even when SSE connection is temporarily lost
+
+        console.log('Real-time configuration cleanup completed (model preserved)');
     }
 
     /**
@@ -1037,26 +1040,32 @@ class ChatbotService {
             }
 
             // Model selection priority:
-            // 1. SSE connection active model
-            // 2. localStorage saved model
+            // 1. this.currentModel (set by SSE or backend) - ALWAYS FIRST
+            // 2. localStorage saved model (with recent timestamp)
             // 3. Global backup
             // 4. Backend API
             // 5. Default fallback
-            
+
             let selectedModel;
             const modelSources = [];
-            
-            // 1. Check SSE connection model (using sseConnected or readyState)
-            if ((this.sseConnected || this.configStream?.readyState === 1) && this.currentModel) {
+
+            // 1. Check this.currentModel first (set by SSE or backend)
+            // This is the most reliable source as it's updated by SSE or backend API
+            if (this.currentModel) {
                 selectedModel = this.currentModel;
-                modelSources.push('SSE');
+                modelSources.push('currentModel');
+
+                // Also check if SSE is active for logging
+                if (this.sseConnected || this.configStream?.readyState === 1) {
+                    modelSources.push('SSE-active');
+                }
             }
-            
-            // 2. Check localStorage (with timestamp validation)
+
+            // 2. Check localStorage (with timestamp validation) - only if currentModel is not set
             if (!selectedModel) {
                 const savedModel = localStorage.getItem('currentModel');
                 const lastUpdated = sessionStorage.getItem('modelLastUpdated');
-                
+
                 if (savedModel && lastUpdated) {
                     const updateAge = Date.now() - new Date(lastUpdated).getTime();
                     if (updateAge < 300000) { // 5 minutes
@@ -1065,13 +1074,13 @@ class ChatbotService {
                     }
                 }
             }
-            
+
             // 3. Check global backup
             if (!selectedModel && window.CURRENT_MODEL) {
                 selectedModel = window.CURRENT_MODEL;
                 modelSources.push('global');
             }
-            
+
             // 4. Load from backend if still no model
             if (!selectedModel) {
                 try {
@@ -1084,7 +1093,7 @@ class ChatbotService {
                     console.warn('Failed to load model from backend:', error);
                 }
             }
-            
+
             // 5. Use fallback if all else fails
             if (!selectedModel) {
                 selectedModel = 'gemma2:2b';
