@@ -192,23 +192,26 @@ class ChatbotService {
             // Use stored URL if available, otherwise use default URL
             const defaultUrl = `${apiBaseUrl}/api/config/stream`;
             this.sseUrl = this.sseUrl || defaultUrl;
-            console.log('Connecting SSE to:', this.sseUrl);
+            console.log('🔌 Connecting SSE to:', this.sseUrl);
             this.configStream = new EventSource(this.sseUrl);
-            
+
             // Track connection state
             this.isConnected = false;
+
+            // Log initial state
+            console.log('EventSource created, readyState:', this.configStream.readyState, '(0=CONNECTING, 1=OPEN, 2=CLOSED)');
             
             this.configStream.onopen = () => {
-                console.log('SSE connection established to:', this.sseUrl);
+                console.log('✅ SSE connection OPEN (readyState: 1) to:', this.sseUrl);
                 this.sseConnected = true;
                 this.everConnected = true;
                 this.reconnectAttempts = 0; // Reset attempts on successful connection
                 this.sseModelPriority = false; // Reset priority on new connection
-                console.log('SSE connected, waiting for config update');
-                
+                console.log('SSE connected, requesting initial config...');
+
                 // Request initial config on connection
                 this.requestCurrentConfig();
-                
+
                 // Show success notification on first connection
                 if (!this.hasShownConnectionSuccess) {
                     this.showNotification('Real-time updates connected', 'success');
@@ -219,7 +222,7 @@ class ChatbotService {
             this.configStream.onmessage = (event) => {
                 try {
                     const data = JSON.parse(event.data);
-                    console.log('SSE message received:', data);
+                    console.log('📨 SSE message received:', data);
 
                     if (data.type === 'config' || data.type === 'config_update') {
                         // Update current model from real-time config
@@ -301,23 +304,23 @@ class ChatbotService {
      * Setup page visibility handling to manage SSE connection lifecycle
      */
     setupVisibilityHandling() {
-        // Only setup if Page Visibility API is supported
+        // DISABLED: Page visibility handling was causing SSE disconnect/reconnect loops
+        // SSE connections are lightweight and can stay open even when tab is hidden
+        console.log('Page visibility handling disabled - SSE will stay connected');
+
+        // Optional: Only reconnect if connection is actually lost
         if (typeof document.hidden !== 'undefined') {
             document.addEventListener('visibilitychange', () => {
-                if (document.hidden) {
-                    // Page is hidden - cleanup to save resources
-                    console.log('Page hidden, cleaning up SSE connection');
-                    this.cleanupRealTimeConfig();
-                } else {
-                    // Page is visible again - reconnect
-                    console.log('Page visible, reconnecting SSE');
-                    // Small delay to ensure page is fully active
-                    setTimeout(() => {
-                        this.setupRealTimeConfig();
-                    }, 500);
+                if (!document.hidden) {
+                    // Page became visible - check if SSE is still connected
+                    if (!this.sseConnected || !this.configStream || this.configStream.readyState !== 1) {
+                        console.log('Page visible and SSE disconnected, reconnecting...');
+                        setTimeout(() => {
+                            this.setupRealTimeConfig();
+                        }, 500);
+                    }
                 }
             });
-            console.log('Page visibility handling enabled');
         }
     }
 
