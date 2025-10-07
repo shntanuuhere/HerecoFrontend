@@ -137,11 +137,14 @@ class ChatbotService {
                     
                     if (data.type === 'config' || data.type === 'config_update') {
                         // Update current model from real-time config
+                        const oldModel = this.currentModel;
                         this.currentModel = data.data.primary;
                         console.log('Real-time config update received:', data.data);
                         
-                        // Show notification to user
-                        this.showNotification('AI model configuration updated in real-time!', 'success');
+                        // Show notification only if model actually changed
+                        if (oldModel !== this.currentModel) {
+                            this.showNotification(`AI model updated to: ${this.currentModel}`, 'success');
+                        }
                     } else if (data.type === 'ping') {
                         // Keep connection alive
                         console.log('Config stream ping received');
@@ -865,15 +868,18 @@ class ChatbotService {
                 return null;
             }
 
-            // Refresh current model configuration before each request
-            await this.loadCurrentModel();
+            // Use the current model from SSE config (no need to refresh)
+            // If no model set, load it
+            if (!this.currentModel) {
+                await this.loadCurrentModel();
+            }
 
             // Validate and prepare conversation history
             const validatedHistory = this.validateConversationHistory();
             
             // Prepare request payload with validated conversation history
             const payload = {
-                model: this.currentModel,
+                model: this.currentModel || 'gemma2:2b', // Use current or fallback
                 messages: validatedHistory,
                 max_tokens: 1000,
                 temperature: 0.7
