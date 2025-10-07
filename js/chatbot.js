@@ -1100,7 +1100,7 @@ class ChatbotService {
                 modelSources.push('fallback');
             }
             
-            console.log(`Selected model: ${selectedModel} (sources: ${modelSources.join(', ')}, SSE connected: ${this.sseConnected}, readyState: ${this.configStream?.readyState ?? 'none'}, SSE priority: ${this.sseModelPriority})`);
+            console.log(`Selected model: ${selectedModel} (sources: ${modelSources.join(', ')})`);
             
             // Validate and prepare conversation history
             const validatedHistory = this.validateConversationHistory();
