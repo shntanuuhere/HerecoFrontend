@@ -65,7 +65,9 @@ const Config = {
             health: '/api/health',
             
     // Chatbot endpoints
-    chatbot: '/api/chatbot/ollama',
+    chatbot: '/api/chatbot/chat', // Unified endpoint - intelligently routes to correct AI service
+    chatbotOllama: '/api/chatbot/ollama', // Legacy endpoint (deprecated)
+    chatbotGemini: '/api/chatbot/gemini', // Legacy endpoint (deprecated)
     chatbotModels: '/api/chatbot/models',
     datasetUpload: '/api/chatbot/dataset/upload',
     datasetList: '/api/chatbot/dataset',
