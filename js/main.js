@@ -534,7 +534,7 @@ const Utils = {
         const video = document.createElement('video');
         video.preload = 'auto';
         video.muted = true;
-        video.src = 'https://shntanuuherebucket1.blob.core.windows.net/files/TVA.mov';
+        video.src = 'https://media.hereco.xyz/files/TVA.mov';
         
         // Store preloaded video globally for reuse
         window.preloadedModalVideo = video;
@@ -710,7 +710,7 @@ const Utils = {
             video = document.createElement('video');
             video.preload = 'auto';
             video.muted = true;
-            video.src = 'https://shntanuuherebucket1.blob.core.windows.net/files/TVA.mov';
+            video.src = 'https://media.hereco.xyz/files/TVA.mov';
         }
         
         // Set up video container
